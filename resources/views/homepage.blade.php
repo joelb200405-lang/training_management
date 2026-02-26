@@ -8,7 +8,7 @@
 </head>
 
 <body>  
-    <h2>Homepage</h2>
+  
 
     <a href="{{ route("about_page") }}">About us</a>
 </body>
