@@ -189,7 +189,27 @@ section{
 }
 
 .course-parent .child .child-header .fa-plus{
-  font-size: 80px;
+  font-size: 100px;
+  position: absolute;
+}
+
+.course-parent .child .child-header .fa-bread-slice{
+  font-size: 100px;
+  position: absolute;
+}
+
+.course-parent .child .child-header .fa-truck{
+  font-size: 100px;
+  position: absolute;
+}
+
+.course-parent .child .child-header .fa-shirt{
+  font-size: 100px;
+  position: absolute;
+}
+
+.course-parent .child .child-header .fa-cake-candles{
+  font-size: 100px;
   position: absolute;
 }
 

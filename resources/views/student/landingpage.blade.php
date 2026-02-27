@@ -94,7 +94,7 @@
 
 
                     <div class="child-header">
-                        <i class="fa fa-plus"></i>
+                        <i class="fa-solid fa-bread-slice"></i>
 
 
 
@@ -120,7 +120,7 @@
 
                     <div class="child-header">
 
-                        <i class="fa fa-plus"></i>
+                        <i class="fa-solid fa-truck"></i>
 
                         <div class="heart">
 
@@ -145,7 +145,7 @@
 
                     <div class="child-header">
 
-                        <i class="fa fa-plus"></i>
+                        <i class="fa-solid fa-shirt"></i>
 
                         <div class="heart">
 
@@ -170,7 +170,7 @@
 
                     <div class="child-header">
 
-                        <i class="fa fa-plus"></i>
+                        <i class="fa-solid fa-cake-candles"></i>
 
                         <div class="heart">
 
