@@ -6,6 +6,6 @@
     <title>Document</title>
 </head>
 <body>
-    
+    <h2> Hello LARAVEL</h2>
 </body>
 </html>

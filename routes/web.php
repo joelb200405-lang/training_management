@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\product_controller;
 
 Route::get('/', function () {
-    return view('homepage');
+    return view('student.landingpage');
 });
 
 Route::get("/about-page", [product_controller::class, "about_page"])->name("about_page");
