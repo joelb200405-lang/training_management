@@ -29,7 +29,7 @@
                     <div class="form-logo">
                         <div class="parent-logo">
                             <div class="logo"></div>
-                            <p>Computer System Servicing</p>
+                            <h2>Livelihood Program</h2>
                         </div>
                         <h2>Start your learning journey today.</h2>
                         <p>Create an account and start learning today.</p>
@@ -39,19 +39,19 @@
 
                         <div class="col-lg-4 mt-3">
                             <div class="text-box">
-                                <label>Firstname</label>
+                                <label>Firstname: </label>
                                 <!-- <div class="input-group">
                                     <span class="input-group-text"><i class="fa fa-envelope"></i></span>
                                     <input type="text" class="form-control" placeholder="Enter firstname" name="" id="">
                                 </div> -->
-                                <input type="text" class="form-control" placeholder="e.g. Juan" name="firstname" id="" required>
+                                <input type="text" class="form-control" placeholder=" Juan" name="firstname" id="" required>
                             </div>
                         </div>
 
                         <div class="col-lg-4 mt-3">
                             <div class="text-box">
-                                <label>Lastname</label>
-                                <input type="text" class="form-control" placeholder="e.g. Dela Cruz" name="lastname" id="" required>
+                                <label>Lastname: </label>
+                                <input type="text" class="form-control" placeholder=" Dela Cruz" name="lastname" id="" required>
                                 <!-- <div class="input-group">
                                     <span class="input-group-text"><i class="fa fa-envelope"></i></span>
                                     <input type="text" class="form-control" placeholder="Enter lastname" name="" id="">
@@ -61,8 +61,8 @@
 
                         <div class="col-lg-12 mt-3">
                             <div class="text-box">
-                                <label>Email</label>
-                                <input type="email" class="form-control" placeholder="e.g. juandelacruz@gmail.com" name="email" id="" required>
+                                <label>Email: </label>
+                                <input type="email" class="form-control" placeholder=" juandelacruz@gmail.com" name="email" id="" required>
                                 <!-- <div class="input-group">
                                     <span class="input-group-text"><i class="fa fa-envelope"></i></span>
                                     <input type="email" class="form-control" placeholder="Enter email" name="" id="">
@@ -72,8 +72,8 @@
 
                         <div class="col-lg-12 mt-3">
                             <div class="text-box">
-                                <label>Username</label>
-                                <input type="text" class="form-control" placeholder="e.g. juan_dc12" name="username" id="" required>
+                                <label>Username: </label>
+                                <input type="text" class="form-control" placeholder=" juan_dc12" name="username" id="" required>
                                 <!-- <div class="input-group">
                                     <span class="input-group-text"><i class="fa fa-user"></i></span>
                                     <input type="text" class="form-control" placeholder="Enter username" name="" id="">
@@ -83,8 +83,8 @@
 
                         <div class="col-lg-12 mt-3">
                             <div class="text-box">
-                                <label>Password</label>
-                                <input type="password" class="form-control" placeholder="At least 8 characters" name="password"
+                                <label>Password: </label>
+                                <input type="password" class="form-control" placeholder=" new password" name="password"
                                         id="" required>
                                 <!-- <div class="input-group">
                                     <span class="input-group-text"><i class="fa fa-lock"></i></span>
@@ -96,8 +96,8 @@
 
                         <div class="col-lg-12 mt-3">
                             <div class="text-box">
-                                <label>Confirm Password</label>
-                                <input type="password" class="form-control" placeholder="Re-enter your password" name="confirm_password"
+                                <label>Confirm Password: </label>
+                                <input type="password" class="form-control" placeholder=" Re-enter password" name="confirm_password"
                                         id="" required>
                                 <!-- <div class="input-group">
                                     <span class="input-group-text"><i class="fa fa-lock"></i></span>

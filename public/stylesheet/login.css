@@ -59,7 +59,7 @@
     justify-content: left;
     align-items: center;
     gap: 0.8rem;
-    margin-top: 1.5rem;
+    margin-top: 1.rem;
 }
 
 .container-fluid .login-parent .form .form-logo .parent-logo p {
@@ -166,7 +166,7 @@
     justify-content: center;
     align-items: center;
     width: 100%;
-    margin-top: 2rem;
+    margin-top: 1rem;
     gap: 1rem;
 }
 

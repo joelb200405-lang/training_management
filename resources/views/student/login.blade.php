@@ -36,13 +36,13 @@
                     </div>
 
                     <div class="text-box">
-                        <label>Username or Email</label>
+                        <label>Username: </label>
                         <input type="text" class="form-control" placeholder="Enter username or email" name="email" id=""
                             required>
                     </div>
 
                     <div class="text-box">
-                        <label>Password</label>
+                        <label>Password: </label>
                         <input type="password" class="form-control" placeholder="Enter password" name="password" id=""
                             required>
                     </div>
