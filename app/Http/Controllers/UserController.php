@@ -32,8 +32,12 @@ class UserController extends Controller
 
     //     $this->product->InsertDataTbl($incomingFields);
 
-    //     return redirect()->route("about_page");
+    //     return redirectP()->route("about_page");
     // }
+
+    public function SignupPage(){
+        return view("stdent.signup");
+    }
 
     public function Login(){
         return view("student.login");
@@ -44,7 +48,7 @@ class UserController extends Controller
         // dd($request->all());
 
         try {
-            $request->validate([
+            $request->validate(rules: [
                 "firstname" => "required",
                 "lastname" => "required",
                 "email" => ["required", Rule::unique("user_tbls", "email")],
@@ -61,6 +65,7 @@ class UserController extends Controller
             ]);
 
             return redirect()->route("Login");
+
         } catch (\Exception $e) {
             dd($e->getMessage(), $e->getLine(), $e->getFile());
         }

@@ -1,13 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
 
 
-*{
+* {
   margin: 0;
   padding: 0;
   box-sizing: 0;
 }
 
-.container{
+.container {
   padding-bottom: 20px;
 }
 
@@ -104,13 +104,13 @@ main {
   padding: 50px;
 }
 
-main .parent-box img{
+main .parent-box img {
   width: 100%;
   height: 400px;
   margin-top: 1rem;
 }
 
-section{
+section {
   padding-left: 50px;
 }
 
@@ -120,7 +120,7 @@ section{
   align-items: center;
 }
 
-.text-1 p{
+.text-1 p {
   margin: 0;
   color: #025628;
   font-weight: bold;
@@ -139,7 +139,7 @@ section{
   background-color: #F7EE17;
 }
 
-.text-2 p{
+.text-2 p {
   margin: 0;
   color: #025628;
   font-weight: bold;
@@ -151,64 +151,64 @@ section{
   align-items: center;
 }
 
-.course-parent{
+.course-parent {
   display: flex;
   gap: 30px;
 
 }
 
-.course-parent .child{
+.course-parent .child {
   border: 1px solid black;
   width: 250px;
   height: 250px;
 }
 
-.course-parent .child .child-header{
+.course-parent .child .child-header {
   width: 250px;
   height: 155px;
   background-color: gray;
 }
 
-.course-parent .child p{
+.course-parent .child p {
   margin: 12px 0 0 0;
 }
 
-.course-parent .child h5{
+.course-parent .child h5 {
   margin: 0;
 }
 
-.course-parent .child .fa{
+.course-parent .child .fa {
   margin-top: 16px;
 }
 
-.course-parent .child .child-header{
+.course-parent .child .child-header {
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
 }
 
-.course-parent .child .child-header .fa-plus{
+.course-parent .child .child-header .fa-plus {
   font-size: 100px;
   position: absolute;
 }
 
-.course-parent .child .child-header .fa-bread-slice{
+.course-parent .child .child-header .fa-bread-slice {
   font-size: 100px;
   position: absolute;
 }
 
-.course-parent .child .child-header .fa-truck{
+.course-parent .child .child-header .fa-truck {
   font-size: 100px;
   position: absolute;
 }
 
-.course-parent .child .child-header .fa-shirt{
+.course-parent .child .child-header .fa-shirt {
   font-size: 100px;
   position: absolute;
 }
 
-.course-parent .child .child-header .fa-cake-candles{
+.course-parent .child .child-header .fa-cake-candles {
   font-size: 100px;
   position: absolute;
 }
@@ -221,7 +221,7 @@ section{
   flex-direction: column;
 }
 
-.course-parent .child .child-header .heart{
+.course-parent .child .child-header .heart {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -229,59 +229,63 @@ section{
   flex-direction: column;
   gap: 8px;
 }
-section .view-parent{
-   display: flex;
+
+section .view-parent {
+  display: flex;
   justify-content: center;
   align-items: center;
   padding: 30px;
 }
-.rounded_box{
+
+.rounded_box {
   padding: 15px;
   width: 150px;
-   background-color: #025628;
-   border-radius: 30px;
-   display: flex;
-   justify-content: center;
-   align-items: center;
+  background-color: #025628;
+  border-radius: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.rounded_box .btn_Sign_In{
- border: none;
- outline: none;
- color:white;
- background-color: #025628;
+.rounded_box .btn_Sign_In {
+  border: none;
+  outline: none;
+  color: white;
+  background-color: #025628;
 }
 
-.view-child{
+.view-child {
   padding: 15px;
   width: 250px;
-   background-color: #025628;
-   border-radius: 30px;
-   display: flex;
-   justify-content: center;
-   align-items: center;
-}
-.view-child .btn_view_courses{
-   border: none;
-   outline: none;
-   color: white;
-   background-color: #025628;
+  background-color: #025628;
+  border-radius: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.section-3{
- margin-bottom: 35px;
+.view-child .btn_view_courses {
+  border: none;
+  outline: none;
+  color: white;
+  background-color: #025628;
 }
 
-.container-2 .section-4 .commercial{
+.section-3 {
+  margin-bottom: 35px;
+}
+
+.container-2 .section-4 .commercial {
   padding: 15px;
 }
-.container-2 .section-4 .commercial .photo-1{
+
+.container-2 .section-4 .commercial .photo-1 {
   width: 300px;
   height: 300px;
   border: 1px solid black;
 }
 
-.container-2 .section-4 .commercial .photo-2{
+.container-2 .section-4 .commercial .photo-2 {
   width: 300px;
   height: 300px;
   display: flex;
@@ -289,26 +293,27 @@ section .view-parent{
   justify-content: space-between;
 }
 
-.container-2 .section-4 .commercial .photo-2 .photo-child-1{
-width: 300px;
-height: 150px;
-border: 1px solid black;
-margin: 0 0 50px 0;
-}
-.container-2 .section-4 .commercial .photo-2 .photo-child-2{
- width: 300px;
-height: 150px;
-border: 1px solid black;
-bottom: 50px;
+.container-2 .section-4 .commercial .photo-2 .photo-child-1 {
+  width: 300px;
+  height: 150px;
+  border: 1px solid black;
+  margin: 0 0 50px 0;
 }
 
-.container-2 .section-4 .commercial{
+.container-2 .section-4 .commercial .photo-2 .photo-child-2 {
+  width: 300px;
+  height: 150px;
+  border: 1px solid black;
+  bottom: 50px;
+}
+
+.container-2 .section-4 .commercial {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.footer-container{
+.footer-container {
   border: 1px solid black;
   background-color: #025628;
   display: flex;
@@ -317,7 +322,7 @@ bottom: 50px;
   padding: 2rem;
 }
 
-.footer-container .logo-text{
+.footer-container .logo-text {
   display: flex;
   flex-wrap: wrap;
   gap: 3rem;
@@ -331,21 +336,14 @@ bottom: 50px;
   justify-content: center;
 } */
 
-.logo-section img{
-   width: 70px;
+.logo-section img {
+  width: 70px;
   height: 70px;
 }
-.footer-container .logo-text p{
+
+.footer-container .logo-text p {
   color: white;
   padding-left: 30px;
   font-size: small;
   gap: 5px;
 }
- 
-
-
-
- 
-
-
-

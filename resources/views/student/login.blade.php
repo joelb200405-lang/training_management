@@ -9,7 +9,7 @@
 
     <!-- bootstrap link -->
     <link rel="stylesheet" href="../bootstrap_folder/css/bootstrap.min.css">
-    
+
     <!-- font awesome cdn link -->
     <link rel="stylesheet" href="../font-awesome-icon/css/all.min.css">
 </head>
@@ -18,7 +18,46 @@
 
     <div class="container-fluid p-0">
 
-        <form action="?url=login" method="post">
+        <div class="parent-login">
+            <div class="login-image">
+
+            </div>
+
+            <div class="login-form">
+                <div class="forms">
+                    <form action="" method="post">
+                        <span>WELCOME BACK</span>
+
+                        <h2><b>Sign</b> in to your <b>account</b></h2>
+
+                        <div class="mt-4">
+                            <label>Email address</label>
+                            <input type="text" name="email" class="form-control mt-1" placeholder="Enter email address">
+                        </div>
+
+                        <div class="mt-4">
+                            <label>Password</label>
+                            <input type="password" name="password" class="form-control mt-1"
+                                placeholder="Enter password">
+                        </div>
+
+                        <div class="mt-4 text-end forgot">
+                            <a href="#">Forgot Password</a>
+                        </div>
+
+                        <div class="mt-4 login-btn">
+                            <button class="btn w-100">Login</button>
+                        </div>
+
+                        <div class="mt-4 signup text-center">
+                            <label>Don't have an account? <a href="" {{ route("SignupPage") }}>Signup</a></label>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- <form action="?url=login" method="post">
 
             <div class="login-parent">
                 <div class="form-extension image-container">
@@ -77,7 +116,7 @@
                 </div>
 
             </div>
-        </form>
+        </form> -->
     </div>
 
     <!-- bootstrap link javascript -->
