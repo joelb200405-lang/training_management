@@ -18,7 +18,9 @@
 
     <div class="container-fluid p-0">
 
-        <form action="?url=signup" method="post">
+        <form action="{{ route("SignUp") }}" method="post">
+
+            @csrf
 
             <div class="login-parent">
                 <div class="form-extension image-container">
@@ -97,7 +99,7 @@
                         <div class="col-lg-12 mt-3">
                             <div class="text-box">
                                 <label>Confirm Password: </label>
-                                <input type="password" class="form-control" placeholder=" Re-enter password" name="confirm_password"
+                                <input type="password" class="form-control" placeholder=" Re-enter password" name="password_confirmation"
                                         id="" required>
                                 <!-- <div class="input-group">
                                     <span class="input-group-text"><i class="fa fa-lock"></i></span>
