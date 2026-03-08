@@ -45,7 +45,7 @@
     <p> Home </p>
     <p> About </p>
     <p> Contact </p>
-    <p> Sign Up </p>
+    <p> Courses </p>
 
     <form action="" method="Get">
 

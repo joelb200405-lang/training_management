@@ -50,7 +50,7 @@
                         </div>
 
                         <div class="mt-4 signup text-center">
-                            <label>Don't have an account? <a href="" {{ route("SignupPage") }}>Signup</a></label>
+                            <label>Don't have an account? <a href="{{ route("SignupPage") }}">Signup</a></label>
                         </div>
                     </form>
                 </div>

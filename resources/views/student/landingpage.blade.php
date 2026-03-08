@@ -45,7 +45,7 @@
     <p> Home </p>
     <p> About </p>
     <p> Contact </p>
-    <p> Sign Up </p>
+    <p> Courses </p>
 
     <form action="" method="Get">
 
@@ -57,7 +57,7 @@
             </div>
             <div class="rounded_box">
     <a href="/login">
-        <button type="button" class="btn_Sign_In">Sign Up</button>
+        <button type="button" class="btn_Sign_In">Login</button>
     </a>
     </div>
         </div>

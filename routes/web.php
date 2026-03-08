@@ -13,11 +13,11 @@ Route::get('/', function () {
 
 Route::get("/login", [UserController::class, "Login"])->name("Login");
     //para matawag sa browser ang sign up 
-// Route::get('/sign_up', function (){
-//     return view('student.sign_up');
-// });
+ // Route::get('/sign_up', function (){
+ //    return view('student.sign_up');
+ // });
 
-Route::get("/signup", [UserController::class, "SignupPage"])->name("SignupPage");
+Route::get("/sign_up", [UserController::class, "SignupPage"])->name("SignupPage");
 
     //para matawag sa browser ang homepage 
 Route::get('/homepage', function () {
