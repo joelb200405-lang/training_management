@@ -13,6 +13,9 @@ Route::get('/', function () {
 
 Route::get("/login", [UserController::class, "Login"])->name("Login");
     //para matawag sa browser ang sign up 
+
+Route::post("/login", [UserController::class, "LoginUser"])->name("LoginUser");
+
  // Route::get('/sign_up', function (){
  //    return view('student.sign_up');
  // });
@@ -20,11 +23,14 @@ Route::get("/login", [UserController::class, "Login"])->name("Login");
 Route::get("/sign_up", [UserController::class, "SignupPage"])->name("SignupPage");
 
     //para matawag sa browser ang homepage 
-Route::get('/homepage', function () {
-    return view('student.homepage');
-});
+// /*Route::get('/homepage', function () {
+//     return view('student.homepage');
+// })->name("homepage");*/
+Route::get("/homepage", [UserController::class, "homepage"])->name("homepage");
 
 Route::post("/signup-form", [UserController::class, "SignUp"])->name("SignUp");
+
+Route::get("/handle", [UserController::class, "handle"])->name("handle");
 
 // Route::post("/signup-form", [UserController::class, ""])
 

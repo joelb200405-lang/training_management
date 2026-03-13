@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User_tbl extends Model
+class User_tbl extends Authenticatable
 {
     protected $table = "user_tbls";
 
@@ -13,6 +13,7 @@ class User_tbl extends Model
         "lastname",
         "email",
         "username",
-        "password"
+        "password",
+        "role"
     ];
 }

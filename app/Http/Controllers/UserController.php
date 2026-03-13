@@ -7,6 +7,7 @@ use App\Models\product_table;
 use App\Models\User_tbl;
 use Illuminate\Http\Request;
 use Auth;
+use Illuminate\support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -54,6 +55,7 @@ class UserController extends Controller
                 "email" => ["required", Rule::unique("user_tbls", "email")],
                 "username" => "required",
                 "password" => "required|confirmed",
+                "role" => "required",
             ]);
 
             User_tbl::create([
@@ -62,6 +64,7 @@ class UserController extends Controller
                 "email" => $request->email,
                 "username" => $request->username,
                 "password" => bcrypt($request->password),
+                "role" => $request->role,
             ]);
 
             return redirect()->route("Login");
@@ -70,4 +73,58 @@ class UserController extends Controller
             dd($e->getMessage(), $e->getLine(), $e->getFile());
         }
     }
+
+    public function LoginUser(Request $request){
+        $textfiled = $request->validate([
+            "email" => "required", 
+            "password" => "required", 
+        ]);
+        
+        if(auth()->attempt([
+            'email' => $textfiled['email'],
+            'password' => $textfiled['password'],
+        ])
+        
+        ){
+            $request->session()->regenerate();
+            return redirect()->route("handle");
+        }else{
+             return redirect()->route("Login");
+        }
+    }
+
+    public function handle(){
+        $user = Auth::user();
+
+        if($user->role === "student"){
+            return redirect()->route("homepage");
+        } else if($user->role === "teacher"){
+            return redirect()->route("teacher");
+        } else{
+            return redirect()->route("admin");
+        }
+    }
+
+    public function homepage(){
+
+        $username = Auth::check() ? Auth::user()->username : null;
+        return view(
+            "student.homepage", ["username" => $username]);
+
+    }
+
+
+   /* public function LoginUser(Request $request){
+
+    $user = DB::table('user_tbls')
+    ->where('email', $request->email)
+    ->where('password', $request->password)
+    ->first();
+
+    if ($user) {
+        return redirect("homepage");
+    } else {
+        return back();
+    }
+    } */
 }

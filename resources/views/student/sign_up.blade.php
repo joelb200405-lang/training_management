@@ -82,6 +82,7 @@
                                 </div> -->
                             </div>
                         </div>
+                         
 
                         <div class="col-lg-12 mt-3">
                             <div class="text-box">
@@ -105,6 +106,16 @@
                                     <span class="input-group-text"><i class="fa fa-lock"></i></span>
                                     <input type="password" class="form-control" placeholder="Confirm password" name=""
                                         id="">
+                                </div> -->
+                            </div>
+                        </div>
+                        <div class="col-lg-12 mt-3">
+                            <div class="text-box">
+                                <label>Role: </label>
+                                <input type="text" class="form-control" placeholder="Enter your role" name="role" id="" required>
+                                <!-- <div class="input-group">
+                                    <span class="input-group-text"><i class="fa fa-user"></i></span>
+                                    <input type="text" class="form-control" placeholder="Enter username" name="" id="">
                                 </div> -->
                             </div>
                         </div>

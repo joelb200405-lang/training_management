@@ -55,7 +55,9 @@
                 <input type="text" placeholder="What are you looking for? ">
                 <i class="fa fa-search"></i>
             </div>
-            <img class="profile" src="../images/profile.png" alt="Profile Picture">
+           @if ($username)
+                <p>{{ $username }}</p>
+           @endif
         </div>
 
 

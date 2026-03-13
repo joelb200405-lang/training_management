@@ -25,20 +25,22 @@
 
             <div class="login-form">
                 <div class="forms">
-                    <form action="" method="post">
+                    <form action="{{ route('LoginUser') }}" method="post">
+
+                      @csrf
+
                         <span>WELCOME BACK</span>
 
                         <h2><b>Sign</b> in to your <b>account</b></h2>
 
                         <div class="mt-4">
                             <label>Email address</label>
-                            <input type="text" name="email" class="form-control mt-1" placeholder="Enter email address">
+                            <input type="text" name="email" class="form-control mt-1" placeholder="Enter email address" required>
                         </div>
 
                         <div class="mt-4">
                             <label>Password</label>
-                            <input type="password" name="password" class="form-control mt-1"
-                                placeholder="Enter password">
+                            <input type="password" name="password" class="form-control mt-1" placeholder="Enter password" required>
                         </div>
 
                         <div class="mt-4 text-end forgot">
@@ -46,7 +48,7 @@
                         </div>
 
                         <div class="mt-4 login-btn">
-                            <button class="btn w-100">Login</button>
+                            <button class="btn w-100" type="submit">Login</button>
                         </div>
 
                         <div class="mt-4 signup text-center">
