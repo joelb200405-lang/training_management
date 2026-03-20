@@ -58,67 +58,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- <form action="?url=login" method="post">
-
-            <div class="login-parent">
-                <div class="form-extension image-container">
-                    <img src="../../images/bead.jpg" alt="bread">
-                </div>
-                <div class="form-extension form">
-
-                    <div class="form-logo">
-                        <div class="parent-logo">
-                            <div class="logo"></div>
-                            <h2>Livelihood Program</h2>
-                        </div>
-                        <h2 class="fw-semibold">Let's the learning journey begin.</h2>
-                        <p>Unlock a world of learning with just one click. Log in to get started.</p>
-                    </div>
-
-                    <div class="text-box">
-                        <label>Username: </label>
-                        <input type="text" class="form-control" placeholder="Enter username or email" name="email" id=""
-                            required>
-                    </div>
-
-                    <div class="text-box">
-                        <label>Password: </label>
-                        <input type="password" class="form-control" placeholder="Enter password" name="password" id=""
-                            required>
-                    </div>
-
-                    <div class="forgot text-end">
-                        <a href="#">Forgot Password</a>
-                    </div>
-
-                    <div class="button">
-                        <button class="submit">Login</button>
-                    </div>
-
-                    <h4>Or Login with</h4>
-
-                    <div class="accounts">
-                        <a href="#">
-                            <i class="fa-brands fa-google"></i>
-                            <p class="m-0">Google</p>
-                        </a>
-
-                        <a href="#">
-                            <i class="fa-brands fa-facebook"></i>
-                            <p class="m-0">Facebook</p>
-                        </a>
-                    </div>
-
-                    <div class="change">
-                        <label>Don't have an account? <a href="/sign_up">Signup</a>
-                        </label>
-                    </div>
-
-                </div>
-
-            </div>
-        </form> -->
     </div>
 
     <!-- bootstrap link javascript -->

@@ -24,18 +24,6 @@ class UserController extends Controller
         return view("about");
     }
 
-    // public function InsertData(Request $request){
-    //     $incomingFields = $request->validate([
-    //         "product_name" => "required",
-    //         "product_quantity" => "required",
-    //         "product_description" => "required",
-    //     ]);
-
-    //     $this->product->InsertDataTbl($incomingFields);
-
-    //     return redirectP()->route("about_page");
-    // }
-
     public function SignupPage(){
         return view("student.sign_up");
     }
@@ -112,19 +100,11 @@ class UserController extends Controller
             "student.homepage", ["username" => $username]);
 
     }
-
-
-   /* public function LoginUser(Request $request){
-
-    $user = DB::table('user_tbls')
-    ->where('email', $request->email)
-    ->where('password', $request->password)
-    ->first();
-
-    if ($user) {
-        return redirect("homepage");
-    } else {
-        return back();
+    public function admin1(){
+        return view("admin.admin1");
     }
-    } */
+     public function teacher(){
+        return view("trainer.teacher");
+    }
+
 }

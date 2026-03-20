@@ -335,21 +335,7 @@
 
     </div>
 
-    <!-- <div class="container-fluid p-0">
-        <div class="row">
-            <div class="col-lg-4 col-md-4">
-                <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Nostrum, error. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Laudantium, eaque.</p>
-            </div>
 
-            <div class="col-lg-4 col-md-4">
-                <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Nostrum, error. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Laudantium, eaque.</p>
-            </div>
-
-            <div class="col-lg-4 col-md-12">
-                <p class="text-">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Nostrum, error. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Laudantium, eaque.</p>
-            </div>
-        </div>
-    </div> -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>
