@@ -92,7 +92,7 @@ class UserController extends Controller
             return redirect()->route("admin");
         }
     }
-
+        //new (temporary)
     public function homepage(){
 
         $username = Auth::check() ? Auth::user()->username : null;

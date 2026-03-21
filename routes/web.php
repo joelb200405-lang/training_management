@@ -19,7 +19,7 @@ Route::post("/signup-form", [UserController::class, "SignUp"])->name("SignUp");
 Route::get("/homepage", [UserController::class, "homepage"])->name("homepage");
 
 Route::get("/handle", [UserController::class, "handle"])->name("handle");
-
+//new(temporary)
 Route::get("/admin1", [UserController::class, "admin1"])->name("admin1");
 Route::get("/teacher", [UserController::class, "teacher"])->name("teacher");
 ?>
