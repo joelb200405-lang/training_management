@@ -11,12 +11,6 @@ use Illuminate\support\Facades\DB;
 
 class UserController extends Controller
 {
-    public $product;
-
-    public function __construct()
-    {
-        $this->product = new product_table();
-    }
 
     public function about_page()
     {
