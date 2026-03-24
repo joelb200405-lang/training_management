@@ -95,7 +95,7 @@
                                 <select class="form-control" name="role" id="" required>
                                 <option value="" disabled selectd>-- Select Role --</option>
                                 <option value="student">student</option>
-                                <option value="student">trainer</option>
+                                <option value="trainer">trainer</option>
                                 </select>
                             </div>
                         </div>
