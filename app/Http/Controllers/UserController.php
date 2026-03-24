@@ -80,10 +80,12 @@ class UserController extends Controller
 
         if($user->role === "student"){
             return redirect()->route("homepage");
-        } else if($user->role === "teacher"){
+        } else if($user->role === "trainer"){
             return redirect()->route("teacher");
+        } else if($user->role == "admin"){
+            return redirect()->route("admin1");
         } else{
-            return redirect()->route("admin");
+            return redirect()->route("login");
         }
     }
         //new (temporary)

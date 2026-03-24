@@ -92,8 +92,11 @@
                         <div class="col-lg-12 mt-3">
                             <div class="text-box">
                                 <label>Role: </label>
-                                <input type="text" class="form-control" placeholder="Enter your role" name="role" id="" required>
-                               
+                                <select class="form-control" name="role" id="" required>
+                                <option value="" disabled selectd>-- Select Role --</option>
+                                <option value="student">student</option>
+                                <option value="student">trainer</option>
+                                </select>
                             </div>
                         </div>
 
