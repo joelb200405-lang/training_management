@@ -8,6 +8,11 @@ use App\Models\User_tbl;
 use Illuminate\Http\Request;
 use Auth;
 use Illuminate\support\Facades\DB;
+//Email
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Hash;
+use App\Mail\ResetPasswordMail;
 
 class UserController extends Controller
 {
@@ -102,5 +107,82 @@ class UserController extends Controller
      public function teacher(){
         return view("trainer.teacher");
     }
+
+    //forgotpassword
+
+    public function ForgotPassword(){
+         return view("student.forgotpassword");
+    }
+
+    //Email
+
+    public function SendResetLink(Request $request)
+{
+    $request->validate(['email' => 'required|email']);
+
+    // Check if email exists in user_tbls
+    $user = User_tbl::where('email', $request->email)->first();
+
+    if (!$user) {
+        return back()->with('error', 'No account found with that email address.');
+    }
+
+    // Generate token
+    $token = Str::random(64);
+
+    // Save to password_reset_tokens table
+    DB::table('password_reset_tokens')->updateOrInsert(
+        ['email' => $request->email],
+        [
+            'token'      => $token,
+            'created_at' => now(),
+        ]
+    );
+
+    // Build reset link
+    $resetLink = route('ResetPasswordPage', ['token' => $token]) . '?email=' . urlencode($request->email);
+
+    // Send email
+    Mail::to($request->email)->send(new ResetPasswordMail($resetLink));
+
+    return back()->with('status', 'Reset link sent! Please check your email.');
+}
+
+public function ResetPasswordPage(Request $request, $token)
+{
+    return view('student.reset_password', [
+        'token' => $token,
+        'email' => $request->email,
+    ]);
+}
+
+public function ResetPassword(Request $request)
+{
+    $request->validate([
+        'email'    => 'required|email',
+        'token'    => 'required',
+        'password' => 'required|confirmed|min:8',
+    ]);
+
+    // Check token
+    $record = DB::table('password_reset_tokens')
+                ->where('email', $request->email)
+                ->where('token', $request->token)
+                ->first();
+
+    if (!$record) {
+        return back()->with('error', 'Invalid or expired reset link.');
+    }
+
+    // Update password
+    User_tbl::where('email', $request->email)->update([
+        'password' => bcrypt($request->password),
+    ]);
+
+    // Delete token
+    DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+
+    return redirect()->route('Login')->with('status', 'Password reset successfully! Please login.');
+}
 
 }

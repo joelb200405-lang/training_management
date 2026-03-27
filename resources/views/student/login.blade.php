@@ -44,7 +44,7 @@
                         </div>
 
                         <div class="mt-4 text-end forgot">
-                            <a href="#">Forgot Password</a>
+                            <a href="{{  route('ForgotPassword') }}">Forgot Password</a>
                         </div>
 
                         <div class="mt-4 login-btn">
