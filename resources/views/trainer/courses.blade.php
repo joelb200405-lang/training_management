@@ -1,60 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LEDIPO Trainer Dashboard</title>
-    
-    <link rel="stylesheet" href="stylesheet/courses.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body>
+@extends('trainer.layout')
 
-    <div class="top-strip">
-        <div class="language-selector">
-            English <i class="fas fa-chevron-down"></i>
-        </div>
-    </div>
+@section('title', 'Courses')
 
-    <div class="container">
-        
-        <nav class="sidebar">
-            <div class="logo">
-                <img src="images/logo.png" alt="logo">
-                <p class="sidebar-title">Dasmariñas City Training Center</p>
-            </div>
-            <ul>
-                <li><a href="teacher"><i class="fas fa-th-large"></i> Dashboard</a></li>
-                <li class="courses"><a href=" "><i class="fas fa-book"></i> Courses</a></li>
-                <li><a href="learner"><i class="fas fa-users"></i> Trainees</a></li>
-                <li><a href="assessment"><i class="fas fa-clipboard-check"></i> Assessment</a></li>
-                <li><a href="certificates"><i class="fas fa-certificate"></i> Certificates</a></li>
-                <li><a href="reports"><i class="fas fa-chart-line"></i> Reports</a></li>
-                <li><a href="settings"><i class="fas fa-gear"></i> Settings</a></li>
-            </ul>
-        </nav>
+@section('css')
+    <link rel="stylesheet" href="{{ asset('stylesheet/courses.css') }}">
+@endsection
 
-        <main class="main-content">
-            
-            <header class="main-header">
-                <div class="search-box">
-                    <input type="text" placeholder="What are you looking for?">
-                    <button type="submit"><i class="fas fa-search"></i></button>
-                </div>
-                
-                <div class="icon-buttons">
-                    <div class="icon-item"><i class="fas fa-bell"></i></div>
-                    <div class="icon-item logout"><i class="fas fa-right-from-bracket"></i></div>
-                </div>
-            </header>
-
+@section('content')
             <div class="courses-panel">
                 <h2 class="panel-title">Courses</h2>
                 
                 <div class="courses-grid">
                     <div class="course-card">
                         <div class="card-img">
-                            <img src="1.jpg" alt="Computer Literacy">
+                            <img src="{{ asset('images/1.jpg') }}" alt="Computer Literacy">
                         </div>
                         <div class="card-body">
                             <h3>Computer Literacy</h3>
@@ -66,7 +25,7 @@
 
                     <div class="course-card">
                         <div class="card-img">
-                            <img src="2.jpg" alt="Fashion Bayong">
+                            <img src="{{ asset('images/2.jpg') }}" alt="Fashion Bayong">
                         </div>
                         <div class="card-body">
                             <h3>Fashion Bayong</h3>
@@ -78,7 +37,7 @@
 
                     <div class="course-card">
                         <div class="card-img">
-                            <img src="3.jpg" alt="Candle Making">
+                            <img src="{{ asset('images/3.jpg') }}" alt="Candle Making">
                         </div>
                         <div class="card-body">
                             <h3>Candle Making</h3>
@@ -90,7 +49,7 @@
 
                     <div class="course-card">
                         <div class="card-img">
-                            <img src="4.jpg" alt="Hilot Wellness">
+                            <img src="{{ asset('images/4.jpg') }}" alt="Hilot Wellness">
                         </div>
                         <div class="card-body">
                             <h3>Hilot Wellness</h3>
@@ -102,7 +61,7 @@
 
                     <div class="course-card">
                         <div class="card-img">
-                            <img src="5.jpg" alt="Basic Sewing">
+                            <img src="{{ asset('images/5.jpg') }}" alt="Basic Sewing">
                         </div>
                         <div class="card-body">
                             <h3>Basic Sewing</h3>
@@ -265,52 +224,19 @@
             </form>
         </div>
     </div>
-
-    <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-col">
-                <h3>Support</h3>
-                <p>Barangay Burol Main, City of Dasmariñas, Cavite, Philippines.</p>
-                <p><a href="mailto:Regals@gmail.com">Regals@gmail.com</a></p>
-                <p>+88015-88888-9999</p>
-            </div>
-            <div class="footer-col">
-                <h3>Account</h3>
-                <ul>
-                    <li><a href="#">My Account</a></li>
-                    <li><a href="#">Login / Register</a></li>
-                    <li><a href="#">Likes</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h3>Quick Link</h3>
-                <ul>
-                    <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Terms Of Use</a></li>
-                    <li><a href="#">FAQ</a></li>
-                    <li><a href="#">Contact</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; Copyright Rimel 2022. All right reserved</p>
-        </div>
-    </footer>
-
+    @endsection
+    
+   @section('scripts')
     <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // VIEW MODAL ELEMENTS
         const viewModal = document.getElementById("viewCourseModal");
         const editBtn = document.getElementById("masterEditBtn");
         const backBtn = document.getElementById("finalBackBtn");
-
-        // ADD MODAL ELEMENTS
         const addModal = document.getElementById("courseModal");
         const openAddBtn = document.getElementById("openModal");
         const closeAddX = document.getElementById("closeX");
         const cancelAddBtn = document.getElementById("cancelBtn");
 
-        // 1. Open View Modal
         document.querySelectorAll(".view-btn").forEach(btn => {
             btn.onclick = (e) => {
                 e.preventDefault();
@@ -318,12 +244,10 @@
             };
         });
 
-        // 2. View Modal Edit Toggle
         if (editBtn) {
             editBtn.onclick = function() {
                 const groups = document.querySelectorAll(".edit-group");
                 groups.forEach(g => g.classList.toggle("hidden"));
-
                 if (this.innerHTML.includes("Edit Course")) {
                     this.innerHTML = '<i class="fas fa-check"></i> Finish Editing';
                 } else {
@@ -332,7 +256,6 @@
             };
         }
 
-        // 3. View Modal Close
         const closeViewAll = () => {
             viewModal.style.display = "none";
             document.querySelectorAll(".edit-group").forEach(g => g.classList.add("hidden"));
@@ -340,20 +263,14 @@
         };
         if(backBtn) backBtn.onclick = closeViewAll;
 
-        // 4. Add Modal Logic
-        if (openAddBtn) {
-            openAddBtn.onclick = () => addModal.style.setProperty('display', 'flex', 'important');
-        }
+        if (openAddBtn) openAddBtn.onclick = () => addModal.style.setProperty('display', 'flex', 'important');
         if (closeAddX) closeAddX.onclick = () => addModal.style.display = "none";
         if (cancelAddBtn) cancelAddBtn.onclick = () => addModal.style.display = "none";
 
-        // Global Close on Background Click
         window.onclick = function(event) {
             if (event.target == viewModal) closeViewAll();
             if (event.target == addModal) addModal.style.display = "none";
         };
     });
     </script>
-
-</body>
-</html>
+@endsection
