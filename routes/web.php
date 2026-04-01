@@ -19,8 +19,11 @@ Route::post("/signup-form", [UserController::class, "SignUp"])->name("SignUp");
 Route::get("/homepage", [UserController::class, "homepage"])->name("homepage");
 
 Route::get("/handle", [UserController::class, "handle"])->name("handle");
-//new(temporary)
-Route::get("/admin1", [UserController::class, "admin1"])->name("admin1");
+//new
+
+Route::get("/admin1", [UserController::class, "admin1"])->name("admin1")->middleware("admin");
+Route::get("/trainees", [UserController::class, "trainees"])->name("trainees")->middleware("admin");
+
 Route::get("/teacher", [UserController::class, "teacher"])->name("teacher");
 
 //forgotpassword
@@ -36,4 +39,9 @@ Route::get("/reset-password/{token}", [UserController::class, "ResetPasswordPage
 // Save the new password
 Route::post("/reset-password", [UserController::class, "ResetPassword"])->name("ResetPassword");
 
+
+//iya
+Route::get("/adminlogin", [UserController::class, "adminlogin"])->name("adminlogin");
+
+Route::post("/Logout", [UserController::class, "Logout"])->name("Logout");
 ?>

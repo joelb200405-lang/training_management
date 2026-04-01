@@ -22,7 +22,46 @@
         * {
             font-family: "Open Sans", sans-serif;
         }
+
+        .user-welcome{
+            position: relative;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(0,0,0,0.1);
+            user-select: none;
+        }
+        .dropdown-content{
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 110%;
+            background: white;
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,1);
+            min-width: 140px;
+            z-index: 999;
+        }
+        .dropdown-content.show{
+            display: block;
+        }
+        .dropdown-content a{
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            font-size: 14px;
+            color: #333;
+            text-decoration: none;  
+        }
+        .dropdown-content a:hover{
+            background: #f5f5f5;
+            border-radius: 6px;
+        }
     </style>
+    
  
 </head>
 
@@ -55,13 +94,24 @@
                 <input type="text" placeholder="What are you looking for? ">
                 <i class="fa fa-search"></i>
             </div>
-           @if ($username)
-                <p>{{ $username }}</p>
-           @endif
+
         </div>
-
-
     </form>
+
+               @if ($username)
+                <div class="user-welcome" onclick="toggleDropdown(event)">
+                    Welcome, <strong>{{ $username }}</strong>!
+                    <i class="fa-solid fa-chevron-down" style="font-size: 0.8rem; margin-left: 5px;"></i>
+                    <div id="logout-dropdown" class="dropdown-content">
+                        <form action="{{ route('Logout') }}" method="post">
+                            @csrf
+                        <button type="submit" style="background:none; border:none; cursor:pointer; color:#333; font-size:14px; padding: 10px 16px;">
+                            <i class="fa-solid fa-right-from-bracket"></i>Logout
+                        </button>
+                        </form>
+                    </div>
+                </div>
+           @endif
 
 
 </div>
@@ -339,6 +389,19 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>
+
+    <script>
+        function toggleDropdown(event){
+            event.stopPropagation();
+            document.getElementById("logout-dropdown").classList.toggle("show");
+        }
+        window.onclick = function(event){
+            if (!event.target.closest('.user-welcome')) {
+                const dropdown = document.getElementById("logout-dropdown");
+                if (dropdown) dropdown.classList.remove("show");
+            }
+        }
+    </script>
 
 </body>
 

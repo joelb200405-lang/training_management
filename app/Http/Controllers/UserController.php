@@ -90,7 +90,7 @@ class UserController extends Controller
         } else if($user->role == "admin"){
             return redirect()->route("admin1");
         } else{
-            return redirect()->route("login");
+            return redirect()->route("Login");
         }
     }
         //new (temporary)
@@ -183,6 +183,27 @@ public function ResetPassword(Request $request)
     DB::table('password_reset_tokens')->where('email', $request->email)->delete();
 
     return redirect()->route('Login')->with('status', 'Password reset successfully! Please login.');
-}
+
+
+    }
+
+        public function adminlogin()
+    {
+
+        return view("admin.adminlogin");
+    }
+    
+            public function trainees()
+    {
+
+        return view("admin.trainees");
+    }
+
+    public function Logout(Request $request){
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect()->route('Login');
+    }
 
 }
