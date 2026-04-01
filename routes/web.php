@@ -44,4 +44,13 @@ Route::post("/reset-password", [UserController::class, "ResetPassword"])->name("
 Route::get("/adminlogin", [UserController::class, "adminlogin"])->name("adminlogin");
 
 Route::post("/Logout", [UserController::class, "Logout"])->name("Logout");
+
+//bocita
+Route::get("/learner", [UserController::class, "learner"])->name("learner");
+Route::get("/courses", [UserController::class, "courses"])->name("courses");
+Route::get("/assessment", [UserController::class, "assessment"])->name("assessment");
+Route::get("/certificates", [UserController::class, "certificates"])->name("certificates");
+Route::get("/reports", [UserController::class, "reports"])->name("reports");
+Route::get("/settings", [UserController::class, "settings"])->name("settings");
+
 ?>

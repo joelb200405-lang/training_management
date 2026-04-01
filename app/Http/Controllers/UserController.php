@@ -206,4 +206,42 @@ public function ResetPassword(Request $request)
         return redirect()->route('Login');
     }
 
+    //bocita
+
+     public function learner()
+    {
+
+        return view("trainer.learner");
+    }
+
+     public function courses()
+    {
+
+        return view("trainer.courses");
+    }
+
+       public function assessment()
+    {
+
+        return view("trainer.assessment");
+    }
+
+      public function certificates()
+    {
+
+        return view("trainer.certificates");
+    }
+
+     public function reports()
+    {
+
+        return view("trainer.reports");
+    }
+
+       public function settings()
+    {
+
+        return view("trainer.settings");
+    }
+
 }

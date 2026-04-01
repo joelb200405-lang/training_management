@@ -1,0 +1,381 @@
+/* ==========================================================================
+   1. GLOBAL VARIABLES & BASE STYLES
+   ========================================================================== */
+:root {
+    --primary-green: #004d26;
+    --text-green: #004d26;
+    --white: #ffffff;
+    --hover-green: #e8f5e9;
+    --text-gray: #555;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f4f4f4;
+}
+
+/* ==========================================================================
+   2. MAIN LAYOUT STRUCTURE
+   ========================================================================== */
+.container {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+/* ==========================================================================
+   3. TOP NAVIGATION STRIP
+   ========================================================================== */
+.top-strip {
+    background-color: var(--primary-green);
+    color: white;
+    padding: 8px 50px;
+    display: flex;
+    justify-content: flex-end;
+    font-size: 14px;
+}
+
+.language-selector {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ==========================================================================
+   4. MAIN HEADER (SEARCH & ICONS)
+   ========================================================================== */
+.main-header {
+    background-color: #ffffff;
+    padding: 15px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e0e0e0;
+    width: 100%;
+    box-sizing: border-box;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.brand-name {
+    font-size: 18px;
+    color: var(--text-green);
+    margin: 0;
+    font-weight: 600;
+}
+
+.actions-section {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+/* Search Box */
+.search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-box input {
+    width: 300px;
+    padding: 10px 45px 10px 20px;
+    border: 2px solid var(--primary-green);
+    border-radius: 25px;
+    outline: none;
+    font-size: 14px;
+}
+
+.search-box button {
+    position: absolute;
+    right: 15px;
+    background: none;
+    border: none;
+    color: var(--primary-green);
+    cursor: pointer;
+    font-size: 18px;
+}
+
+/* Icon Buttons */
+.icon-buttons {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    font-size: 22px;
+    color: var(--primary-green);
+    cursor: pointer;
+}
+
+.icon-item i {
+    transition: transform 0.2s;
+}
+
+.icon-item i:hover {
+    transform: scale(1.1);
+    color: #007d3d;
+}
+
+/* ==========================================================================
+   5. SIDEBAR NAVIGATION (LEFT)
+   ========================================================================== */
+.sidebar {
+    width: 250px;
+    background: #ffffff;
+    padding: 20px 0;
+    border-right: 1px solid #ddd;
+    min-height: 100vh;
+}
+
+.sidebar .logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 10px;
+    text-align: center;
+}
+
+.sidebar .logo img {
+    height: 110px;
+    width: auto;
+    margin-bottom: 10px;
+}
+
+.sidebar .logo p {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--primary-green);
+    margin: 0;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar li {
+    margin-bottom: 5px;
+    transition: 0.3s;
+    border-left: 4px solid transparent;
+}
+
+.sidebar li a {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 25px;
+    text-decoration: none;
+    color: black;
+    font-weight: 500;
+    width: 100%;
+    transition: 0.3s;
+}
+
+.sidebar li i {
+    width: 20px;
+    text-align: center;
+    font-size: 18px;
+}
+
+/* Sidebar States */
+.sidebar li:hover {
+    background-color: var(--hover-green);
+    border-left: 4px solid var(--primary-green);
+}
+
+.sidebar li:hover a {
+    color: var(--primary-green);
+}
+
+.sidebar li.active {
+    background-color: var(--primary-green);
+    border-left: 4px solid var(--primary-green);
+}
+
+.sidebar li.active a {
+    color: white;
+}
+
+/* ==========================================================================
+   6. SETTINGS CARD FRAME
+   ========================================================================== */
+.panel-title {
+    color: #004d26;
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.settings-card-frame {
+    display: flex;
+    max-width: 950px;
+    margin: 20px auto;
+    background: var(--white);
+    border: 2px solid var(--primary-green);
+    border-radius: 25px;
+    min-height: 550px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+/* ==========================================================================
+   7. INTERNAL SETTINGS SIDEBAR (TABS)
+   ========================================================================== */
+.settings-sidebar {
+    width: 280px;
+    background: #f8f9fa;
+    padding-top: 30px;
+    border-right: 1px solid #eee;
+}
+
+.nav-tab {
+    width: 90%;
+    padding: 18px 25px;
+    border: none;
+    background: transparent;
+    text-align: left;
+    font-weight: 700;
+    color: var(--text-gray);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.nav-tab.active {
+    background-color: var(--primary-green);
+    color: white;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    width: 100%;
+}
+
+/* ==========================================================================
+   8. SETTINGS CONTENT AREA
+   ========================================================================== */
+.settings-body-area {
+    flex: 1;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+}
+
+.center-title {
+    text-align: center;
+    color: var(--primary-green);
+    font-weight: 800;
+    margin-bottom: 40px;
+    font-size: 22px;
+}
+
+/* ==========================================================================
+   9. FORMS, INPUTS & BUTTONS
+   ========================================================================== */
+.form-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 25px;
+}
+
+.form-row label {
+    width: 140px;
+    text-align: right;
+    font-weight: 800;
+    color: var(--primary-green);
+    font-size: 14px;
+}
+
+/* Inputs */
+.custom-input {
+    width: 300px;
+    padding: 12px 18px;
+    border: 2px solid var(--primary-green);
+    border-radius: 15px;
+    outline: none;
+    transition: 0.3s;
+}
+
+.custom-input:focus {
+    box-shadow: 0 0 8px rgba(0,77,38,0.2);
+}
+
+.custom-input-file {
+    width: 300px;
+    padding: 12px;
+    border: 2px dashed var(--primary-green);
+    border-radius: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--primary-green);
+    cursor: pointer;
+}
+
+.custom-slider {
+    width: 300px;
+    accent-color: var(--primary-green);
+}
+
+/* Action Buttons */
+.btn-action-outline {
+    width: 300px;
+    padding: 12px;
+    background: transparent;
+    border: 2px solid var(--primary-green);
+    border-radius: 15px;
+    color: var(--primary-green);
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-action-outline:hover {
+    background: var(--primary-green);
+    color: white;
+}
+
+.btn-dark-green {
+    background: var(--primary-green);
+    color: white;
+    border: none;
+    padding: 15px 35px;
+    border-radius: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.settings-action-row {
+    margin-top: auto;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* ==========================================================================
+   10. UTILITIES & ANIMATIONS
+   ========================================================================== */
+.tab-panel { display: none; }
+.tab-panel.active { display: block; animation: fadeIn 0.4s; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
