@@ -95,12 +95,13 @@ class UserController extends Controller
     }
         //new (temporary)
     public function homepage(){
-
         $username = Auth::check() ? Auth::user()->username : null;
-        return view(
-            "student.homepage", ["username" => $username]);
-
-    }
+        $courses = \App\Models\Course_tbl::where('status', 'active')->get();
+        return view("student.homepage", [
+        "username" => $username,
+        "courses" => $courses,
+    ]);
+}
     public function admin1(){
         return view("admin.admin1");
     }

@@ -79,7 +79,7 @@
 
 <div class="navbar-2">
 
-    <img src="../images/logo_hill.png" alt="logo">
+    <img src="{{ asset('images/logo.png') }}" alt="logo">
 
     <p> Home </p>
     <p> About </p>
@@ -122,7 +122,7 @@
 
         <main>
             <div class="parent-box">
-                <img src="../images/Sulongna.jpg" alt="Sulongna">
+                <img src="{{ asset('images/sulongna.jpg') }}" alt="Sulongna">
             </div>
         </main>
 
@@ -138,107 +138,26 @@
             <h3>What's New</h3>
 
             <div class="course-parent">
-                <div class="child child-1">
-
-
-                    <div class="child-header">
-                        <i class="fa-solid fa-bread-slice"></i>
-
-
-
-                        <div class="heart">
-
-                            <i class="fa fa-heart"></i>
-
-
-                            <i class="fa fa-eye"></i>
-                        </div>
-                    </div>
-
-                    <p>Baking(cake,bread,pastries)</p>
-                    <h5>Mon-Tue 10:00am</h5>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-
-                </div>
-
-                <div class="child child-2">
-
-                    <div class="child-header">
-
-                        <i class="fa-solid fa-truck"></i>
-
-                        <div class="heart">
-
-                            <i class="fa fa-heart"></i>
-
-
-                            <i class="fa fa-eye"></i>
-                        </div>
-
-                    </div>
-
-                    <p>Street food and snack</p>
-                    <h5>Mon-Tue 10:00am</h5>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-
-                </div>
-
-                <div class="child child-3">
-
-                    <div class="child-header">
-
-                        <i class="fa-solid fa-shirt"></i>
-
-                        <div class="heart">
-
-                            <i class="fa fa-heart"></i>
-
-
-                            <i class="fa fa-eye"></i>
-                        </div>
-
-                    </div>
-
-                    <p>Basic sewing</p>
-                    <h5>Wed-Thu 10:00am</h5>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-
-                </div>
-
-                <div class="child child-4">
-
-                    <div class="child-header">
-
-                        <i class="fa-solid fa-cake-candles"></i>
-
-                        <div class="heart">
-
-                            <i class="fa fa-heart"></i>
-
-
-                            <i class="fa fa-eye"></i>
-                        </div>
-
-                    </div>
-
-                    <p>Candle making</p>
-                    <h5>Wed-Thu 10:00am</h5>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-
-                </div>
+    @foreach($courses as $course)
+    <div class="child">
+        <div class="child-header">
+            <i class="fa-solid fa-book"></i>
+            <div class="heart">
+                <i class="fa fa-heart"></i>
+                <i class="fa fa-eye"></i>
             </div>
+        </div>
+        <p>{{ $course->title }}</p>
+        <h6><i class="fa fa-clock"></i> {{ $course->schedule }}</h6>
+        <h6><i class="fa fa-calendar"></i> {{ $course->duration }}</h6>
+        <h6><i class="fa fa-location-dot"></i> {{ $course->location }}</h6>
+        <i class="fa fa-star"></i>
+        <i class="fa fa-star"></i>
+        <i class="fa fa-star"></i>
+        <i class="fa fa-star"></i>
+    </div>
+    @endforeach
+</div>
 
 
             <div class="view-parent">
@@ -344,7 +263,7 @@
 
     <div class="footer-container">
         <div class="logo-section">
-            <img src="../images/logo_hill.png" alt="logo">
+            <img src="../images/logo.png" alt="logo">
         </div>
 
         <div class="logo-text">

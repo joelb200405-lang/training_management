@@ -1,52 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LEDIPO Trainer Dashboard</title>
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-     <link rel="stylesheet" href="{{ asset('stylesheet/settings.css') }}">
-</head>
-<body>
+@extends('trainer.layout')
 
-    <div class="top-strip">
-        <div class="language-selector">
-            English <i class="fas fa-chevron-down"></i>
-        </div>
-    </div>
+@section('title', 'Settings')
 
-    <div class="container">
-        
-        <nav class="sidebar">
-            <div class="logo">
-                <img src="{{ asset('images/logo.png') }}" alt="logo">
-                <p class="sidebar-title">Dasmariñas City Training Center</p>
-            </div>
-            <ul>
-                <li><a href="teacher"><i class="fas fa-th-large"></i> Dashboard</a></li>
-                <li><a href="courses"><i class="fas fa-book"></i> Courses</a></li>
-                <li><a href="learner"><i class="fas fa-users"></i> Trainees</a></li>
-                <li><a href="assessment"><i class="fas fa-clipboard-check"></i> Assessment</a></li>
-                <li><a href="certificates"><i class="fas fa-certificate"></i> Certificates</a></li>
-                <li><a href="reports"><i class="fas fa-chart-line"></i> Reports</a></li>
-                <li class="settings"><a href=" "><i class="fas fa-gear"></i> Settings</a></li>
-            </ul>
-        </nav>
+@section('css')
+    <link rel="stylesheet" href="{{ asset('stylesheet/settings.css') }}">
+@endsection
 
-        <main class="main-content">
-            
-            <header class="main-header">
-                <div class="search-box">
-                    <input type="text" placeholder="What are you looking for?">
-                    <button type="submit"><i class="fas fa-search"></i></button>
-                </div>
-                
-                <div class="icon-buttons">
-                    <div class="icon-item"><i class="fas fa-bell"></i></div>
-                    <div class="icon-item logout"><i class="fas fa-right-from-bracket"></i></div>
-                </div>
-            </header>
+@section('content')
 
             <div class="panel-padding">
                 <div class="settings-card-frame">
@@ -169,35 +129,23 @@
                         <div class="settings-action-row">
                             <button class="btn-dark-green" onclick="saveAllSettings()">Save All Changes</button>
                         </div>
-                    </div> </div> </div> </main>
+                    </div> 
+                </div> 
+            </div> 
+        </main>
     </div>
 
+   @endsection
+
+@section('scripts')
     <script>
-        /**
-         * TAB NAVIGATION LOGIC
-         * Switches visibility between different setting panels
-         */
         function openTab(evt, tabName) {
-            let i, tabpanels, tablinks;
-
-            tabpanels = document.getElementsByClassName("tab-panel");
-            for (i = 0; i < tabpanels.length; i++) {
-                tabpanels[i].classList.remove("active");
-            }
-
-            tablinks = document.getElementsByClassName("nav-tab");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].classList.remove("active");
-            }
-
-            document.getElementById(tabName).classList.add("active");
-            evt.currentTarget.classList.add("active");
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            evt.currentTarget.classList.add('active');
         }
 
-        /**
-         * APPEARANCE LOGIC
-         * Live font-size adjustment and theme feedback
-         */
         const fontSlider = document.getElementById('fontSlider');
         if(fontSlider) {
             fontSlider.addEventListener('input', function() {
@@ -215,6 +163,4 @@
             alert("Settings for Dasmariñas City Training Center have been updated.");
         }
     </script>
-
-</body>
-</html>
+@endsection
