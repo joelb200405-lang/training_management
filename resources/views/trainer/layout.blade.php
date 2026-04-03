@@ -30,8 +30,8 @@
                 <li class="{{ request()->routeIs('teacher') ? 'active' : '' }}">
                     <a href="{{ route('teacher') }}"><i class="fas fa-th-large"></i> Dashboard</a>
                 </li>
-                <li class="{{ request()->routeIs('courses') ? 'active' : '' }}">
-                    <a href="{{ route('courses') }}"><i class="fas fa-book"></i> Courses</a>
+                <li class="{{ request()->routeIs('trainer.courses') ? 'active' : '' }}">
+                    <a href="{{ route('trainer.courses') }}"><i class="fas fa-book"></i> Courses</a>
                 </li>
                 <li class="{{ request()->routeIs('learner') ? 'active' : '' }}">
                     <a href="{{ route('learner') }}"><i class="fas fa-users"></i> Trainees</a>

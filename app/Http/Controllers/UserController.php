@@ -209,12 +209,11 @@ public function ResetPassword(Request $request)
 
     //bocita
 
-     public function learner()
-    {
-
-        return view("trainer.learner");
+     public function learner(){
+    $enrollments = \App\Models\Enrollment_tbl::with(['user', 'course'])
+                    ->get();
+    return view("trainer.learner", compact('enrollments'));
     }
-
      public function courses()
     {
 
@@ -244,7 +243,7 @@ public function ResetPassword(Request $request)
 
         return view("trainer.settings");
     }
-        //ctudent cources
+        //ctudent leaner
     public function allCourses(){
     $courses = \App\Models\Course_tbl::where('status', 'active')->get();
     return view("student.all_courses", compact('courses'));

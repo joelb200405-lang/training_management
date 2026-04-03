@@ -24,42 +24,45 @@
 
     <div class="table-outline">
         <table class="trainee-data-table">
-            <thead>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Fullname</th>
+                        <th>Course</th>
+                        <th>Progress</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+        <tbody>
+            @forelse($enrollments as $enrollment)
+            <tr>
+                <td>{{ str_pad($enrollment->id, 4, '0', STR_PAD_LEFT) }}</td>
+                <td class="name">{{ $enrollment->user->lastname }}, {{ $enrollment->user->firstname }}</td>
+                <td class="course">{{ $enrollment->course->title }}</td>
+                <td>
+                    <div style="background: #e8f5e9; border-radius: 20px; padding: 4px 0; text-align: center;">
+                        <div style="background: #025628; height: 6px; border-radius: 20px; width: {{ $enrollment->progress }}%;"></div>
+                    </div>
+                    <small style="color: #888;">{{ $enrollment->progress }}%</small>
+                </td>
+                <td class="{{ $enrollment->status === 'active' ? 'status-active' : 'status-wait' }}">
+                    {{ ucfirst($enrollment->status) }}
+                </td>
+                <td class="action-icons">
+                    <i class="fas fa-eye view" onclick="openProfile()"></i>
+                    <i class="fas fa-edit edit"></i>
+                    <i class="fas fa-trash-alt delete"></i>
+                </td>
+            </tr>
+            @empty
                 <tr>
-                    <th>Trainee ID</th>
-                    <th>Fullname</th>
-                    <th>Course</th>
-                    <th>Barangay</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>2023-2-0018</td>
-                    <td class="name">Bong, Marcos</td>
-                    <td class="course">Nail Care</td>
-                    <td>Salitran II</td>
-                    <td class="status-active">Active</td>
-                    <td class="action-icons">
-                        <i class="fas fa-eye view" onclick="openProfile()"></i>
-                        <i class="fas fa-edit edit"></i>
-                        <i class="fas fa-trash-alt delete"></i>
+                    <td colspan="6" style="text-align: center; color: #888; padding: 20px;">
+                        No students enrolled yet.
                     </td>
                 </tr>
-                <tr>
-                    <td>2023-2-0019</td>
-                    <td class="name">Ramos, Roshian</td>
-                    <td class="course">Candle Making</td>
-                    <td>Sabang</td>
-                    <td class="status-wait">Waitlisted</td>
-                    <td class="action-icons">
-                        <i class="fas fa-eye view" onclick="openProfile()"></i>
-                        <i class="fas fa-edit edit"></i>
-                        <i class="fas fa-trash-alt delete"></i>
-                    </td>
-                </tr>
-            </tbody>
+            @endforelse
+        </tbody>
         </table>
     </div>
 

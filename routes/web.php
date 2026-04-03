@@ -47,7 +47,7 @@ Route::post("/Logout", [UserController::class, "Logout"])->name("Logout");
 
 //bocita
 Route::get("/learner", [UserController::class, "learner"])->name("learner");
-Route::get("/courses", [UserController::class, "courses"])->name("courses");
+Route::get("/trainer/courses", [UserController::class, "courses"])->name("trainer.courses");
 Route::get("/assessment", [UserController::class, "assessment"])->name("assessment");
 Route::get("/certificates", [UserController::class, "certificates"])->name("certificates");
 Route::get("/reports", [UserController::class, "reports"])->name("reports");
