@@ -10,10 +10,10 @@
     <h2 class="panel-title">Trainees</h2>
 
     <section class="stats-grid">
-        <div class="stat-card"><h3>67</h3><p>Total Registered</p></div>
-        <div class="stat-card"><h3>67</h3><p>Currently Enrolled</p></div>
-        <div class="stat-card"><h3>67</h3><p>Certified Graduates</p></div>
-        <div class="stat-card urgent"><h3>07</h3><p>Urgent Assessments</p></div>
+    <div class="stat-card"><h3>{{ $totalRegistered }}</h3><p>Total Registered</p></div>
+    <div class="stat-card"><h3>{{ $currentlyEnrolled }}</h3><p>Currently Enrolled</p></div>
+    <div class="stat-card"><h3>{{ $graduates }}</h3><p>Certified Graduates</p></div>
+    <div class="stat-card urgent"><h3>{{ $urgentAssessments }}</h3><p>Urgent Assessments</p></div>
     </section>
 
     <div class="filter-row">

@@ -11,10 +11,10 @@
     <h2 class="panel-title">Dashboard</h2>
 
     <section class="stats-grid">
-        <div class="stat-card"><h3>67</h3><p>Total Trainees</p></div>
-        <div class="stat-card"><h3>67</h3><p>Monthly Enrollment Trend</p></div>
-        <div class="stat-card"><h3>97%</h3><p>Completion Rate</p></div>
-        <div class="stat-card urgent"><h3>06</h3><p>Urgent Assessments</p></div>
+    <div class="stat-card"><h3>{{ $totalTrainees }}</h3><p>Total Trainees</p></div>
+    <div class="stat-card"><h3>{{ $monthlyEnrollment }}</h3><p>Monthly Enrollment Trend</p></div>
+    <div class="stat-card"><h3>{{ $completionRate }}</h3><p>Completion Rate</p></div>
+    <div class="stat-card urgent"><h3>{{ $urgentAssessments }}</h3><p>Urgent Assessments</p></div>
     </section>
 
     <section class="charts-grid">
@@ -45,18 +45,37 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr><td>Nelmida, Rheyan</td><td>Computer Lit.</td><td>43%</td><td class="risk-high">High</td></tr>
-                    <tr><td>Marcos, Bong</td><td>Nail Care</td><td>20%</td><td class="risk-high">High</td></tr>
+                    @forelse($lowPerforming as $enrollment)
+                    <tr>
+                        <td>{{ $enrollment->user->lastname }}, {{ $enrollment->user->firstname }}</td>
+                        <td>{{ $enrollment->course->title }}</td>
+                        <td>{{ $enrollment->progress }}%</td>
+                        <td class="risk-high">High</td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="4" style="text-align:center; color:#888;">No low performing trainees!</td>
+                    </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
-        <div class="deadlines-container">
-            <h4 class="yellow-header">Upcoming Deadlines</h4>
-            <ul>
-                <li>Dress Making Final Project Submission</li>
-                <li>Graduation Requirements Clearance</li>
-            </ul>
-        </div>
+                <div class="deadlines-container">
+                    <h4 class="yellow-header">Upcoming Deadlines</h4>
+                    <ul>
+                        @forelse($deadlines as $deadline)
+                        <li>
+                            <strong>{{ $deadline->title }}</strong><br>
+                            <small style="color:#888;">
+                                <i class="fas fa-calendar"></i> 
+                                {{ $deadline->due_date->format('M d, Y') }}
+                            </small>
+                        </li>
+                        @empty
+                        <li style="color:#888;">No upcoming deadlines!</li>
+                        @endforelse
+                    </ul>
+                </div>
     </section>
 @endsection
 

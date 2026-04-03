@@ -105,9 +105,44 @@ class UserController extends Controller
     public function admin1(){
         return view("admin.admin1");
     }
-     public function teacher(){
-        return view("trainer.teacher");
-    }
+public function teacher(){
+    // Stat cards
+    $totalTrainees     = \App\Models\Enrollment_tbl::where('status', 'active')->count();
+    $monthlyEnrollment = \App\Models\Enrollment_tbl::whereMonth('enrolled_at', now()->month)
+                         ->whereYear('enrolled_at', now()->year)
+                         ->count();
+    $completionRate    = \App\Models\Enrollment_tbl::count() > 0
+                         ? round(\App\Models\Enrollment_tbl::where('status', 'completed')->count()
+                         / \App\Models\Enrollment_tbl::count() * 100) . '%'
+                         : '0%';
+    $urgentAssessments = \App\Models\Deadline_tbl::where('due_date', '<=', now()->addDays(3))
+                         ->where('due_date', '>=', now())
+                         ->count();
+
+    // Low performing trainees (progress below 50%)
+    $lowPerforming = \App\Models\Enrollment_tbl::with(['user', 'course'])
+                     ->where('status', 'active')
+                     ->where('progress', '<', 50)
+                     ->orderBy('progress', 'asc')
+                     ->take(5)
+                     ->get();
+
+    // Upcoming deadlines
+    $deadlines = \App\Models\Deadline_tbl::where('due_date', '>=', now())
+                 ->orderBy('due_date', 'asc')
+                 ->take(5)
+                 ->get();
+
+    return view("trainer.teacher", compact(
+        'totalTrainees',
+        'monthlyEnrollment',
+        'completionRate',
+        'urgentAssessments',
+        'lowPerforming',
+        'deadlines'
+    ));
+}
+
 
     //forgotpassword
 
@@ -209,11 +244,22 @@ public function ResetPassword(Request $request)
 
     //bocita
 
-     public function learner(){
-    $enrollments = \App\Models\Enrollment_tbl::with(['user', 'course'])
-                    ->get();
-    return view("trainer.learner", compact('enrollments'));
-    }
+    public function learner(){
+    $enrollments = \App\Models\Enrollment_tbl::with(['user', 'course'])->get();
+
+    $totalRegistered   = \App\Models\User_tbl::where('role', 'student')->count();
+    $currentlyEnrolled = \App\Models\Enrollment_tbl::where('status', 'active')->count();
+    $graduates         = \App\Models\Enrollment_tbl::where('status', 'completed')->count();
+    $urgentAssessments = 0; // we'll update this later when we build assessments
+
+    return view("trainer.learner", compact(
+        'enrollments',
+        'totalRegistered',
+        'currentlyEnrolled',
+        'graduates',
+        'urgentAssessments'
+    ));
+}
      public function courses()
     {
 
