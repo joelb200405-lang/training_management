@@ -244,5 +244,39 @@ public function ResetPassword(Request $request)
 
         return view("trainer.settings");
     }
+        //ctudent cources
+    public function allCourses(){
+    $courses = \App\Models\Course_tbl::where('status', 'active')->get();
+    return view("student.all_courses", compact('courses'));
+}
+
+public function courseDetail($id){
+    $course = \App\Models\Course_tbl::findOrFail($id);
+    return view("student.course_detail", compact('course'));
+}
+
+public function enroll(Request $request, $id){
+    $course = \App\Models\Course_tbl::findOrFail($id);
+
+    // Check if already enrolled
+    $existing = \App\Models\Enrollment_tbl::where('user_id', Auth::id())
+                ->where('course_id', $id)
+                ->first();
+
+    if($existing){
+        return back()->with('error', 'You are already enrolled in this course!');
+    }
+
+    // Enroll the student
+    \App\Models\Enrollment_tbl::create([
+        'user_id'     => Auth::id(),
+        'course_id'   => $id,
+        'status'      => 'active',
+        'progress'    => 0,
+        'enrolled_at' => now(),
+    ]);
+
+    return back()->with('success', 'Successfully enrolled in ' . $course->title . '!');
+}
 
 }

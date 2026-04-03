@@ -53,4 +53,9 @@ Route::get("/certificates", [UserController::class, "certificates"])->name("cert
 Route::get("/reports", [UserController::class, "reports"])->name("reports");
 Route::get("/settings", [UserController::class, "settings"])->name("settings");
 
+
+//cources 
+Route::get("/courses", [UserController::class, "allCourses"])->name("all.courses");
+Route::get("/courses/{id}", [UserController::class, "courseDetail"])->name("course.detail");
+Route::post("/courses/{id}/enroll", [UserController::class, "enroll"])->name("course.enroll");
 ?>
