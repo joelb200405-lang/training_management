@@ -13,18 +13,14 @@
         </main>
 
         <section>
-            <div class="text-1">
-                <div class="box">
-
-                </div>
-                <p>Today's</p>
-
-            </div>
-
-            <h3>What's New</h3>
-
-            <div class="course-parent">
-    @foreach($courses as $course)
+                 <div class="text-1">
+                    <div class="box">
+                     </div>
+                         <p>Today's</p>
+                 </div>
+                     <h3>What's New</h3>
+                <div class="course-parent">
+    @foreach($newCourses as $course)
     <div class="child">
         <div class="child-header">
             <i class="fa-solid fa-book"></i>
@@ -33,14 +29,19 @@
                 <i class="fa fa-eye"></i>
             </div>
         </div>
-        <p>{{ $course->title }}</p>
-        <h6><i class="fa fa-clock"></i> {{ $course->schedule }}</h6>
-        <h6><i class="fa fa-calendar"></i> {{ $course->duration }}</h6>
-        <h6><i class="fa fa-location-dot"></i> {{ $course->location }}</h6>
-        <i class="fa fa-star"></i>
-        <i class="fa fa-star"></i>
-        <i class="fa fa-star"></i>
-        <i class="fa fa-star"></i>
+        <div class="child-body">
+            <p class="course-title">{{ $course->title }}</p>
+            <p class="course-info"><i class="fa fa-clock"></i> {{ $course->schedule }}</p>
+            <p class="course-info"><i class="fa fa-calendar"></i> {{ $course->duration }}</p>
+            <p class="course-info"><i class="fa fa-location-dot"></i> {{ Str::limit($course->location, 30) }}</p>
+            <div class="course-stars">
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+            </div>
+            <a href="{{ route('course.detail', $course->id) }}" class="btn-view-course">View Course</a>
+        </div>
     </div>
     @endforeach
 </div>
@@ -74,37 +75,32 @@
             <h3>OTHER COURSES</h3>
 
             <div class="course-parent">
-                <div class="child child-1">
-
+                @forelse($otherCourses as $course)
+                <div class="child">
                     <div class="child-header">
-
+                        <i class="fa-solid fa-book"></i>
+                        <div class="heart">
+                            <i class="fa fa-heart"></i>
+                            <i class="fa fa-eye"></i>
+                        </div>
+                    </div>
+                    <div class="child-body">
+                        <p class="course-title">{{ $course->title }}</p>
+                        <p class="course-info"><i class="fa fa-clock"></i> {{ $course->schedule }}</p>
+                        <p class="course-info"><i class="fa fa-calendar"></i> {{ $course->duration }}</p>
+                        <p class="course-info"><i class="fa fa-location-dot"></i> {{ Str::limit($course->location, 30) }}</p>
+                        <div class="course-stars">
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                        </div>
+                        <a href="{{ route('course.detail', $course->id) }}" class="btn-view-course">View Course</a>
                     </div>
                 </div>
-                <div class="child child-2">
-
-                    <div class="child-header">
-
-                    </div>
-
-                </div>
-
-                <div class="child child-3">
-
-                    <div class="child-header">
-
-
-                    </div>
-
-                </div>
-
-                <div class="child child-4">
-
-                    <div class="child-header">
-
-
-                    </div>
-
-                </div>
+                @empty
+                    <p style="color:#888;">No other courses available.</p>
+                @endforelse
             </div>
 
 

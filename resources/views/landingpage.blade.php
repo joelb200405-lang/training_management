@@ -40,7 +40,7 @@
 
 <div class="navbar-2">
 
-    <img src="../images/logo_hill.png" alt="logo">
+    <img src="../images/logo.png" alt="logo">
 
     <p> Home </p>
     <p> About </p>
@@ -296,7 +296,7 @@
 
     <div class="footer-container">
         <div class="logo-section">
-            <img src="../images/logo_hill.png" alt="logo">
+            <img src="../images/logo.png" alt="logo">
         </div>
 
         <div class="logo-text">

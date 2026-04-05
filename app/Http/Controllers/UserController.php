@@ -96,12 +96,26 @@ class UserController extends Controller
         //new (temporary)
     public function homepage(){
         $username = Auth::check() ? Auth::user()->username : null;
-        $courses = \App\Models\Course_tbl::where('status', 'active')->get();
+        
+        // Latest 4 courses for "What's New"
+        $newCourses = \App\Models\Course_tbl::where('status', 'active')
+                        ->orderBy('id', 'desc')
+                        ->take(4)
+                        ->get();
+
+        // Older courses for "Other Courses"
+        $otherCourses = \App\Models\Course_tbl::where('status', 'active')
+                        ->orderBy('id', 'asc')
+                        ->skip(4)
+                        ->take(4)
+                        ->get();
+
         return view("student.homepage", [
-        "username" => $username,
-        "courses" => $courses,
-    ]);
-}
+            "username"     => $username,
+            "newCourses"   => $newCourses,
+            "otherCourses" => $otherCourses,
+        ]);
+    }
     public function admin1(){
         return view("admin.admin1");
     }
