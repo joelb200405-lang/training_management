@@ -5,7 +5,7 @@ use App\Http\Controllers\UserController;
     
 Route::get('/', function () {
     return view('landingpage');    //The first you will see.
-});
+})->name('landingpage');
 // nilalagyan kolang ng ganto"//" kasi makakalimutan ako hehe joel*
 
 Route::get("/login", [UserController::class, "Login"])->name("Login");
@@ -58,4 +58,17 @@ Route::get("/settings", [UserController::class, "settings"])->name("settings");
 Route::get("/courses", [UserController::class, "allCourses"])->name("all.courses");
 Route::get("/courses/{id}", [UserController::class, "courseDetail"])->name("course.detail");
 Route::post("/courses/{id}/enroll", [UserController::class, "enroll"])->name("course.enroll");
+
+//contact
+Route::get("/contact", [UserController::class, "contact"])->name("contact");
+Route::post("/contact", [UserController::class, "sendContact"])->name("contact.send");
+//only for landingpage
+Route::get("/contact-us", [UserController::class, "landingContact"])->name("landing.contact");
+Route::post("/contact-us", [UserController::class, "landingContactSend"])->name("landing.contact.send");
+Route::get("/about", [UserController::class, "landingAbout"])->name("landing.about");
+
+Route::get("/our-courses", [UserController::class, "landingCourses"])->name("landing.courses");
+Route::get("/our-courses/{id}", [UserController::class, "landingCourseDetail"])->name("landing.course.detail");
+//student about
+Route::get("/about", [UserController::class, "about"])->name("about")
 ?>

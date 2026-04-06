@@ -73,8 +73,8 @@
     <div class="navbar-2">
         <img src="{{ asset('images/logo.png') }}" alt="logo">
         <p><a href="{{ route('homepage') }}" style="text-decoration:none; color:inherit;">Home</a></p>
-        <p>About</p>
-        <p>Contact</p>
+        <p><a href="{{ route('about') }}" style="text-decoration:none; color:inherit;">About</a></p>
+        <p><a href="{{ route('contact') }}" style="text-decoration:none; color:inherit;">Contact</a></p>
         <p><a href="{{ route('all.courses') }}" style="text-decoration:none; color:inherit;">Courses</a></p>
 
         <form action="" method="Get">

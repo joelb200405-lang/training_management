@@ -1,347 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dasmarinas</title>
+    <title>Dasmariñas Livelihood Training</title>
     <link rel="stylesheet" href="{{ asset('stylesheet/landingpage.css') }}">
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
-        integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
-        rel="stylesheet">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <style>
-        * {
-            font-family: "Open Sans", sans-serif;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="proconnect" href="https://fonts.googleapis.com">
+    <link rel="proconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 </head>
-
 <body>
 
-
-    <div class="navbar-1">
-    <span></span>
-    <p>Dasmarinas: Tulong sa Kabuhayan, Tuloy ang kaunlaran!</p>
-    <select>
-        <option>English</option>
-        <option>Tagalog</option>
-    </select>
-</div>
-
-<div class="navbar-2">
-
-    <img src="../images/logo.png" alt="logo">
-
-    <p> Home </p>
-    <p> About </p>
-    <p> Contact </p>
-    <p> Courses </p>
-
-    <form action="" method="Get">
-
-        <div class="nav-search-icons">
-
-            <div class="search">
-                <input type="text" placeholder="What are you looking for? ">
-                <i class="fa fa-search"></i>
-            </div>
-            <div class="rounded_box">
-    <a href="/login">
-        <button type="button" class="btn_Sign_In">Login</button>
-    </a>
-    </div>
+    <nav class="navbar">
+        <div class="nav-logo">
+            <img src="{{ asset('images/logo.png') }}" alt="Logo">
+            <span>LEDIPO</span>
         </div>
-
-
-    </form>
-
-
-</div>
-
-
-    <div class="container-fluid p-0">
-       
-
-        <main>
-            <div class="parent-box">
-                <img src="../images/Sulongna.jpg" alt="Sulongna">
-            </div>
-        </main>
-
-        <section>
-            <div class="text-1">
-                <div class="box">
-
-                </div>
-                <p>Today's</p>
-
-            </div>
-
-            <h3>What's New</h3>
-
-            <div class="course-parent">
-                <div class="child child-1">
-
-
-                    <div class="child-header">
-                        <i class="fa-solid fa-bread-slice"></i>
-
-
-
-                        <div class="heart">
-
-                            <i class="fa fa-heart"></i>
-
-
-                            <i class="fa fa-eye"></i>
-                        </div>
-                    </div>
-
-                    <p>Baking(cake,bread,pastries)</p>
-                    <h5>Mon-Tue 10:00am</h5>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-
-                </div>
-
-                <div class="child child-2">
-
-                    <div class="child-header">
-
-                        <i class="fa-solid fa-truck"></i>
-
-                        <div class="heart">
-
-                            <i class="fa fa-heart"></i>
-
-
-                            <i class="fa fa-eye"></i>
-                        </div>
-
-                    </div>
-
-                    <p>Street food and snack</p>
-                    <h5>Mon-Tue 10:00am</h5>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-
-                </div>
-
-                <div class="child child-3">
-
-                    <div class="child-header">
-
-                        <i class="fa-solid fa-shirt"></i>
-
-                        <div class="heart">
-
-                            <i class="fa fa-heart"></i>
-
-
-                            <i class="fa fa-eye"></i>
-                        </div>
-
-                    </div>
-
-                    <p>Basic sewing</p>
-                    <h5>Wed-Thu 10:00am</h5>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-
-                </div>
-
-                <div class="child child-4">
-
-                    <div class="child-header">
-
-                        <i class="fa-solid fa-cake-candles"></i>
-
-                        <div class="heart">
-
-                            <i class="fa fa-heart"></i>
-
-
-                            <i class="fa fa-eye"></i>
-                        </div>
-
-                    </div>
-
-                    <p>Candle making</p>
-                    <h5>Wed-Thu 10:00am</h5>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-
-                </div>
-            </div>
-
-
-            <div class="view-parent">
-                <div class="view-child">
-                    <button class="btn_view_courses">View All Courses</button>
-                </div>
-            </div>
-        </section>
-
-
-
-
-    </div>
-
-
-
-    <div class="container-1">
-
-        <section class="section-3">
-            <div class="text-2">
-                <div class="box">
-
-                </div>
-                <p>AVAILABLE COURSE</p>
-
-            </div>
-
-            <h3>OTHER COURSES</h3>
-
-            <div class="course-parent">
-                <div class="child child-1">
-
-                    <div class="child-header">
-
-                    </div>
-                </div>
-                <div class="child child-2">
-
-                    <div class="child-header">
-
-                    </div>
-
-                </div>
-
-                <div class="child child-3">
-
-                    <div class="child-header">
-
-
-                    </div>
-
-                </div>
-
-                <div class="child child-4">
-
-                    <div class="child-header">
-
-
-                    </div>
-
-                </div>
-            </div>
-
-
-    </div>
-
-    <div class="container-2">
-
-        <section class="section-4">
-            <div class="text-1">
-                <div class="box">
-
-                </div>
-                <p>Community</p>
-
-            </div>
-
-            <div class="commercial parent">
-                <div class="photo-1">
-
-
-                </div>
-                <div class="commercial parent">
-                    <div class="photo-2">
-
-                        <div class="photo-child-1">
-
-                        </div>
-
-                        <div class="photo-child-2">
-
-
-                        </div>
-
-
-                    </div>
-
-
-
-                </div>
-            </div>
-    </div>
-
-    <div class="footer-container">
-        <div class="logo-section">
-            <img src="../images/logo.png" alt="logo">
+        <ul class="nav-links">
+            <li><a href="#" class="active">Home</a></li>
+            <li><a href="{{ route('landing.about') }}">About</a></li>
+            <li><a href="{{ route('landing.courses') }}">Courses</a></li>
+            <li><a href="{{ route('landing.contact') }}">Contact</a></li>
+        </ul>
+        <div class="nav-actions">
+            <a href="{{ route('Login') }}" class="btn-signin">Sign In</a>
+            <a href="{{ route('SignupPage') }}" class="btn-signup">Sign Up</a>
         </div>
+        <button class="hamburger" id="hamburger">
+            <i class="fas fa-bars"></i>
+        </button>
+    </nav>
 
-        <div class="logo-text">
-            <div>
-                <p>Support</p>
-
-                <p>Barangay Burol Main, City of Dasmariñas, Cavite, Philippines.</p>
-
-                <p>Regals@gmail.com</p>
-
-                <p>+88015-88888-9999</p>
+<section class="hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <div class="hero-badge">
+            <i class="fas fa-award"></i>
+            Dasmariñas City Livelihood Program
+        </div>
+        <h1>Start Your <span>Training</span> Journey</h1>
+        <p>Access free government-accredited livelihood training programs. Build your skills, grow your income, and transform your future with Dasmariñas City.</p>
+        <div class="hero-actions">
+            <a href="{{ route('SignupPage') }}" class="btn-primary">
+                Get Started <i class="fas fa-arrow-right"></i>
+            </a>
+            <a href="{{ route('Login') }}" class="btn-secondary">
+                Sign In
+            </a>
+        </div>
+        <div class="hero-stats">
+            <div class="stat">
+                <span class="stat-num">6+</span>
+                <span class="stat-label">Courses</span>
             </div>
-
-            <div>
-                <p>Account</p>
-
-                <p>My Account</p>
-
-                <p>Login/Register</p>
-
-                <p>Likes</p>
-
+            <div class="stat-divider"></div>
+            <div class="stat">
+                <span class="stat-num">100+</span>
+                <span class="stat-label">Students</span>
             </div>
-
-            <div>
-                <p>Quick Linkp>
-
-                <p>Privacy Policy</p>
-
-                <p>Team of Use</p>
-
-                <p>FaQ</p>
-
-                <p>Contact</p>
+            <div class="stat-divider"></div>
+            <div class="stat">
+                <span class="stat-num">Free</span>
+                <span class="stat-label">Registration</span>
             </div>
         </div>
-
-
     </div>
-
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-        crossorigin="anonymous"></script>
+</section>
 
 </body>
-
 </html>

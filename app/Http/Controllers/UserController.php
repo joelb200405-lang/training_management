@@ -338,4 +338,69 @@ public function enroll(Request $request, $id){
     return back()->with('success', 'Successfully enrolled in ' . $course->title . '!');
 }
 
+//contact
+public function contact(){
+    return view("student.contact");
+}
+
+    public function sendContact(Request $request){
+        $request->validate([
+            'name'    => 'required',
+            'email'   => 'required|email',
+            'message' => 'required',
+        ]);
+
+        // For now just redirect with success message
+        // Later we can add email sending feature
+        return back()->with('success', 'Your message has been sent! We will contact you within 24 hours.');
+    }
+
+//landingpage contact
+        public function landingContact(){
+        return view("landing_contact");
+    }
+
+    public function landingContactSend(Request $request){
+        $request->validate([
+            'name'    => 'required',
+            'email'   => 'required|email',
+            'message' => 'required',
+        ]);
+
+        return back()->with('success', 'Your message has been sent! We will contact you within 24 hours.');
+    }
+
+    public function landingAbout(){
+    $totalStudents = \App\Models\User_tbl::where('role', 'student')->count();
+    $totalCourses  = \App\Models\Course_tbl::where('status', 'active')->count();
+    $totalTrainers = \App\Models\User_tbl::where('role', 'trainer')->count();
+
+    return view("landing_about", compact(
+        'totalStudents',
+        'totalCourses',
+        'totalTrainers'
+    ));
+    }
+    //about
+        public function landingCourses(){
+        $courses = \App\Models\Course_tbl::where('status', 'active')->get();
+        return view("landing_courses", compact('courses'));
+    }
+
+    public function landingCourseDetail($id){
+        $course = \App\Models\Course_tbl::findOrFail($id);
+        return view("landing_course_detail", compact('course'));
+    }
+
+    public function about(){
+    $totalStudents = \App\Models\User_tbl::where('role', 'student')->count();
+    $totalCourses  = \App\Models\Course_tbl::where('status', 'active')->count();
+    $totalTrainers = \App\Models\User_tbl::where('role', 'trainer')->count();
+
+    return view("student.about", compact(
+        'totalStudents',
+        'totalCourses',
+        'totalTrainers'
+    ));
+    }
 }
