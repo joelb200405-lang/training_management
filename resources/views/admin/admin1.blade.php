@@ -23,6 +23,8 @@
             </a>
         </div>
 
+        <p>LEDIPO</p>
+
         <div class="header-right">
             <div class="user-welcome" onclick="toggleDropdown(event)">
                 Welcome, <strong>Admin!</strong>
