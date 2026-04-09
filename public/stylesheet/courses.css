@@ -515,3 +515,84 @@ body {
     opacity: 0.5;
     font-size: 12px;
 }
+
+.modal-header p{
+    color: #004d26; 
+    margin: 0;
+}
+.modal-header span{
+    cursor:pointer; 
+    font-size:28px;
+}
+
+/* Layout & Container Fixes */
+#openModal {
+    cursor: pointer;
+}
+
+.scrollable-body {
+    padding: 20px 0;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* Form Sections */
+.form-section {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.form-section.no-border {
+    border-bottom: none;
+}
+
+.form-section-title {
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.form-label {
+    font-size: 12px;
+    color: #888;
+    display: block; /* Para sigurado na nasa taas ng input */
+}
+
+/* Input Fields */
+.form-input, .form-select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+/* Modal Footer & Buttons */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.btn-cancel {
+    padding: 10px 20px;
+    border: none;
+    background: #eee;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-publish {
+    padding: 10px 20px;
+    border: none;
+    background: #004d26;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-publish:hover {
+    background: #00361a;
+}

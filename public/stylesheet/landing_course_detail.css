@@ -1,0 +1,230 @@
+/* ===== COURSE DETAIL PAGE ===== */
+
+.course-detail-wrapper {
+    padding: 120px 60px 60px;
+    min-height: 100vh;
+    background: #f9f9f9;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 30px;
+}
+
+.breadcrumb a {
+    color: #025628;
+    text-decoration: none;
+}
+
+.breadcrumb span {
+    margin: 0 8px;
+}
+
+/* Hero Banner */
+.course-banner {
+    background: #025628;
+    border-radius: 12px;
+    padding: 40px;
+    margin-bottom: 30px;
+    color: white;
+}
+
+.course-banner-sector {
+    background: #F7EE17;
+    color: #025628;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 14px;
+    border-radius: 20px;
+    display: inline-block;
+}
+
+.course-banner h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-top: 16px;
+    margin-bottom: 12px;
+}
+
+.course-banner p {
+    font-size: 15px;
+    opacity: 0.85;
+    line-height: 1.7;
+}
+
+.course-banner-meta {
+    display: flex;
+    gap: 30px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.course-banner-meta span {
+    font-size: 14px;
+}
+
+/* Content Layout */
+.course-detail-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+}
+
+/* Cards */
+.detail-card {
+    background: white;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.detail-card:last-child {
+    margin-bottom: 0;
+}
+
+.detail-card h4 {
+    color: #025628;
+    font-weight: 700;
+    margin-bottom: 14px;
+}
+
+.detail-card p {
+    color: #555;
+    line-height: 1.8;
+    font-size: 14px;
+}
+
+/* Schedule Items */
+.schedule-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.schedule-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.schedule-icon {
+    width: 40px;
+    height: 40px;
+    background: #025628;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.schedule-icon i {
+    color: white;
+}
+
+.schedule-info p:first-child {
+    margin: 0;
+    font-size: 12px;
+    color: #888;
+}
+
+.schedule-info p:last-child {
+    margin: 0;
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+}
+
+/* Sticky Sidebar */
+.sidebar-card {
+    background: white;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 28px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    position: sticky;
+    top: 100px;
+}
+
+.sidebar-card h4 {
+    color: #025628;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.sidebar-card > p {
+    color: #888;
+    font-size: 13px;
+    margin-bottom: 20px;
+}
+
+/* Sidebar Meta */
+.sidebar-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.sidebar-meta-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+}
+
+.sidebar-meta-row span:first-child {
+    color: #888;
+}
+
+.sidebar-meta-row span:last-child {
+    font-weight: 600;
+}
+
+.sidebar-meta-row .highlight {
+    color: #025628;
+}
+
+.sidebar-divider {
+    border: none;
+    border-top: 1px solid #eee;
+    margin-bottom: 20px;
+}
+
+/* Sidebar Buttons */
+.btn-enroll {
+    display: block;
+    text-align: center;
+    background: #025628;
+    color: white;
+    padding: 14px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    margin-bottom: 10px;
+}
+
+.btn-enroll:hover {
+    background: #013d1c;
+}
+
+.btn-signin-outline {
+    display: block;
+    text-align: center;
+    background: transparent;
+    color: #025628;
+    padding: 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    border: 2px solid #025628;
+}
+
+.btn-signin-outline:hover {
+    background: rgba(2, 86, 40, 0.05);
+}

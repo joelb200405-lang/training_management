@@ -4,6 +4,8 @@
 
 @section('css')
     <link rel="stylesheet" href="{{ asset('stylesheet/reports.css') }}">
+    <link rel="stylesheet" href="../bootstrap_folder/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../font-awesome-icon/css/all.min.css">
 @endsection
 
 @section('content')

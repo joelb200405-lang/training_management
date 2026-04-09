@@ -364,3 +364,32 @@ td {
     opacity: 0.5;
     font-size: 12px;
 }
+/* removing inline */
+
+/* Chart Wrappers */
+.chart-wrapper {
+    height: 250px;
+}
+
+/* Table Custom Styles */
+.empty-table-msg {
+    text-align: center;
+    color: #888;
+    padding: 20px;
+}
+
+/* Deadlines Styles */
+.deadline-date {
+    color: #888;
+}
+
+.empty-list-msg {
+    color: #888;
+    list-style: none; /* Para mawala ang bullet point kung empty */
+}
+
+/* Risk Levels (dagdag para sa table) */
+.risk-high {
+    color: #d9534f; /* Red for high risk */
+    font-weight: bold;
+}

@@ -1,0 +1,151 @@
+/* ===== COURSES LIST PAGE ===== */
+
+.courses-wrapper {
+    padding: 120px 60px 60px;
+    min-height: 100vh;
+    background: #f9f9f9;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 30px;
+}
+
+.breadcrumb a {
+    color: #025628;
+    text-decoration: none;
+}
+
+.breadcrumb span {
+    margin: 0 8px;
+}
+
+/* Header */
+.courses-header {
+    margin-bottom: 40px;
+}
+
+.courses-header h2 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #025628;
+    margin-bottom: 10px;
+}
+
+.courses-header p {
+    font-size: 14px;
+    color: #888;
+}
+
+/* Grid */
+.courses-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.courses-empty {
+    color: #888;
+}
+
+/* Course Card */
+.course-card {
+    background: white;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s;
+}
+
+.course-card:hover {
+    transform: translateY(-4px);
+}
+
+/* Card Thumbnail */
+.course-thumbnail {
+    height: 160px;
+    background: #025628;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.course-thumbnail i {
+    font-size: 60px;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.course-sector-badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    background: #F7EE17;
+    color: #025628;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+/* Card Body */
+.course-body {
+    padding: 20px;
+}
+
+.course-body h4 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #025628;
+    margin-bottom: 12px;
+}
+
+.course-body > p {
+    font-size: 13px;
+    color: #888;
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+
+/* Course Meta */
+.course-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.course-meta p {
+    font-size: 12px;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+}
+
+.course-meta i {
+    color: #025628;
+    width: 14px;
+}
+
+/* View Button */
+.btn-view-course {
+    display: block;
+    text-align: center;
+    background: #025628;
+    color: white;
+    padding: 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background 0.3s;
+}
+
+.btn-view-course:hover {
+    background: #013d1c;
+}

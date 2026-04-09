@@ -4,6 +4,8 @@
 
 @section('css')
     <link rel="stylesheet" href="{{ asset('stylesheet/trainer.css') }}">
+    <link rel="stylesheet" href="../bootstrap_folder/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../font-awesome-icon/css/all.min.css">
 @endsection
 
 @section('content')
@@ -20,13 +22,13 @@
     <section class="charts-grid">
         <div class="chart-container">
             <h4>Trainees per Course</h4>
-            <div style="height: 250px;">
+            <div class="chart-wrapper">
                 <canvas id="traineesBarChart"></canvas>
             </div>
         </div>
         <div class="chart-container">
             <h4>Completed vs Ongoing</h4>
-            <div style="height: 250px;">
+            <div class="chart-wrapper">
                 <canvas id="statusPieChart"></canvas>
             </div>
         </div>
@@ -54,7 +56,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="4" style="text-align:center; color:#888;">No low performing trainees!</td>
+                        <td colspan="4" class="empty-table-msg">No low performing trainees!</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -66,13 +68,13 @@
                         @forelse($deadlines as $deadline)
                         <li>
                             <strong>{{ $deadline->title }}</strong><br>
-                            <small style="color:#888;">
+                            <small class="deadline-date">
                                 <i class="fas fa-calendar"></i> 
                                 {{ $deadline->due_date->format('M d, Y') }}
                             </small>
                         </li>
                         @empty
-                        <li style="color:#888;">No upcoming deadlines!</li>
+                        <li class="empty-list-msg">No upcoming deadlines!</li>
                         @endforelse
                     </ul>
                 </div>

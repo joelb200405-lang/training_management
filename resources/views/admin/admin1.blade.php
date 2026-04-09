@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet" href="../bootstrap_folder/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../font-awesome-icon/css/all.min.css">
 </head>
 
 <body>
@@ -20,15 +23,15 @@
             </a>
         </div>
 
-        <div class="header-right" style="display: flex; align-items: center; gap: 20px;">
+        <div class="header-right">
             <div class="user-welcome" onclick="toggleDropdown(event)">
                 Welcome, <strong>Admin!</strong>
-                <i class="fa-solid fa-chevron-down" style="font-size: 0.8rem; margin-left: 5px;"></i>
+                <i class="fa-solid fa-chevron-down"></i>
 
                 <div id="logout-dropdown" class="dropdown-content">
                     <form action="{{ route('Logout') }}" method="post">
                         @csrf
-                        <button type="submit" style="background:none; border:none; cursor:pointer; padding:0;">
+                        <button type="submit" class="btn-logout">
                             <i class="fa-solid fa-right-from-bracket"></i>Logout
                         </button>
                     </form>
@@ -90,7 +93,7 @@
                             </div>
                         </ul>
 
-                        <div style="text-align: center; margin-top: 15px;">
+                        <div class="updates-footer">
                             <button class="view-more-btn" id="viewMoreBtn" onclick="toggleUpdates()">
                                 View More <i class="fa-solid fa-chevron-down"></i>
                             </button>
@@ -293,7 +296,7 @@
                                 <strong>Database Backup</strong>
                                 <p>Download a copy of all trainees, trainers, and courses.</p>
                             </div>
-                            <button class="btn-all" style="width: auto; padding: 10px 20px;">Backup Now</button>
+                            <button class="btn-all btn-backup">Backup Now</button>
                         </div>
                     </div>
                 </div>

@@ -4,6 +4,8 @@
 
 @section('css')
     <link rel="stylesheet" href="{{ asset('stylesheet/certificates.css') }}">
+    <link rel="stylesheet" href="../bootstrap_folder/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../font-awesome-icon/css/all.min.css">
 @endsection
 
 @section('content')
@@ -124,8 +126,8 @@
     <div id="addTraineeModal" class="modal-overlay">
         <div class="modal-box wide-modal">
             <div class="modal-content-flex">
-                <div class="modal-right-info" style="border-right: 1px solid #eee;">
-                    <h2 class="page-title-green" style="font-size: 22px;">Issue New Certificate</h2>
+                <div class="modal-right-info border-right" >
+                    <h2 class="page-title-green large-text">Issue New Certificate</h2>
                     <form id="issueCertForm">
                         <div class="info-content">
                             <h3 class="section-header">1. Trainee Selection</h3>
@@ -134,16 +136,16 @@
                                 <option value="1">Nelmida, Rheyan (Grade: 94%)</option>
                                 <option value="2">Bong, Marcos (Grade: 88%)</option>
                             </select>
-                            <input type="text" class="form-input" placeholder="Course: Dressmaking" readonly style="background: #f9f9f9;">
+                            <input type="text" class="form-input input-randomly" placeholder="Course: Dressmaking" readonly>
                         </div>
 
                         <div class="info-content">
                             <h3 class="section-header">2. Official Record Details</h3>
-                            <div style="display: flex; gap: 10px;">
+                            <div class="form-row-flex">
                                 <input type="text" class="form-input" value="DCTC-2026-005" title="Control Number">
                                 <input type="date" class="form-input" value="2026-03-31">
                             </div>
-                            <select class="form-input" multiple style="height: 60px;">
+                            <select class="form-input select-multiple" multiple>
                                 <option selected>Hon. Jennifer Austria-Barzaga</option>
                                 <option selected>Center Head Name</option>
                                 <option>Course Instructor</option>
@@ -157,25 +159,25 @@
                                 <option>Certificate of Appreciation</option>
                                 <option>Special Recognition</option>
                             </select>
-                            <textarea class="form-input" placeholder="Remarks/Honors (e.g. With Honors)" style="height: 50px;"></textarea>
+                            <textarea class="form-input textarea-small" placeholder="Remarks/Honors (e.g. With Honors)"></textarea>
                         </div>
                     </form>
                 </div>
 
-                <div class="modal-left-preview" style="background: #fff;">
+                <div class="modal-left-preview bg-white">
                     <h3 class="section-header">4. Live Preview</h3>
-                    <div class="cert-frame" style="transform: scale(0.9); margin-top: 0;">
+                    <div class="cert-frame preview-scale">
                         <div class="cert-placeholder" id="livePreviewBox">
-                            <img src="logo.png" alt="Logo" style="width: 30px;">
-                            <p style="font-size: 8px; margin: 5px 0;">CITY OF DASMARIÑAS</p>
-                            <h4 style="color: var(--primary-green); margin: 10px 0; font-size: 14px;">[TRAINEE NAME]</h4>
-                            <p style="font-size: 9px;">For successfully completing the course in</p>
-                            <p style="font-weight: bold; font-size: 11px;">[COURSE NAME]</p>
+                            <img src="logo.png" alt="Logo" class="preview-logo">
+                            <p class="preview-subtext">CITY OF DASMARIÑAS</p>
+                            <h4 class="preview-trainee-name">[TRAINEE NAME]</h4>
+                            <p class="preview-detail">For successfully completing the course in</p>
+                            <p class="preview-course-name">[COURSE NAME]</p>
                         </div>
                     </div>
                     
-                    <div class="modal-actions-grid" style="margin-top: 10px;">
-                        <button class="modal-btn print-btn" style="grid-column: span 2;">
+                    <div class="modal-actions-grid mt-10">
+                        <button class="modal-btn print-btn grid-span-2">
                             <i class="fas fa-file-pdf"></i> Save & Generate PDF
                         </button>
                         <button class="modal-btn email-btn">

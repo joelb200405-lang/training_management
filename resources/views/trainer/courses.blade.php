@@ -4,10 +4,12 @@
 
 @section('css')
     <link rel="stylesheet" href="{{ asset('stylesheet/courses.css') }}">
+    <link rel="stylesheet" href="../bootstrap_folder/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../font-awesome-icon/css/all.min.css">
 @endsection
 
 @section('content')
-            <div class="courses-panel">
+            <div class="courses-panel p-5">
                 <h2 class="panel-title">Courses</h2>
                 
                 <div class="courses-grid">
@@ -71,7 +73,7 @@
                         </div>
                     </div>
 
-                    <div class="create-card" id="openModal" style="cursor: pointer;">
+                    <div class="create-card" id="openModal">
                         <div class="create-inner">
                             <i class="fas fa-plus"></i>
                             <p>Create New Course</p>
@@ -179,19 +181,18 @@
     <div id="courseModal" class="modal-overlay">
         <div class="modal-box">
             <div class="modal-header">
-                <h2 style="color: #004d26; margin: 0;">Add New Course</h2>
-                <span class="close-x" id="closeX" style="cursor:pointer; font-size:28px;">&times;</span>
+                <h2>Add New Course</h2>
+                <span class="close-x" id="closeX">&times;</span>
             </div>
             
             <form action="save_course.php" method="POST" enctype="multipart/form-data">
-                <div class="modal-body" style="padding: 20px 0; max-height: 400px; overflow-y: auto;">
+                <div class="modal-body">
                     
-                    <div style="margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
-                        <h4 style="color: #666; margin-bottom: 10px;">Core Course Details</h4>
-                        <input type="text" name="course_name" placeholder="Course Name" required 
-                               style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    <div class="form-section">
+                        <h4>Core Course Details</h4>
+                        <input type="text" name="course_name" placeholder="Course Name" required>
                         
-                        <select name="category" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                        <select name="category">
                             <option value="">Select Category</option>
                             <option>Livelihood</option>
                             <option>ICT</option>
@@ -200,26 +201,24 @@
                         </select>
                     </div>
 
-                    <div style="margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
-                        <h4 style="color: #666; margin-bottom: 10px;">Instructor</h4>
-                        <input type="text" name="instructor" placeholder="Assigned Instructor" 
-                               style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px;">
-                        <input type="number" name="capacity" placeholder="Max Capacity" 
-                               style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    <div class="form-section">
+                        <h4>Instructor</h4>
+                        <input type="text" name="instructor" placeholder="Assigned Instructor">
+                        <input type="number" name="capacity" placeholder="Max Capacity">
                     </div>
 
-                    <div style="margin-bottom: 20px;">
-                        <h4 style="color: #666; margin-bottom: 10px;">Schedule</h4>
-                        <label style="font-size: 12px; color: #888;">Start Date</label>
-                        <input type="date" name="start_date" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px;">
-                        <label style="font-size: 12px; color: #888;">End Date</label>
-                        <input type="date" name="end_date" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    <div class="form-section no-border">
+                        <h4>Schedule</h4>
+                        <label>Start Date</label>
+                        <input type="date" name="start_date" class="form-input">
+                        <label>End Date</label>
+                        <input type="date" name="end_date" class="form-input form-control">
                     </div>
                 </div>
 
-                <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px; padding-top: 15px; border-top: 1px solid #eee;">
-                    <button type="button" id="cancelBtn" style="padding: 10px 20px; border: none; background: #eee; border-radius: 5px; cursor: pointer;">Cancel</button>
-                    <button type="submit" style="padding: 10px 20px; border: none; background: #004d26; color: white; border-radius: 5px; cursor: pointer;">Publish</button>
+                <div class="modal-footer form-actions">
+                    <button type="button" id="cancelBtn" class="btn-cancel">Cancel</button>
+                    <button type="submit"class="btn-publish">Publish</button>
                 </div>
             </form>
         </div>

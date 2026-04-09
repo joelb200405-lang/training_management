@@ -24,7 +24,7 @@
 
             <div class="login-parent">
                 <div class="form-extension image-container">
-                    <img src="../../images/welder.jpg" alt="welder">
+                    <img src="../../images/2.jpg" alt="welder">
                 </div>
                 <div class="form-extension form">
 

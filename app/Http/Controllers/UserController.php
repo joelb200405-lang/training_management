@@ -384,7 +384,7 @@ public function contact(){
     //about
         public function landingCourses(){
         $courses = \App\Models\Course_tbl::where('status', 'active')->get();
-        return view("landing_courses", compact('courses'));
+        return view("index", compact('courses'));
     }
 
     public function landingCourseDetail($id){

@@ -457,4 +457,47 @@ body {
     font-size: 12px;
 }
 
-/* new */
+/* removing inline in leaner.blade.php *//* Progress Bar Styling */
+.progress-container {
+    background: #e8f5e9;
+    border-radius: 20px;
+    padding: 4px 0;
+    text-align: center;
+}
+
+.progress-bar {
+    background: #025628;
+    height: 6px;
+    border-radius: 20px;
+    transition: width 0.3s ease; /* Para smooth ang paggalaw */
+}
+
+.progress-text {
+    color: #888;
+}
+
+/* Table Empty Message */
+.empty-table-msg {
+    text-align: center;
+    color: #888;
+    padding: 20px;
+}
+
+/* Modal Form Layout */
+.form-row-group {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.input-small {
+    width: 80px;
+}
+
+.input-medium {
+    width: 120px;
+}
+
+
+

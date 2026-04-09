@@ -4,6 +4,8 @@
 
 @section('css')
     <link rel="stylesheet" href="{{ asset('stylesheet/settings.css') }}">
+    <link rel="stylesheet" href="../bootstrap_folder/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../font-awesome-icon/css/all.min.css">
 @endsection
 
 @section('content')
@@ -39,7 +41,7 @@
                             </div>
                             <div class="form-row">
                                 <label>Employee ID</label>
-                                <input type="text" class="custom-input" value="DCTC-2026-001" readonly style="background:#f9f9f9;">
+                                <input type="text" class="custom-input input-disable" value="DCTC-2026-001" readonly>
                             </div>
                             <div class="form-row">
                                 <label>Password</label>

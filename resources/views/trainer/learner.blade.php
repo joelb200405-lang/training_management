@@ -4,6 +4,8 @@
 
 @section('css')
     <link rel="stylesheet" href="{{ asset('stylesheet/learner.css') }}">
+    <link rel="stylesheet" href="../bootstrap_folder/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../font-awesome-icon/css/all.min.css">
 @endsection
 
 @section('content')
@@ -41,10 +43,10 @@
                 <td class="name">{{ $enrollment->user->lastname }}, {{ $enrollment->user->firstname }}</td>
                 <td class="course">{{ $enrollment->course->title }}</td>
                 <td>
-                    <div style="background: #e8f5e9; border-radius: 20px; padding: 4px 0; text-align: center;">
-                        <div style="background: #025628; height: 6px; border-radius: 20px; width: {{ $enrollment->progress }}%;"></div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: {{ $enrollment->progress }}%;"></div>
                     </div>
-                    <small style="color: #888;">{{ $enrollment->progress }}%</small>
+                    <small class="progress-text">{{ $enrollment->progress }}%</small>
                 </td>
                 <td class="{{ $enrollment->status === 'active' ? 'status-active' : 'status-wait' }}">
                     {{ ucfirst($enrollment->status) }}
@@ -57,9 +59,7 @@
             </tr>
             @empty
                 <tr>
-                    <td colspan="6" style="text-align: center; color: #888; padding: 20px;">
-                        No students enrolled yet.
-                    </td>
+                    <td colspan="6" class="empty-table-msg">No students enrolled yet.</td>
                 </tr>
             @endforelse
         </tbody>
@@ -84,9 +84,9 @@
                         <h3 class="section-header">Basic Information</h3>
                         <input type="text" name="fullname" placeholder="Full Name (Last, First)" class="form-input" required>
                         <input type="text" name="address" placeholder="Barangay / Address" class="form-input" required>
-                        <div style="display: flex; gap: 10px; justify-content: center;">
-                            <input type="number" name="age" placeholder="Age" class="form-input" style="width: 80px;" required>
-                            <select name="gender" class="form-input" style="width: 120px;" required>
+                        <div class="form-row-group">
+                            <input type="number" name="age" placeholder="Age" class="form-input" required>
+                            <select name="gender" class="form-input" required>
                                 <option value="" disabled selected>Gender</option>
                                 <option value="Male">Male</option>
                                 <option value="Female">Female</option>

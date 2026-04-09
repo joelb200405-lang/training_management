@@ -17,7 +17,7 @@
             <span>LEDIPO</span>
         </div>
         <ul class="nav-links">
-            <li><a href="{{ route('landingpage') }}">Home</a></li>
+            <li><a href="{{ route('index') }}">Home</a></li>
             <li><a href="{{ route('landing.about') }}" class="">About</a></li>
             <li><a href="{{ route('landing.courses') }}" class="">Courses</a></li>
             <li><a href="{{ route('landing.contact') }}" class="active">Contact</a></li>
@@ -33,7 +33,7 @@
 
         
         <nav style="font-size: 13px; color: #888; margin-bottom: 30px;">
-            <a href="{{ route('landingpage') }}" style="color: #025628; text-decoration: none;">Home</a>
+            <a href="{{ route('index') }}" style="color: #025628; text-decoration: none;">Home</a>
             <span style="margin: 0 8px;">/</span>
             <span>Contact</span>
         </nav>

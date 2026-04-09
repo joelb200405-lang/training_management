@@ -3,9 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
     
-Route::get('/', function () {
-    return view('landingpage');    //The first you will see.
-})->name('landingpage');
+Route::get('/', [UserController::class, 'landingCourses'])->name('index');   //The first you will see.
 // nilalagyan kolang ng ganto"//" kasi makakalimutan ako hehe joel*
 
 Route::get("/login", [UserController::class, "Login"])->name("Login");
@@ -67,8 +65,7 @@ Route::get("/contact-us", [UserController::class, "landingContact"])->name("land
 Route::post("/contact-us", [UserController::class, "landingContactSend"])->name("landing.contact.send");
 Route::get("/about", [UserController::class, "landingAbout"])->name("landing.about");
 
-Route::get("/our-courses", [UserController::class, "landingCourses"])->name("landing.courses");
 Route::get("/our-courses/{id}", [UserController::class, "landingCourseDetail"])->name("landing.course.detail");
 //student about
-Route::get("/about", [UserController::class, "about"])->name("about")
+Route::get("/student/about", [UserController::class, "about"])->name("about");
 ?>

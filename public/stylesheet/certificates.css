@@ -632,3 +632,61 @@ body {
     opacity: 0.5;
     font-size: 12px;
 }
+
+/* new remove inline */
+
+/* Layout Utilities */
+.border-right { border-right: 1px solid #eee; }
+.bg-white { background: #fff; }
+.mt-10 { margin-top: 10px; }
+.grid-span-2 { grid-column: span 2; }
+.large-text { font-size: 22px; }
+
+/* Form Elements */
+.form-row-flex {
+    display: flex;
+    gap: 10px;
+}
+
+.input-readonly {
+    background: #f9f9f9;
+}
+
+.select-multiple {
+    height: 60px;
+}
+
+.textarea-small {
+    height: 50px;
+}
+
+/* Certificate Live Preview */
+.preview-scale {
+    transform: scale(0.9);
+    margin-top: 0;
+}
+
+.preview-logo {
+    width: 30px;
+}
+
+.preview-subtext {
+    font-size: 8px;
+    margin: 5px 0;
+}
+
+.preview-trainee-name {
+    color: var(--primary-green);
+    margin: 10px 0;
+    font-size: 14px;
+    /* transition properties are handled via JS in your script */
+}
+
+.preview-detail {
+    font-size: 9px;
+}
+
+.preview-course-name {
+    font-weight: bold;
+    font-size: 11px;
+}

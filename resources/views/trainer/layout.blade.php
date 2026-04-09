@@ -6,7 +6,11 @@
     <title>@yield('title', 'LEDIPO Trainer Dashboard')</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+     <link rel="stylesheet" href="../bootstrap_folder/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../font-awesome-icon/css/all.min.css">
 
     @yield('css')
 </head>
@@ -19,7 +23,7 @@
          </div>
     </div>
 
-    <div class="container">
+    <div class="container" style="margin: 0; padding: 0;">
 
         <nav class="sidebar">
             <div class="logo">
@@ -106,6 +110,10 @@
     </footer>
 
     @yield('scripts')
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
 
 </body>
 </html>
