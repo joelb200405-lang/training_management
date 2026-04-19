@@ -1,0 +1,353 @@
+/* =============================================
+   RESET & BASE
+   ============================================= */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Open Sans", sans-serif;
+    background: #f5f5f3;
+    color: #1a1a1a;
+    min-height: 100vh;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* =============================================
+   TOPBAR
+   ============================================= */
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    height: 56px;
+    background: #025628;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    gap: 16px;
+    overflow: visible;
+}
+
+.topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.topbar-logo {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    border-radius: 6px;
+}
+
+/* =============================================
+   HAMBURGER
+   ============================================= */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 36px;
+    height: 36px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.hamburger span {
+    display: block;
+    width: 18px;
+    height: 1.5px;
+    background: #fff;
+    border-radius: 2px;
+    transition: all 0.2s;
+}
+
+/* =============================================
+   TOPBAR SEARCH
+   ============================================= */
+.topbar-search {
+    flex: 1;
+    max-width: 360px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.13);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 8px;
+    padding: 7px 14px;
+}
+
+.topbar-search-icon {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+.topbar-search input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-size: 13px;
+    font-family: "Open Sans", sans-serif;
+    width: 100%;
+}
+
+.topbar-search input::placeholder {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+/* =============================================
+   AVATAR & DROPDOWN
+   ============================================= */
+.topbar-right {
+    position: relative;
+    flex-shrink: 0;
+    z-index: 9999;
+}
+
+.avatar-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #F7EE17;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    color: #025628;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Open Sans", sans-serif;
+    transition: opacity 0.15s;
+}
+
+.avatar-btn:hover {
+    opacity: 0.9;
+}
+
+.dropdown {
+    display: none;
+    position: fixed;  
+    right: 16px;      
+    top: 60px;        
+    width: 190px;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+    z-index: 9999;    
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.dropdown.open {
+    display: block;
+}
+
+.dropdown-header {
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.dh-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+.dh-role {
+    font-size: 11px;
+    color: #888;
+    margin-top: 2px;
+}
+
+.dd-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #1a1a1a;
+    cursor: pointer;
+    transition: background 0.15s;
+    text-decoration: none;
+}
+
+.dd-item:hover {
+    background: #f5f5f5;
+    color: #1a1a1a;
+}
+
+.dd-icon {
+    width: 14px;
+    font-size: 13px;
+    color: #888;
+    text-align: center;
+}
+
+.dd-divider {
+    height: 1px;
+    background: rgba(0, 0, 0, 0.06);
+    margin: 4px 0;
+}
+
+.dd-logout {
+    color: #A32D2D;
+}
+
+.dd-logout .dd-icon {
+    color: #A32D2D;
+}
+
+/* =============================================
+   APP BODY
+   ============================================= */
+.app-body {
+    display: flex;
+    min-height: calc(100vh - 56px);
+    position: relative;
+}
+
+/* =============================================
+   SIDEBAR
+   ============================================= */
+.sidebar {
+    width: 210px;
+    flex-shrink: 0;
+    background: #fff;
+    border-right: 1px solid rgba(0, 0, 0, 0.08);
+    padding: 16px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.sidebar-section-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #aaa;
+    padding: 4px 12px 10px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #555;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    text-decoration: none;
+}
+
+.nav-item:hover {
+    background: #f5f5f3;
+    color: #1a1a1a;
+}
+
+.nav-item.active {
+    background: #e8f5e9;
+    color: #025628;
+    font-weight: 700;
+}
+
+.nav-icon {
+    width: 15px;
+    font-size: 14px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+/* =============================================
+   SIDEBAR OVERLAY (mobile)
+   ============================================= */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 56px 0 0 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 90;~
+}
+
+.sidebar-overlay.show {
+    display: block;
+}
+
+/* =============================================
+   MAIN CONTENT
+   ============================================= */
+.main-content {
+    flex: 1;
+    min-width: 0;
+    background: #f5f5f3;
+    overflow-x: hidden; 
+    width: 0;           
+}
+
+/* =============================================
+   RESPONSIVE — MOBILE
+   ============================================= */
+@media (max-width: 768px) {
+
+    .hamburger {
+        display: flex;
+    }
+
+    .topbar-brand span {
+        display: none;
+    }
+
+    .topbar-search {
+        max-width: 200px;
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 56px;
+        left: 0;
+        bottom: 0;
+        z-index: 95;
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+        width: 230px;
+    }
+
+    .sidebar.sidebar-open {
+        transform: translateX(0);
+    }
+}
+
+@media (max-width: 480px) {
+    .topbar-search {
+        display: none;
+    }
+}

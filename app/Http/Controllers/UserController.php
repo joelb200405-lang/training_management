@@ -94,31 +94,75 @@ class UserController extends Controller
         }
     }
         //new (temporary)
-    public function homepage(){
-        $username = Auth::check() ? Auth::user()->username : null;
-        
-        // Latest 4 courses for "What's New"
-        $newCourses = \App\Models\Course_tbl::where('status', 'active')
-                        ->orderBy('id', 'desc')
-                        ->take(4)
-                        ->get();
+// I-update ang homepage() method sa UserController.php
 
-        // Older courses for "Other Courses"
-        $otherCourses = \App\Models\Course_tbl::where('status', 'active')
-                        ->orderBy('id', 'asc')
-                        ->skip(4)
-                        ->take(4)
-                        ->get();
+public function homepage()
+{
+    $userId = Auth::id();
 
-        return view("student.homepage", [
-            "username"     => $username,
-            "newCourses"   => $newCourses,
-            "otherCourses" => $otherCourses,
-        ]);
+    $enrollment = \App\Models\Enrollment_tbl::with('course')
+                    ->where('user_id', $userId)
+                    ->where('status', 'active')
+                    ->first();
+
+    $upcomingDeadlines = \App\Models\Deadline_tbl::where('due_date', '>=', now())
+                            ->where('due_date', '<=', now()->addDays(30))
+                            ->count();
+
+    $announcements = \App\Models\Announcement::active()->latest()->take(5)->get();
+
+    if ($enrollment) {
+        $modules = \App\Models\Module::where('course_id', $enrollment->course_id)
+                    ->active()->ordered()->get();
+    } else {
+        $modules = collect();
     }
-    public function admin1(){
-        return view("admin.admin1");
-    }
+
+    return view('student.homepage', compact(
+        'enrollment',
+        'upcomingDeadlines',
+        'announcements',
+        'modules'
+    ));
+}
+public function admin1()
+{
+    $courses = \App\Models\Course_tbl::paginate(3);
+    $trainers = \App\Models\User_tbl::where('role', 'trainer')->get();
+
+    return view("admin.admin1", compact('courses', 'trainers'));
+}
+
+public function assignTrainer(Request $request, $courseId)
+{
+    $request->validate([
+        'trainer_id' => 'required|exists:user_tbls,id',
+    ]);
+
+    $course = \App\Models\Course_tbl::findOrFail($courseId);
+    $course->trainer_id = $request->trainer_id;
+    $course->save();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Trainer assigned successfully!',
+        'trainer' => \App\Models\User_tbl::find($request->trainer_id),
+    ]);
+}
+
+// Idagdag ang removeTrainer() method:
+
+public function removeTrainer($courseId)
+{
+    $course = \App\Models\Course_tbl::findOrFail($courseId);
+    $course->trainer_id = null;
+    $course->save();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Trainer removed successfully!',
+    ]);
+}
 public function teacher(){
     // Stat cards
     $totalTrainees     = \App\Models\Enrollment_tbl::where('status', 'active')->count();
@@ -382,9 +426,17 @@ public function contact(){
     ));
     }
     //about
-        public function landingCourses(){
+        public function index(){
         $courses = \App\Models\Course_tbl::where('status', 'active')->get();
-        return view("index", compact('courses'));
+        $totalStudents = \App\Models\User_tbl::where('role', 'student')->count();
+        $totalCourses  = \App\Models\Course_tbl::where('status', 'active')->count();
+        $totalTrainers = \App\Models\User_tbl::where('role', 'trainer')->count();
+        return view("index", compact(
+            'courses',
+            'totalStudents',
+            'totalCourses',
+            'totalTrainers'
+            ));
     }
 
     public function landingCourseDetail($id){
@@ -403,4 +455,133 @@ public function contact(){
         'totalTrainers'
     ));
     }
+
+    //dashboard
+public function dashboard()
+{
+    $userId = Auth::id();
+
+    // My enrollments with course info
+    $enrollments = \App\Models\Enrollment_tbl::with('course')
+                    ->where('user_id', $userId)
+                    ->get();
+
+    // Stats
+    $totalEnrolled   = $enrollments->count();
+    $totalCompleted  = $enrollments->where('status', 'completed')->count();
+    $avgProgress     = $totalEnrolled > 0
+                        ? round($enrollments->avg('progress'))
+                        : 0;
+
+    // Upcoming deadlines (next 30 days)
+    $deadlines = \App\Models\Deadline_tbl::where('due_date', '>=', now())
+                    ->where('due_date', '<=', now()->addDays(30))
+                    ->orderBy('due_date', 'asc')
+                    ->get();
+
+    $upcomingDeadlines = $deadlines->count();
+
+    return view('student.dashboard', compact(
+        'enrollments',
+        'totalEnrolled',
+        'totalCompleted',
+        'avgProgress',
+        'upcomingDeadlines',
+        'deadlines'
+    ));
+}
+
+// ── COURSE CONTENT (Modules & Quizzes) ────────────────────────────────────
+
+    public function getCourseContent($courseId)
+    {
+        $modules = \App\Models\Module::where('course_id', $courseId)
+                         ->orderBy('order')
+                         ->get(['id', 'title', 'description', 'order', 'is_active']);
+
+        $quizzes = \App\Models\Quiz::where('course_id', $courseId)
+                       ->with('module')
+                       ->get();
+
+        return response()->json([
+            'modules' => $modules,
+            'quizzes' => $quizzes,
+        ]);
+    }
+
+    // ── MODULES ───────────────────────────────────────────────────────────────
+
+    public function storeModule(Request $request)
+    {
+        $request->validate([
+            'course_id'   => 'required|exists:course_tbls,id',
+            'title'       => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'file'        => 'nullable|file|mimes:pdf,doc,docx|max:10240',
+        ]);
+
+        $order = \App\Models\Module::where('course_id', $request->course_id)->max('order') + 1;
+
+        $filePath = null;
+        $fileType = null;
+        $fileSize = null;
+
+        if ($request->hasFile('file')) {
+            $file     = $request->file('file');
+            $filePath = $file->store('modules', 'public');
+            $fileType = $file->getClientOriginalExtension();
+            $fileSize = $file->getSize();
+        }
+
+        $module = \App\Models\Module::create([
+            'course_id'   => $request->course_id,
+            'title'       => $request->title,
+            'description' => $request->description,
+            'order'       => $order,
+            'is_active'   => true,
+            'file_path'   => $filePath,
+            'file_type'   => $fileType,
+            'file_size'   => $fileSize,
+        ]);
+
+        return response()->json(['success' => true, 'module' => $module]);
+    }
+
+    public function destroyModule($id)
+    {
+        $module = \App\Models\Module::findOrFail($id);
+        $module->delete();
+        return response()->json(['success' => true]);
+    }
+
+    // ── QUIZZES ───────────────────────────────────────────────────────────────
+
+    public function storeQuiz(Request $request)
+    {
+        $request->validate([
+            'course_id'     => 'required|exists:course_tbls,id',
+            'module_id'     => 'nullable|exists:modules,id',
+            'title'         => 'required|string|max:255',
+            'passing_score' => 'required|integer|min:1|max:100',
+            'time_limit'    => 'required|integer|min:1',
+        ]);
+
+        $quiz = \App\Models\Quiz::create($request->only(
+            'course_id', 'module_id', 'title', 'passing_score', 'time_limit'
+        ));
+
+        $quiz->load('module');
+
+        return response()->json(['success' => true, 'quiz' => $quiz]);
+    }
+
+    public function destroyQuiz($id)
+    {
+        $quiz = \App\Models\Quiz::findOrFail($id);
+        $quiz->delete();
+        return response()->json(['success' => true]);
+    }
+
+    
+
 }

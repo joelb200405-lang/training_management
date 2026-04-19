@@ -2,177 +2,197 @@
 
 @section('title', 'Home')
 
+@section('css')
+<link rel="stylesheet" href="{{ asset('stylesheet/homepage.css') }}">
+@endsection
+
 @section('content')
-    <div class="container-fluid p-0">
-       
-
-        <main>
-            <div class="parent-box">
-                <img src="{{ asset('images/sulongna.jpg') }}" alt="Sulongna">
-            </div>
-        </main>
-
-        <section>
-                 <div class="text-1">
-                    <div class="box">
-                     </div>
-                         <p>Today's</p>
-                 </div>
-                     <h3>What's New</h3>
-                <div class="course-parent">
-                    @foreach($newCourses as $course)
-                    <div class="child">
-                        <div class="child-header">
-                            <i class="fa-solid fa-book"></i>
-                            <div class="heart">
-                                <i class="fa fa-heart"></i>
-                                <i class="fa fa-eye"></i>
-                            </div>
-                        </div>
-                        <div class="child-body">
-                            <p class="course-title">{{ $course->title }}</p>
-                            <p class="course-info"><i class="fa fa-clock"></i> {{ $course->schedule }}</p>
-                            <p class="course-info"><i class="fa fa-calendar"></i> {{ $course->duration }}</p>
-                            <p class="course-info"><i class="fa fa-location-dot"></i> {{ Str::limit($course->location, 30) }}</p>
-                            <div class="course-stars">
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                            </div>
-                            <a href="{{ route('course.detail', $course->id) }}" class="btn-view-course">View Course</a>
-                        </div>
-                    </div>
-                    @endforeach
-                    </div>
+<div class="Homepage_wrap">
 
 
-            <div class="view-parent">
-                <div class="view-child">
-                    <a href="{{ route('all.courses') }}" class="btn_view_courses">View All Courses</a>
+    <div class="Top_row">
+
+        <div class="Welcome_card">
+            <h2>Hello, {{ Auth::user()->firstname }}! 👋</h2>
+            <div class="welcome-date">{{ now()->format('l, F d, Y') }} · LEDIPO</div>
+            <div class="welcome-stats">
+                <div class="wstat">
+                    <div class="wstat-num">{{ $enrollment ? ucfirst($enrollment->status) : 'None' }}</div>
+                    <div class="wstat-lbl">Status</div>
+                </div>
+                <div class="wstat">
+                    <div class="wstat-num">{{ $enrollment ? ($enrollment->progress ?? 0) . '%' : '0%' }}</div>
+                    <div class="wstat-lbl">Progress</div>
+                </div>
+                <div class="wstat">
+                    <div class="wstat-num">{{ $upcomingDeadlines }}</div>
+                    <div class="wstat-lbl">Deadlines</div>
                 </div>
             </div>
-        </section>
+        </div>
 
-
-
+        <div class="schedule-card">
+            <div class="scard-title">📅 Today's Schedule</div>
+            @if($enrollment && $enrollment->course)
+                <div class="sched-row">
+                    <div class="sched-time">{{ $enrollment->course->schedule }}</div>
+                    <div class="sched-info">
+                        <div class="sched-name">{{ $enrollment->course->title }}</div>
+                        <div class="sched-loc">📍 {{ $enrollment->course->location }}</div>
+                    </div>
+                </div>
+            @else
+                <div class="no-sched">No active course today.</div>
+            @endif
+        </div>
 
     </div>
 
-
-
-    <div class="container-1">
-
-        <section class="section-3">
-            <div class="text-2">
-                <div class="box">
-
-                </div>
-                <p>AVAILABLE COURSE</p>
-
-            </div>
-
-            <h3>OTHER COURSES</h3>
-
-            <div class="course-parent">
-                @forelse($otherCourses as $course)
-                <div class="child">
-                    <div class="child-header">
-                        <i class="fa-solid fa-book"></i>
-                        <div class="heart">
-                            <i class="fa fa-heart"></i>
-                            <i class="fa fa-eye"></i>
-                        </div>
+    <div class="sec">
+        <div class="sec-title">📢 Announcements</div>
+        <div class="announce-list">
+            @forelse($announcements as $announcement)
+                @php
+                    $type = $announcement->type ?? 'reminder';
+                    if ($type === 'urgent') {
+                        $dotColor  = '#A32D2D';
+                        $badgeClass = 'b-red';
+                        $badgeLabel = 'Urgent';
+                    } elseif ($type === 'notice') {
+                        $dotColor  = '#854F0B';
+                        $badgeClass = 'b-yellow';
+                        $badgeLabel = 'Notice';
+                    } else {
+                        $dotColor  = '#3B6D11';
+                        $badgeClass = 'b-green';
+                        $badgeLabel = 'Reminder';
+                    }
+                @endphp
+                <div class="an-item">
+                    <div class="an-dot" style="background: {{ $dotColor }}"></div>
+                    <div class="an-info">
+                        <div class="an-title">{{ $announcement->title }}</div>
+                        <div class="an-desc">{{ $announcement->message }}</div>
                     </div>
-                    <div class="child-body">
-                        <p class="course-title">{{ $course->title }}</p>
-                        <p class="course-info"><i class="fa fa-clock"></i> {{ $course->schedule }}</p>
-                        <p class="course-info"><i class="fa fa-calendar"></i> {{ $course->duration }}</p>
-                        <p class="course-info"><i class="fa fa-location-dot"></i> {{ Str::limit($course->location, 30) }}</p>
-                        <div class="course-stars">
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                        </div>
-                        <a href="{{ route('course.detail', $course->id) }}" class="btn-view-course">View Course</a>
-                    </div>
+                    <span class="an-badge {{ $badgeClass }}">{{ $badgeLabel }}</span>
                 </div>
-                @empty
-                    <p style="color:#888;">No other courses available.</p>
-                @endforelse
-            </div>
-
-
+            @empty
+                <div class="empty-state">
+                    <p>No announcements at the moment.</p>
+                </div>
+            @endforelse
+        </div>
     </div>
 
-<div class="container-2">
-    <section class="section-4">
-        <div class="text-1">
-            <div class="box"></div>
-            <p>Community</p>
-        </div>
-        <h3 style="padding-left: 50px; margin-bottom: 20px;">Our Community</h3>
-
-        {{-- CAROUSEL --}}
-        <div id="communityCarousel" class="carousel slide" data-bs-ride="carousel" style="padding: 0 50px;">
-            
-            {{-- INDICATORS --}}
-            <div class="carousel-indicators">
-                <button type="button" data-bs-target="#communityCarousel" data-bs-slide-to="0" class="active"></button>
-                <button type="button" data-bs-target="#communityCarousel" data-bs-slide-to="1"></button>
-                <button type="button" data-bs-target="#communityCarousel" data-bs-slide-to="2"></button>
-                <button type="button" data-bs-target="#communityCarousel" data-bs-slide-to="3"></button>
-                <button type="button" data-bs-target="#communityCarousel" data-bs-slide-to="4"></button>
+    
+    <div class="sec">
+        <div class="sec-title">📖 My Current Course</div>
+        @if($enrollment && $enrollment->course)
+            <div class="course-card">
+                <div class="course-top">
+                    <div class="course-icon">
+                        <i class="fa fa-book"></i>
+                    </div>
+                    <div>
+                        <div class="course-name">{{ $enrollment->course->title }}</div>
+                        <span class="course-badge">{{ $enrollment->course->sector }}</span>
+                    </div>
+                </div>
+                <div class="course-meta-row">
+                    <div class="cmeta">
+                        <div class="cmeta-label">Duration</div>
+                        <div class="cmeta-val">{{ $enrollment->course->duration }}</div>
+                    </div>
+                    <div class="cmeta">
+                        <div class="cmeta-label">Schedule</div>
+                        <div class="cmeta-val">{{ $enrollment->course->schedule }}</div>
+                    </div>
+                    <div class="cmeta">
+                        <div class="cmeta-label">Slots left</div>
+                        <div class="cmeta-val">{{ $enrollment->course->slots }}</div>
+                    </div>
+                </div>
+                <div class="progress-label">
+                    <span>Overall Progress</span>
+                    <span>{{ $enrollment->progress ?? 0 }}%</span>
+                </div>
+                <div class="pbar">
+                    <div class="pfill" style="width: {{ $enrollment->progress ?? 0 }}%"></div>
+                </div>
+                @if(isset($enrollment->course->trainer))
+                    <div class="course-instructor">
+                        👤 Trainer: <strong>{{ $enrollment->course->trainer->firstname }} {{ $enrollment->course->trainer->lastname }}</strong>
+                    </div>
+                @endif
+                <a href="{{ route('course.detail', $enrollment->course->id) }}" class="course-view-btn">
+                    View Course Details
+                </a>
             </div>
+        @else
+            <div class="no-course">
+                <p>You are not enrolled in any course yet.</p>
+                <a href="{{ route('all.courses') }}" class="enroll-btn">Browse Courses</a>
+            </div>
+        @endif
+    </div>
 
-            {{-- SLIDES --}}
-            <div class="carousel-inner" style="border-radius: 12px; overflow: hidden;">
-                <div class="carousel-item active">
-                    <img src="{{ asset('images/1.jpg') }}" class="d-block w-100" alt="Community Photo 1" style="height: 450px; object-fit: cover;">
-                    <div class="carousel-caption d-none d-md-block" style="background: rgba(0,0,0,0.4); border-radius: 8px; padding: 10px 20px;">
-                        <h5>Community Event 1</h5>
-                        <p>Dasmariñas City Training Center</p>
+    {{-- MODULE MATERIALS --}}
+    <div class="sec" id="modules">
+        <div class="sec-title">📦 Module Materials</div>
+        @if($enrollment && isset($modules) && $modules->count() > 0)
+            <div class="mod-list">
+                @foreach($modules as $module)
+                    @php
+                        $ext = strtolower(pathinfo($module->file_path, PATHINFO_EXTENSION));
+                        if ($ext === 'pdf') {
+                            $iconClass = 'mod-pdf';
+                            $icon = '📄';
+                        } elseif (in_array($ext, ['doc', 'docx'])) {
+                            $iconClass = 'mod-doc';
+                            $icon = '📝';
+                        } else {
+                            $iconClass = 'mod-vid';
+                            $icon = '🎬';
+                        }
+                    @endphp
+                    <div class="mod-item">
+                        <div class="mod-icon {{ $iconClass }}">{{ $icon }}</div>
+                        <div class="mod-info">
+                            <div class="mod-title">{{ $module->title }}</div>
+                            <div class="mod-sub">{{ strtoupper($ext) }} · {{ $enrollment->course->title }}</div>
+                        </div>
+                        <a href="{{ asset('storage/' . $module->file_path) }}" download class="mod-btn">
+                            ⬇ Download
+                        </a>
                     </div>
+                @endforeach
+            </div>
+        @else
+            <div class="empty-state">
+                <p>No modules available yet.</p>
+            </div>
+        @endif
+    </div>
+
+    {{-- TRAINING LOCATION --}}
+    <div class="sec" id="location">
+        <div class="sec-title">📍 Training Location</div>
+        @if($enrollment && $enrollment->course)
+            <div class="loc-card">
+                <div class="loc-map">
+                    🗺️ {{ $enrollment->course->location }}
                 </div>
-                <div class="carousel-item">
-                    <img src="{{ asset('images/2.jpg') }}" class="d-block w-100" alt="Community Photo 2" style="height: 450px; object-fit: cover;">
-                    <div class="carousel-caption d-none d-md-block" style="background: rgba(0,0,0,0.4); border-radius: 8px; padding: 10px 20px;">
-                        <h5>Community Event 2</h5>
-                        <p>Dasmariñas City Training Center</p>
-                    </div>
-                </div>
-                <div class="carousel-item">
-                    <img src="{{ asset('images/3.jpg') }}" class="d-block w-100" alt="Community Photo 3" style="height: 450px; object-fit: cover;">
-                    <div class="carousel-caption d-none d-md-block" style="background: rgba(0,0,0,0.4); border-radius: 8px; padding: 10px 20px;">
-                        <h5>Community Event 3</h5>
-                        <p>Dasmariñas City Training Center</p>
-                    </div>
-                </div>
-                <div class="carousel-item">
-                    <img src="{{ asset('images/4.jpg') }}" class="d-block w-100" alt="Community Photo 4" style="height: 450px; object-fit: cover;">
-                    <div class="carousel-caption d-none d-md-block" style="background: rgba(0,0,0,0.4); border-radius: 8px; padding: 10px 20px;">
-                        <h5>Community Event 4</h5>
-                        <p>Dasmariñas City Training Center</p>
-                    </div>
-                </div>
-                <div class="carousel-item">
-                    <img src="{{ asset('images/5.jpg') }}" class="d-block w-100" alt="Community Photo 5" style="height: 450px; object-fit: cover;">
-                    <div class="carousel-caption d-none d-md-block" style="background: rgba(0,0,0,0.4); border-radius: 8px; padding: 10px 20px;">
-                        <h5>Community Event 5</h5>
-                        <p>Dasmariñas City Training Center</p>
-                    </div>
+                <div class="loc-body">
+                    <div class="loc-name">{{ $enrollment->course->title }}</div>
+                    <div class="loc-addr">📍 {{ $enrollment->course->location }}</div>
                 </div>
             </div>
+        @else
+            <div class="empty-state">
+                <p>No location available. Enroll in a course first.</p>
+            </div>
+        @endif
+    </div>
 
-            {{-- CONTROLS --}}
-            <button class="carousel-control-prev" type="button" data-bs-target="#communityCarousel" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon"></span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#communityCarousel" data-bs-slide="next">
-                <span class="carousel-control-next-icon"></span>
-            </button>
-        </div>
-    </section>
 </div>
 @endsection

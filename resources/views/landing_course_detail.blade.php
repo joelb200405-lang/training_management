@@ -13,17 +13,18 @@
 
     <nav class="navbar">
         <div class="nav-logo">
-            <img src="{{ asset('images/logo.png') }}" alt="Logo">
+            <a href="index.php" class="logo-link">
+            <img src="{{ asset('images/logo.png') }}" alt="Logo"></a>
             <span>LEDIPO</span>
         </div>
         <ul class="nav-links">
-            <li><a href="{{ route('index') }}">Home</a></li>
-            <li><a href="{{ route('landing.about') }}">About</a></li>
-            <li><a href="{{ route('landing.courses') }}" class="active">Courses</a></li>
-            <li><a href="{{ route('landing.contact') }}">Contact</a></li>
+            <li><a href="{{ route('index') }}#home">Home</a></li>
+            <li><a href="{{ route('index') }}#about">About</a></li>
+            <li><a href="{{ route('index') }}#courses" class="active">Courses</a></li>
+            <li><a href="{{ route('index') }}#contact">Contact</a></li>
         </ul>
         <div class="nav-actions">
-            <a href="{{ route('Login') }}" class="btn-signin">Sign In</a>
+            <a href="{{ route('Login') }}" class="btn-signin">Login</a>
             <a href="{{ route('SignupPage') }}" class="btn-signup">Sign Up</a>
         </div>
     </nav>
@@ -32,9 +33,9 @@
 
         {{-- Breadcrumb --}}
         <nav class="breadcrumb">
-            <a href="{{ route('index') }}">Home</a>
+            <a href="{{ route('index') }}#home">Home</a>
             <span>/</span>
-            <a href="{{ route('landing.courses') }}">Courses</a>
+            <a href="{{ route('index') }}#courses">Courses</a>
             <span>/</span>
             <span>{{ $course->title }}</span>
         </nav>

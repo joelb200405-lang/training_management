@@ -1,44 +1,28 @@
 /* ==========================================================================
-   1. GLOBAL VARIABLES & BASE STYLES
+   1. GLOBAL VARIABLES & BASE
    ========================================================================== */
 :root {
     --primary-green: #004d26;
-    --text-green: #004d26;
-    --white: #ffffff;
     --hover-green: #e8f5e9;
-    --text-gray: #555;
-    --yellow-head: #f8f16a; /* Added to support table/footer logic */
+    --urgent-red: #d32f2f;
+    --white: #ffffff;
+    --bg-light: #f4f4f4;
+    --yellow-head: #f8f16a;
 }
 
 body {
     margin: 0;
     font-family: 'Segoe UI', sans-serif;
-    background-color: #f4f4f4;
+    background-color: var(--bg-light);
+}
+
+.container-layout {
     display: flex;
-    flex-direction: column;
+    width: 100%;
     min-height: 100vh;
 }
 
-/* ==========================================================================
-   2. LAYOUT ARCHITECTURE
-   ========================================================================== */
-.container {
-    display: flex;
-    width: 100%;
-    flex: 1; /* Allows main content to push footer down */
-}
-
-.main-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-}
-
-/* ==========================================================================
-   3. NAVIGATION (TOP STRIP & HEADER)
-   ========================================================================== */
-/* Top Green Language Strip */
+/* --- Top Strip --- */
 .top-strip {
     background-color: var(--primary-green);
     color: white;
@@ -48,29 +32,143 @@ body {
     font-size: 14px;
 }
 
-.language-selector {
-    cursor: pointer;
+/* --- Sidebar Section --- */
+.sidebar {
+    width: 250px;
+    min-width: 250px;
+    background: var(--white);
+    border-right: 1px solid #ddd;
     display: flex;
-    align-items: center;
-    gap: 8px;
+    flex-direction: column;
+    /* Sticky Sidebar logic */
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    flex-shrink: 0;
 }
 
-/* Main Header (Search & Notifications) */
+.sidebar .logo {
+    padding: 20px 10px;
+    text-align: center;
+}
+
+.sidebar .logo img {
+    height: 100px;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto 10px auto;
+}
+
+.sidebar-title {
+    font-size: 25px;
+    font-weight: 700;
+    color: var(--primary-green);
+    margin: 0;
+    line-height: 1.2;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+}
+
+.sidebar-menu li {
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+}
+
+.sidebar-menu li a {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 25px;
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+}
+
+.sidebar-menu li:hover:not(.active) {
+    background-color: var(--hover-green);
+    border-left: 4px solid var(--primary-green);
+}
+
+.sidebar-menu li.active {
+    background-color: var(--primary-green);
+}
+
+.sidebar-menu li.active a {
+    color: white;
+}
+
+/* --- Main Content Layout --- */
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.welcome-text {
+    font-size: 17px;
+    color:#004d26;
+    white-space: nowrap;
+}
+
+.welcome-text strong {
+    color: var(--primary-green);
+    font-weight: 700;
+}
+
+.main-content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.container-layout {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+}
+
 .main-header {
     background-color: #ffffff;
-    padding: 15px 40px;
+    padding: 15px 50px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid #e0e0e0;
-    width: 100%;
-    box-sizing: border-box;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.brand-name {
+    font-size: 18px;
+    color: var(--text-green);
+    margin: 0;
+    font-weight: 600;
+}
+
+/* ACTIONS (SEARCH & ICONS) */
+.actions-section {
+    display: flex;
+    align-items: center;
+    gap: 25px;
 }
 
 .search-box {
     position: relative;
     display: flex;
+    align-items: center;
 }
 
 .search-box input {
@@ -79,6 +177,7 @@ body {
     border: 2px solid var(--primary-green);
     border-radius: 25px;
     outline: none;
+    font-size: 14px;
 }
 
 .search-box button {
@@ -93,114 +192,31 @@ body {
 
 .icon-buttons {
     display: flex;
-    gap: 25px;
+    align-items: center;
+    gap: 20px;
+    font-size: 24px;
     color: var(--primary-green);
-    font-size: 22px;
+    cursor: pointer;
 }
+
 .icon-item i {
     transition: transform 0.2s;
-    cursor: pointer;
 }
 
 .icon-item i:hover {
     transform: scale(1.1);
     color: #007d3d;
 }
-
 /* ==========================================================================
-   4. SIDEBAR NAVIGATION
+   4. TABLES & STATS
    ========================================================================== */
-.sidebar {
-    width: 250px;
-    background: var(--white);
-    padding: 20px 0;
-    border-right: 1px solid #ddd;
-    min-height: 100vh;
-}
-
-.sidebar .logo {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px 10px;
-    text-align: center;
-}
-
-.sidebar .logo img {
-    height: 110px;
-    width: auto;
-    margin-bottom: 10px;
-}
-
-.sidebar .logo p {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--primary-green);
-    margin: 0;
-}
-
-.sidebar ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.sidebar li {
-    margin-bottom: 5px;
-    transition: 0.3s;
-    border-left: 4px solid transparent;
-}
-
-.sidebar li a {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 15px 25px;
-    text-decoration: none;
-    color: black;
-    font-weight: 500;
-    width: 100%;
-    transition: 0.3s;
-}
-
-.sidebar li i {
-    width: 20px;
-    text-align: center;
-    font-size: 18px;
-}
-
-/* Sidebar Hover & Active States */
-.sidebar li:hover {
-    background-color: var(--hover-green);
-    border-left: 4px solid var(--primary-green);
-}
-
-.sidebar li:hover a {
-    color: var(--primary-green);
-}
-
-.sidebar li.active {
-    background-color: var(--primary-green);
-    border-left: 4px solid var(--primary-green);
-}
-
-.sidebar li.active a {
-    color: white;
-}
-
-/* ==========================================================================
-   5. PAGE CONTENT (DASHBOARD / TRAINEES)
-   ========================================================================== */
-.panel-title, .title-text {
+.panel-title {
     color: #004d26;
     font-size: 28px;
     font-weight: 700;
-    margin-bottom: 25px;
-    padding: 20px 40px 10px 40px; /* Aligned with header padding */
-    border-bottom: 2px solid #f0f0f0;
+    padding: 20px 40px;
 }
 
-/* Stats Cards Grid */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -216,30 +232,28 @@ body {
     text-align: center;
 }
 
-/* Filters */
 .filter-row {
     display: flex;
-    gap: 35px;
+    gap: 20px;
     margin-bottom: 15px;
     padding-left: 40px;
 }
 
-.filter-btn {
+.filter-dropdown {
+    border: none;
+    background: transparent;
     color: #004d26;
-    font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
+    outline: none;
     cursor: pointer;
 }
 
-/* ==========================================================================
-   6. DATA TABLE STYLES
-   ========================================================================== */
 .table-outline {
-    border: 2px solid #004d26;
+    border: 2px solid var(--primary-green);
     border-radius: 20px;
     overflow: hidden;
-    background: white;
     margin: 0 40px;
+    background: white;
 }
 
 .trainee-data-table {
@@ -250,35 +264,27 @@ body {
 .trainee-data-table thead th {
     background-color: var(--yellow-head);
     color: #004d26;
-    padding: 18px;
+    padding: 15px;
     text-align: left;
-    font-size: 16px;
-    font-weight: 800;
 }
 
 .trainee-data-table tbody td {
-    padding: 15px 18px;
-    font-size: 14px;
-    color: #444;
+    padding: 15px;
+    border-bottom: 1px solid #eee;
 }
 
-/* Action Icons inside Table */
 .action-icons {
     display: flex;
     gap: 15px;
-    align-items: center;
-}
-
-.action-icons i {
     cursor: pointer;
     font-size: 18px;
 }
 
-.view, .edit { color: #004d26; }
-.delete { color: #ff0000; }
+.view, .edit { color: var(--primary-green); }
+.delete { color: var(--urgent-red); }
 
 /* ==========================================================================
-   7. MODAL BOXES & FORMS
+   5. PROFILE MODAL DESIGN (ENHANCED)
    ========================================================================== */
 .modal-overlay {
     display: none;
@@ -287,104 +293,118 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.8);
-    z-index: 10000;
+    background: rgba(0,0,0,0.7);
+    z-index: 1000;
     justify-content: center;
     align-items: center;
 }
 
 .profile-modal {
     background: white;
-    border-radius: 20px;
-    width: 420px;
-    padding: 25px 20px;
-    position: relative;
+    padding: 30px;
+    border-radius: 25px;
+    width: 500px; /* Slightly wider for better text flow */
     text-align: center;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
 }
 
-/* Form Styling within Modals */
-.form-input {
-    width: 100%;
-    padding: 10px 15px;
-    margin: 8px 0;
-    border: 1.5px solid #ddd;
-    border-radius: 10px;
-    font-family: inherit;
-    font-size: 14px;
-    box-sizing: border-box;
-    outline: none;
-    transition: border-color 0.3s;
-}
-
-.form-input:focus {
-    border-color: var(--primary-green);
-}
-
-.section-header {
-    font-size: 14px;
+.trainee-full-name {
+    color: var(--primary-green);
+    font-size: 26px;
     font-weight: 700;
-    color: white;
-    background-color: var(--primary-green);
-    padding: 4px 15px;
-    border-radius: 10px;
-    display: inline-block;
-    margin-bottom: 12px;
+    margin: 10px 0 2px 0;
+}
+
+.trainee-id-tag {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 15px;
 }
 
 .profile-photo-circle {
-    width: 90px;
-    height: 90px;
-    background: #f8f9fa;
-    border: 2px solid var(--primary-green);
+    width: 100px;
+    height: 100px;
+    border: 4px solid var(--primary-green);
     border-radius: 50%;
-    margin: 0 auto 10px auto;
+    margin: 0 auto 15px;
     display: flex;
+    align-items: center;
     justify-content: center;
-    align-items: center;
+    font-size: 45px;
+    color: var(--primary-green);
+    background: #f8f9fa;
 }
 
-/* ==========================================================================
-   8. PAGE CONTROLS (BUTTONS)
-   ========================================================================== */
-.bottom-controls {
-    display: flex;
-    justify-content: flex-end;
-    gap: 30px;
-    margin: 30px 40px;
+.modal-divider {
+    border: 0;
+    border-top: 2px solid #f0f0f0;
+    margin: 20px 0;
 }
 
-.add-trainee-text {
-    background: none;
-    border: none;
-    color: #004d26;
-    font-weight: 700;
+.section-badge {
+    background: var(--primary-green);
+    color: white;
+    padding: 6px 20px;
+    border-radius: 50px;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.info-container {
+    text-align: left;
+    padding: 0 10px;
+}
+
+.info-grid p {
+    margin: 8px 0;
     font-size: 15px;
-    cursor: pointer;
+    color: #444;
+}
+
+.doc-list {
     display: flex;
-    align-items: center;
+    flex-direction: column;
     gap: 8px;
 }
 
-.export-pill-btn {
-    background-color: var(--primary-green);
-    color: white;
-    border: none;
-    padding: 12px 35px;
-    border-radius: 30px;
-    font-weight: 600;
-    cursor: pointer;
+.doc-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    padding: 5px 0;
 }
 
-/* ==========================================================================
-   9. FOOTER STYLES
-   ========================================================================== */
+.doc-item.done { color: #2e7d32; font-weight: 500; }
+.doc-item.missing { color: #c62828; font-weight: 500; }
+
+.close-profile-btn {
+    background: var(--primary-green);
+    color: white;
+    border: none;
+    padding: 12px 40px;
+    border-radius: 50px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 25px;
+    transition: 0.3s;
+}
+
+.close-profile-btn:hover {
+    background: #00331a;
+    transform: scale(1.02);
+}
+
+/* --- FIXED FOOTER --- */
 .footer {
-    background-color: var(--primary-green);
+    background: #025628;
     color: #ffffff;
-    padding: 50px 0 20px 0;
-    font-size: 14px;
+    padding: 25px 0 10px 0;
+    font-size: 13px;
     width: 100%;
+    margin-top: auto; 
 }
 
 .footer-content {
@@ -392,19 +412,19 @@ body {
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
-    padding: 0 40px;
+    padding: 0 20px;
     flex-wrap: wrap;
 }
 
 .footer-col {
     flex: 1;
     min-width: 250px;
-    margin-bottom: 30px;
+    margin-bottom: 10px;
 }
 
 .footer-col h3 {
     font-size: 18px;
-    margin-bottom: 25px;
+    margin-bottom: 10px;
     font-weight: 600;
 }
 
@@ -417,87 +437,114 @@ body {
     margin-top: 8px;
 }
 
-.footer-col p {
-    line-height: 1.8;
-    margin-bottom: 12px;
-    opacity: 0.9;
-}
-
-.footer-col ul {
-    list-style: none;
-    padding: 0;
-}
-
-.footer-col ul li {
-    margin-bottom: 12px;
-}
-
-.footer-col a {
-    color: #ffffff;
-    text-decoration: none;
-    opacity: 0.8;
-    transition: all 0.3s ease;
-}
-
-.footer-col a:hover {
-    opacity: 1;
-    padding-left: 5px;
-    color: var(--yellow-head);
-}
-
 .footer-bottom {
     text-align: center;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
-    margin-top: 30px;
-    padding-top: 20px;
+    margin-top: 5px;
+    padding-top: 5px;
 }
 
 .footer-bottom p {
     opacity: 0.6;
-    font-size: 12px;
+    font-size: 13px;
 }
 
-/* removing inline in leaner.blade.php *//* Progress Bar Styling */
-.progress-container {
-    background: #e8f5e9;
-    border-radius: 20px;
-    padding: 4px 0;
-    text-align: center;
+/* Removes blue color and underline from footer links */
+.footer a {
+    color: #ffffff !important;  
+    text-decoration: none !important; 
 }
 
-.progress-bar {
-    background: #025628;
-    height: 6px;
-    border-radius: 20px;
-    transition: width 0.3s ease; /* Para smooth ang paggalaw */
+.footer a:hover {
+    color: var(--yellow-head) !important; 
+    text-decoration: none;
 }
 
-.progress-text {
-    color: #888;
+.footer ul {
+    list-style: none; 
+    padding: 0;       
+    margin: 0;
 }
 
-/* Table Empty Message */
-.empty-table-msg {
-    text-align: center;
-    color: #888;
-    padding: 20px;
-}
+/* ==========================================================================
+   LOGOUT MODAL STYLES (ADDED)
+   ========================================================================== */
 
-/* Modal Form Layout */
-.form-row-group {
-    display: flex;
-    gap: 10px;
+.modal-overlay {
+    display: none; /* Controlled by logout.js */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 9999;
     justify-content: center;
-    margin-bottom: 15px;
+    align-items: center;
 }
 
-.input-small {
-    width: 80px;
+.modal-box {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 20px;
+    width: 380px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    animation: modalPop 0.3s ease-out;
 }
 
-.input-medium {
-    width: 120px;
+
+.modal-actions-centered {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 25px;
 }
 
+.btn-modal-yes {
+    background-color:#004d26;
+    color: white;
+    padding: 10px 35px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    border: none;
+    transition: 0.3s;
+}
 
+.btn-modal-cancel {
+    background-color:#d32f2f;
+    color: white;
+    padding: 10px 35px;
+    border-radius: 50px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+}
 
+.btn-modal-yes:hover, .btn-modal-cancel:hover {
+    opacity: 0.85;
+    transform: translateY(-2px);
+}
+
+.bottom-controls {
+    display: flex;
+    justify-content: flex-end; /* ALIGN TO RIGHT */
+    padding: 20px 40px;
+}
+
+.export-pill-btn {
+    background: var(--primary-green);
+    color: white;
+    border: none;
+    padding: 10px 35px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: 0.3s;
+}
+
+.export-pill-btn:hover {
+    background: #00331a;
+}

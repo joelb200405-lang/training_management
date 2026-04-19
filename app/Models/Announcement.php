@@ -1,0 +1,34 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Announcement extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'title',
+        'message',
+        'type',
+        'is_active',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
+
+    // Scope — active announcements lang
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    // Scope — by type
+    public function scopeUrgent($query)
+    {
+        return $query->where('type', 'urgent');
+    }
+}

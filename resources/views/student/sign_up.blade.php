@@ -24,15 +24,15 @@
 
             <div class="login-parent">
                 <div class="form-extension image-container">
-                    <img src="../../images/2.jpg" alt="welder">
+                    <img src="{{ asset('images/4.jpg') }}" alt="welder">
                 </div>
                 <div class="form-extension form">
 
                     <div class="form-logo">
                         <div class="parent-logo">
-                            <div class="logo"></div>
-                            <h2>Livelihood Program</h2>
+                       <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo-img"> 
                         </div>
+                        <h2>Livelihood Program</h2>
                         <h2>Start your learning journey today.</h2>
                         <p>Create an account and start learning today.</p>
                     </div>
@@ -99,12 +99,7 @@
                                 </select>
                             </div>
                         </div>
-
-                        <div class="col-lg-6 mt-3">
-
-                       
-
-                    </div>
+                     </div>
 
                     <div class="button">
                         <button type="submit">Signup</button>
@@ -112,21 +107,8 @@
 
                     <h4>Or Login with</h4>
 
-                    <div class="accounts">
-                        <a href="#">
-                            <i class="fa-brands fa-google"></i>
-                            <p class="m-0">Google</p>
-                        </a>
-
-                        <a href="#">
-                            <i class="fa-brands fa-facebook"></i>
-                            <p class="m-0">Facebook</p>
-                        </a>
-                    </div>
-
                     <div class="change">
-                        <label>Already have an account? <a href="/login">Login</a>
-                        </label>
+                        <label>Already have an account? <a href="{{ asset('login') }}">Login</a></label>
                     </div>
 
                 </div>

@@ -1,39 +1,88 @@
 /* ==========================================================================
-   1. GLOBAL VARIABLES & BASE STYLES
+   1. THEME VARIABLES (MULTI-LINE)
    ========================================================================== */
 :root {
     --primary-green: #004d26;
-    --text-green: #004d26;
-    --white: #ffffff;
     --hover-green: #e8f5e9;
-    --text-gray: #555;
+    --urgent-red: #d32f2f;
+    --white: #ffffff;
+    --bg-light: #f4f4f4;
+    --yellow-head: #f8f16a;
+    --text-main: #333333;
+    --sidebar-bg: #ffffff;
+    --card-bg: #ffffff;
+    --input-bg: #ffffff;
+    --border-color: #dddddd;
 }
 
+/* DARK MODE OVERRIDES */
+body.dark-theme {
+    --bg-light: #121212;
+    --white: #1e1e1e;
+    --sidebar-bg: #181818;
+    --card-bg: #1e1e1e;
+    --text-main: #e0e0e0;
+    --input-bg: #2d2d2d;
+    --border-color: #333333;
+    --hover-green: #1a3a2a;
+}
+
+/* ==========================================================================
+   2. CORE ELEMENT UPDATES
+   ========================================================================== */
 body {
     margin: 0;
     font-family: 'Segoe UI', sans-serif;
-    background-color: #f4f4f4;
+    background-color: var(--bg-light);
+    color: var(--text-main);
+    transition: background 0.3s, color 0.3s;
 }
 
-/* ==========================================================================
-   2. MAIN LAYOUT STRUCTURE
-   ========================================================================== */
-.container {
+.sidebar {
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border-color);
+}
+
+.sidebar-menu li a {
+    color: var(--text-main);
+}
+
+.main-header {
+    background-color: var(--sidebar-bg);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.settings-card-frame {
+    background: var(--card-bg);
+    border: 2px solid var(--primary-green);
+}
+
+.custom-input {
+    background-color: var(--input-bg);
+    color: var(--text-main);
+    border: 2px solid var(--primary-green);
+}
+
+.settings-sidebar {
+    background: var(--input-bg);
+    border-right: 1px solid var(--border-color);
+}
+
+.nav-tab {
+    color: var(--text-main);
+}
+
+/* This ensures the title in the header stays dark-theme friendly */
+.sidebar-title {
+    color: var(--primary-green);
+}
+.container-layout {
     display: flex;
-    width: 100%;
     min-height: 100vh;
+    width: 100%;
 }
 
-.main-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-}
-
-/* ==========================================================================
-   3. TOP NAVIGATION STRIP
-   ========================================================================== */
+/* --- Top Strip --- */
 .top-strip {
     background-color: var(--primary-green);
     color: white;
@@ -43,25 +92,116 @@ body {
     font-size: 14px;
 }
 
-.language-selector {
-    cursor: pointer;
+/* --- Sidebar Section --- */
+.sidebar {
+    width: 250px;
+    min-width: 250px;
+    background: var(--white);
+    border-right: 1px solid #ddd;
     display: flex;
-    align-items: center;
-    gap: 8px;
+    flex-direction: column;
+    /* Sticky Sidebar logic */
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    flex-shrink: 0;
 }
 
-/* ==========================================================================
-   4. MAIN HEADER (SEARCH & ICONS)
-   ========================================================================== */
+.sidebar .logo {
+    padding: 20px 10px;
+    text-align: center;
+}
+
+.sidebar .logo img {
+    height: 100px;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto 10px auto;
+}
+
+.sidebar-title {
+    font-size: 25px;
+    font-weight: 700;
+    color: var(--primary-green);
+    margin: 0;
+    line-height: 1.2;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+}
+
+.sidebar-menu li {
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+}
+
+.sidebar-menu li a {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 25px;
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+}
+
+.sidebar-menu li:hover:not(.active) {
+    background-color: var(--hover-green);
+    border-left: 4px solid var(--primary-green);
+}
+
+.sidebar-menu li.active {
+    background-color: var(--primary-green);
+}
+
+.sidebar-menu li.active a {
+    color: white;
+}
+
+/* --- Main Content Layout --- */
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.welcome-text {
+    font-size: 17px;
+    color:#004d26;
+    white-space: nowrap;
+}
+
+.welcome-text strong {
+    color: var(--primary-green);
+    font-weight: 700;
+}
+
+.main-content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.container-layout {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+}
+
 .main-header {
     background-color: #ffffff;
-    padding: 15px 40px;
+    padding: 15px 50px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid #e0e0e0;
-    width: 100%;
-    box-sizing: border-box;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
@@ -78,13 +218,13 @@ body {
     font-weight: 600;
 }
 
+/* ACTIONS (SEARCH & ICONS) */
 .actions-section {
     display: flex;
     align-items: center;
     gap: 25px;
 }
 
-/* Search Box */
 .search-box {
     position: relative;
     display: flex;
@@ -110,12 +250,11 @@ body {
     font-size: 18px;
 }
 
-/* Icon Buttons */
 .icon-buttons {
     display: flex;
     align-items: center;
-    gap: 25px;
-    font-size: 22px;
+    gap: 20px;
+    font-size: 24px;
     color: var(--primary-green);
     cursor: pointer;
 }
@@ -380,12 +519,134 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* new remove inline */
+/* --- FIXED FOOTER --- */
+.footer {
+    background: #025628;
+    color: #ffffff;
+    padding: 25px 0 10px 0;
+    font-size: 13px;
+    width: 100%;
+    margin-top: auto; 
+}
 
-.input-disabled {
-    background-color: #f9f9f9;
-    color: #888;
-    cursor: not-allowed;
-    border-color: #e0e0e0;
+.footer-content {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    flex-wrap: wrap;
+}
+
+.footer-col {
+    flex: 1;
+    min-width: 250px;
+    margin-bottom: 10px;
+}
+
+.footer-col h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.footer-col h3::after {
+    content: '';
+    display: block;
+    width: 30px;
+    height: 2px;
+    background: var(--yellow-head);
+    margin-top: 8px;
+}
+
+.footer-bottom {
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 5px;
+    padding-top: 5px;
+}
+
+.footer-bottom p {
+    opacity: 0.6;
+    font-size: 13px;
+}
+
+/* Removes blue color and underline from footer links */
+.footer a {
+    color: #ffffff !important;  
+    text-decoration: none !important; 
+}
+
+.footer a:hover {
+    color: var(--yellow-head) !important; 
+    text-decoration: none;
+}
+
+.footer ul {
+    list-style: none; 
+    padding: 0;       
+    margin: 0;
+}
+
+/* ==========================================================================
+   LOGOUT MODAL STYLES (ADDED)
+   ========================================================================== */
+
+.modal-overlay {
+    display: none; /* Controlled by logout.js */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-box {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 20px;
+    width: 380px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    animation: modalPop 0.3s ease-out;
+}
+
+
+.modal-actions-centered {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.btn-modal-yes {
+    background-color:#004d26;
+    color: white;
+    padding: 10px 35px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    border: none;
+    transition: 0.3s;
+}
+
+.btn-modal-cancel {
+    background-color:#d32f2f;
+    color: white;
+    padding: 10px 35px;
+    border-radius: 50px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-modal-yes:hover, .btn-modal-cancel:hover {
+    opacity: 0.85;
+    transform: translateY(-2px);
 }
 

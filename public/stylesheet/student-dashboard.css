@@ -1,0 +1,329 @@
+/* =============================================
+   DASHBOARD WRAP
+   ============================================= */
+.dashboard-wrap {
+    padding: 28px 32px;
+    max-width: 1100px;
+}
+
+.dashboard-header {
+    margin-bottom: 24px;
+}
+
+.dashboard-header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #025628;
+    margin-bottom: 4px;
+}
+
+.dashboard-header p {
+    font-size: 13px;
+    color: #888;
+}
+
+/* =============================================
+   STATS CARDS
+   ============================================= */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 32px;
+}
+
+.cards {
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    background: #e8f5e9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 18px;
+    color: #025628;
+}
+
+.stat-icon-danger {
+    background: #FCEBEB;
+    color: #A32D2D;
+}
+
+.stat-label {
+    font-size: 11px;
+    color: #888;
+    margin-bottom: 4px;
+}
+
+.stat-val {
+    font-size: 24px;
+    font-weight: 700;
+    color: #025628;
+}
+
+.stat-val-danger {
+    color: #A32D2D;
+}
+
+/* =============================================
+   SECTION TITLE
+   ============================================= */
+.Section_title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 14px;
+}
+
+/* =============================================
+   MY COURSES LIST
+   ============================================= */
+.mc_list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 32px;
+}
+
+.mc_row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    padding: 14px 18px;
+    transition: border-color 0.2s;
+}
+
+.mc_row:hover {
+    border-color: rgba(2, 86, 40, 0.3);
+}
+
+.mc_thumb {
+    width: 44px;
+    height: 44px;
+    background: #025628;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.mc_info {
+    flex: 1;
+    min-width: 0;
+}
+
+.mc_title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 2px;
+}
+
+.mc_sub {
+    font-size: 11px;
+    color: #888;
+    margin-bottom: 8px;
+}
+
+.mc_pbar {
+    height: 5px;
+    background: #f0f0f0;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.mc_pfill {
+    height: 5px;
+    border-radius: 5px;
+    background: #025628;
+    transition: width 0.3s ease;
+}
+
+.mc_right {
+    text-align: right;
+    flex-shrink: 0;
+    min-width: 80px;
+}
+
+.mc_pct {
+    font-size: 13px;
+    font-weight: 700;
+    color: #025628;
+    margin-bottom: 6px;
+}
+
+.mc_done {
+    color: #3B6D11;
+}
+
+.mc-btn {
+    display: inline-block;
+    font-size: 11px;
+    padding: 5px 14px;
+    border-radius: 6px;
+    background: #e8f5e9;
+    color: #025628;
+    font-weight: 700;
+    text-decoration: none;
+    font-family: "Open Sans", sans-serif;
+    transition: background 0.15s;
+}
+
+.mc-btn:hover {
+    background: #c8e6c9;
+    color: #025628;
+}
+
+.mc-btn-done {
+    background: #EAF3DE;
+    color: #3B6D11;
+}
+
+.mc-btn-done:hover {
+    background: #c5dba8;
+    color: #3B6D11;
+}
+
+/* =============================================
+   DEADLINES LIST
+   ============================================= */
+.dl-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 32px;
+}
+
+.dl-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    padding: 13px 18px;
+}
+
+.dl-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.dl-info {
+    flex: 1;
+}
+
+.dl-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 2px;
+}
+
+.dl-date {
+    font-size: 11px;
+    color: #888;
+}
+
+.dl-badge {
+    font-size: 11px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.b-urgent { background: #FCEBEB; color: #A32D2D; }
+.b-soon   { background: #FAEEDA; color: #854F0B; }
+.b-ok     { background: #EAF3DE; color: #3B6D11; }
+
+/* =============================================
+   EMPTY STATE
+   ============================================= */
+.empty_state {
+    text-align: center;
+    padding: 36px 20px;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    color: #aaa;
+}
+
+.empty_state i {
+    font-size: 32px;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.empty_state p {
+    font-size: 13px;
+    margin-bottom: 14px;
+}
+
+.btn-enroll-now {
+    display: inline-block;
+    background: #025628;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 9px 22px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background 0.15s;
+}
+
+.btn-enroll-now:hover {
+    background: #014d20;
+    color: #fff;
+}
+
+/* =============================================
+   RESPONSIVE
+   ============================================= */
+@media (max-width: 900px) {
+    .stats-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .dashboard-wrap {
+        padding: 20px 16px;
+    }
+
+    .stats-row {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .mc-row {
+        flex-wrap: wrap;
+    }
+
+    .mc-right {
+        width: 100%;
+        text-align: left;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+}

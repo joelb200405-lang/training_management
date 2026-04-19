@@ -19,7 +19,7 @@
         <ul class="nav-links">
             <li><a href="{{ route('index') }}">Home</a></li>
             <li><a href="{{ route('landing.about') }}" class="">About</a></li>
-            <li><a href="{{ route('landing.courses') }}" class="">Courses</a></li>
+            <li><a href="{{ route('index') }}" class="">Courses</a></li>
             <li><a href="{{ route('landing.contact') }}" class="active">Contact</a></li>
         </ul>
         <div class="nav-actions">

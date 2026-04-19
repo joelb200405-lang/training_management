@@ -1,40 +1,28 @@
 /* ==========================================================================
-   1. GLOBAL VARIABLES & BASE STYLES
+   1. GLOBAL & SIDEBAR
    ========================================================================== */
 :root {
     --primary-green: #004d26;
     --text-green: #004d26;
     --white: #ffffff;
     --hover-green: #e8f5e9;
-    --text-gray: #555;
+    --urgent-red: #d32f2f;
+    --bg-light: #f4f4f4;
+    --yellow-head: #f8f16a;
 }
 
 body {
     margin: 0;
     font-family: 'Segoe UI', sans-serif;
-    background-color: #f4f4f4;
+    background-color: var(--bg-light);
 }
 
-/* ==========================================================================
-   2. LAYOUT ARCHITECTURE
-   ========================================================================== */
-.container {
+.container-layout {
     display: flex;
     width: 100%;
     min-height: 100vh;
 }
 
-.main-content {
-    flex: 1; /* Fills the right side completely */
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-}
-
-/* ==========================================================================
-   3. NAVIGATION (TOP STRIP & SIDEBAR)
-   ========================================================================== */
-/* Top Green Language Strip */
 .top-strip {
     background-color: var(--primary-green);
     color: white;
@@ -44,95 +32,109 @@ body {
     font-size: 14px;
 }
 
-.language-selector {
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-/* Left Sidebar Navigation */
+/* --- Sidebar Section --- */
 .sidebar {
     width: 250px;
+    min-width: 250px;
     background: var(--white);
-    padding: 20px 0;
     border-right: 1px solid #ddd;
-    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    /* Sticky Sidebar logic */
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    flex-shrink: 0;
 }
 
 .sidebar .logo {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     padding: 20px 10px;
     text-align: center;
 }
 
 .sidebar .logo img {
-    height: 110px;
+    height: 100px;
     width: auto;
-    margin-bottom: 10px;
+    max-width: 100%;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto 10px auto;
 }
 
-.sidebar .logo p {
-    font-size: 14px;
-    font-weight: 600;
+.sidebar-title {
+    font-size: 25px;
+    font-weight: 700;
     color: var(--primary-green);
     margin: 0;
+    line-height: 1.2;
 }
 
-.sidebar ul {
+.sidebar-menu {
     list-style: none;
     padding: 0;
-    margin: 0;
+    margin-top: 20px;
 }
 
-.sidebar li {
-    margin-bottom: 5px;
-    transition: 0.3s;
+.sidebar-menu li {
+    transition: all 0.3s ease;
     border-left: 4px solid transparent;
 }
 
-.sidebar li a {
+.sidebar-menu li a {
     display: flex;
     align-items: center;
     gap: 15px;
     padding: 15px 25px;
     text-decoration: none;
-    color: black;
+    color: #333;
     font-weight: 500;
-    width: 100%;
-    transition: 0.3s;
 }
 
-.sidebar li i {
-    width: 20px;
-    text-align: center;
-    font-size: 18px;
-}
-
-/* Sidebar States */
-.sidebar li:hover {
+.sidebar-menu li:hover:not(.active) {
     background-color: var(--hover-green);
     border-left: 4px solid var(--primary-green);
 }
 
-.sidebar li:hover a {
-    color: var(--primary-green);
-}
-
-.sidebar li.active {
+.sidebar-menu li.active {
     background-color: var(--primary-green);
-    border-left: 4px solid var(--primary-green);
 }
 
-.sidebar li.active a {
+.sidebar-menu li.active a {
     color: white;
 }
 
-/* ==========================================================================
-   4. MAIN HEADER (SEARCH & NOTIFICATIONS)
-   ========================================================================== */
+/* --- Main Content Layout --- */
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.welcome-text {
+    font-size: 17px;
+    color:#004d26;
+    white-space: nowrap;
+}
+
+.welcome-text strong {
+    color: var(--primary-green);
+    font-weight: 700;
+}
+
+.main-content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.container-layout {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+}
+
 .main-header {
     background-color: #ffffff;
     padding: 15px 50px;
@@ -156,13 +158,13 @@ body {
     font-weight: 600;
 }
 
+/* ACTIONS (SEARCH & ICONS) */
 .actions-section {
     display: flex;
     align-items: center;
     gap: 25px;
 }
 
-/* Search Box */
 .search-box {
     position: relative;
     display: flex;
@@ -188,7 +190,6 @@ body {
     font-size: 18px;
 }
 
-/* Icons Group */
 .icon-buttons {
     display: flex;
     align-items: center;
@@ -206,34 +207,32 @@ body {
     transform: scale(1.1);
     color: #007d3d;
 }
-
 /* ==========================================================================
-   5. COURSES GRID & CARDS
+   4. COURSES GRID & CARDS
    ========================================================================== */
+.courses-panel {
+    padding: 30px 50px;
+}
+
 .panel-title {
-    color: #004d26;
-    font-size: 28px;
+    color: var(--primary-green);
+    font-size: 30px;
     font-weight: bold;
     margin-bottom: 25px;
-    border-bottom: 2px solid #f0f0f0;
 }
 
 .courses-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 25px;
-    margin-bottom: 40px;
 }
 
-/* Standard Course Card */
 .course-card {
-    background-color: #004d26;
+    background-color: var(--primary-green);
     border-radius: 20px;
     padding: 15px;
     color: white;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    display: flex;
-    flex-direction: column;
 }
 
 .card-img {
@@ -252,13 +251,12 @@ body {
 
 .card-body h3 {
     font-size: 19px;
-    margin: 0 0 10px 0;
-    font-weight: 600;
+    margin-bottom: 10px;
 }
 
 .card-body p {
-    font-size: 13.5px;
-    margin: 4px 0;
+    font-size: 13px;
+    margin: 5px 0;
     opacity: 0.9;
 }
 
@@ -271,51 +269,37 @@ body {
     border-radius: 25px;
     color: white;
     text-decoration: none;
-    font-size: 13px;
-    font-weight: 500;
     transition: 0.3s;
 }
 
 .view-btn:hover {
     background-color: white;
-    color: #004d26;
+    color: var(--primary-green);
 }
 
-/* "Create New Course" Placeholder Card */
 .create-card {
-    border: 2px solid #004d26;
+    border: 2px dashed var(--primary-green);
     border-radius: 20px;
     background: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    min-height: 320px;
+    min-height: 300px;
     transition: 0.3s;
-}
-
-.create-card:hover {
-    background-color: #f9f9f9;
 }
 
 .create-inner {
     text-align: center;
-    color: #004d26;
+    color: var(--primary-green);
 }
 
 .create-inner i {
     font-size: 50px;
-    margin-bottom: 15px;
-}
-
-.create-inner p {
-    font-size: 18px;
-    font-weight: bold;
-    margin: 0;
+    margin-bottom: 10px;
 }
 
 /* ==========================================================================
-   6. MODAL OVERLAY & POP-UPS
+   5. MODALS (UPDATED WIDTHS TO PREVENT SQUISHING)
    ========================================================================== */
 .modal-overlay {
     display: none;
@@ -324,37 +308,25 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    z-index: 10000;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
     justify-content: center;
     align-items: center;
 }
 
-/* Base Modal Box */
 .modal-box {
-    background-color: #fff;
-    width: 500px;
-    max-width: 90%;
+    background: #fff;
     padding: 25px;
     border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    position: relative;
+    width: 450px;
+    max-width: 90%;
 }
 
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #eee;
-}
-
-/* View Details Modal Variation */
+/* This is the adjusted width for the detail view */
 .details-modal {
-    width: 850px;
+    width: 800px;
     max-width: 95%;
     padding: 30px;
-    border-radius: 20px;
 }
 
 .details-grid {
@@ -364,211 +336,130 @@ body {
     margin-top: 20px;
 }
 
-/* Modal Content Interior Boxes */
 .info-box {
-    margin-bottom: 25px;
+    background: #f9f9f9;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 15px;
 }
 
 .section-tag {
-    background-color: #004d26;
+    background: var(--primary-green);
     color: white;
-    padding: 5px 15px;
-    border-radius: 5px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 13px;
     display: inline-block;
-    font-size: 14px;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .content-list p {
-    font-size: 14px;
-    margin: 5px 0;
-    padding-bottom: 5px;
     border-bottom: 1px solid #eee;
+    padding: 5px 0;
+    font-size: 13px;
+    margin: 0;
     color: #333;
 }
 
-/* Modal Interaction Controls */
 .box-actions {
     display: flex;
     justify-content: flex-end;
-    gap: 10px;
-    margin-top: 5px;
+    gap: 8px;
+    margin-top: 8px;
 }
-
-.edit-group { display: flex; gap: 10px; }
-.hidden { display: none !important; }
 
 .action-btn {
-    background: none; 
-    border: none; 
-    font-weight: bold; 
-    cursor: pointer; 
-    font-size: 12px;
+    border: none;
+    background: none;
+    font-size: 11px;
+    font-weight: bold;
+    cursor: pointer;
 }
-.delete-text { color: #d9534f; }
-.edit-text, .add-text { color: #004d26; }
+
+.delete-text {
+    color: var(--urgent-red);
+}
+
+.edit-text, .add-text {
+    color: var(--primary-green);
+}
 
 .details-footer {
     display: flex;
     justify-content: space-between;
-    margin-top: 30px;
-    padding-top: 20px;
+    margin-top: 20px;
+    padding-top: 15px;
     border-top: 1px solid #eee;
+}
+
+.back-pill-btn {
+    background: var(--primary-green);
+    color: white;
+    padding: 8px 30px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
 }
 
 .main-edit-btn {
     background: none;
     border: none;
-    color: #004d26;
+    color: var(--primary-green);
     font-weight: bold;
     cursor: pointer;
-    font-size: 14px;
-}
-
-.back-pill-btn {
-    background-color: #004d26;
-    color: white;
-    border: none;
-    padding: 10px 40px;
-    border-radius: 25px;
-    cursor: pointer;
-    font-weight: 600;
-}
-
-.view-all-pill {
-    background-color: #004d26;
-    color: white;
-    border: none;
-    padding: 5px 15px;
-    border-radius: 15px;
-    font-size: 12px;
-    cursor: pointer;
-    margin-top: 10px;
 }
 
 /* ==========================================================================
-   7. FOOTER SECTION
+   6. ADD COURSE MODAL (CLEAN)
    ========================================================================== */
-.footer {
-    background-color: #004d26;
-    color: #ffffff;
-    padding: 60px 0 20px 0;
-    font-size: 14px;
-    font-family: 'Segoe UI', sans-serif;
-}
-
-.footer-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-around;
-    padding: 0 20px;
-    flex-wrap: wrap;
-}
-
-.footer-col {
-    flex: 1;
-    min-width: 200px;
-    margin-bottom: 30px;
-}
-
-.footer-col h3 {
-    font-size: 18px;
-    margin-bottom: 20px;
-    font-weight: 600;
-}
-
-.footer-col p {
-    line-height: 1.6;
-    margin-bottom: 10px;
-    opacity: 0.8;
-}
-
-.footer-col ul {
-    list-style: none;
-    padding: 0;
-}
-
-.footer-col ul li {
-    margin-bottom: 12px;
-}
-
-.footer-col a {
-    color: #ffffff;
-    text-decoration: none;
-    opacity: 0.8;
-    transition: opacity 0.3s;
-}
-
-.footer-col a:hover {
-    opacity: 1;
-}
-
-.footer-bottom {
-    text-align: center;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    margin-top: 40px;
-    padding-top: 20px;
-}
-
-.footer-bottom p {
-    opacity: 0.5;
-    font-size: 12px;
-}
-
-.modal-header p{
-    color: #004d26; 
+.modal-title-green {
+    color: var(--primary-green);
     margin: 0;
 }
-.modal-header span{
-    cursor:pointer; 
-    font-size:28px;
-}
 
-/* Layout & Container Fixes */
-#openModal {
+.close-x {
     cursor: pointer;
+    font-size: 28px;
 }
 
-.scrollable-body {
+.modal-body-scroll {
     padding: 20px 0;
     max-height: 400px;
     overflow-y: auto;
 }
 
-/* Form Sections */
-.form-section {
+.modal-section {
     margin-bottom: 20px;
     border-bottom: 1px solid #eee;
     padding-bottom: 10px;
 }
 
-.form-section.no-border {
+.modal-section.no-border {
     border-bottom: none;
 }
 
-.form-section-title {
+.section-label {
     color: #666;
     margin-bottom: 10px;
 }
 
-.form-label {
-    font-size: 12px;
-    color: #888;
-    display: block; /* Para sigurado na nasa taas ng input */
-}
-
-/* Input Fields */
-.form-input, .form-select {
+.modal-input {
     width: 100%;
     padding: 10px;
     margin-bottom: 10px;
     border: 1px solid #ddd;
     border-radius: 5px;
+    outline: none;
 }
 
-/* Modal Footer & Buttons */
-.form-actions {
+.date-hint {
+    font-size: 12px;
+    color: #888;
+    display: block;
+    margin-top: 5px;
+}
+
+.modal-footer-btns {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
@@ -587,12 +478,139 @@ body {
 .btn-publish {
     padding: 10px 20px;
     border: none;
-    background: #004d26;
+    background: var(--primary-green);
     color: white;
     border-radius: 5px;
     cursor: pointer;
 }
 
-.btn-publish:hover {
-    background: #00361a;
+/* ==========================================================================
+   7. FOOTER SECTION (UPDATED FOR FULL WIDTH ALIGNMENT)
+   ========================================================================== */
+.footer {
+    background: #025628;
+    color: #ffffff;
+    padding: 25px 0 10px 0;
+    font-size: 13px;
+    width: 100%;
+    margin-top: auto; 
+}
+
+.footer-content {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    flex-wrap: wrap;
+}
+
+.footer-col {
+    flex: 1;
+    min-width: 250px;
+    margin-bottom: 10px;
+}
+
+.footer-col h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.footer-col h3::after {
+    content: '';
+    display: block;
+    width: 30px;
+    height: 2px;
+    background: var(--yellow-head);
+    margin-top: 8px;
+}
+
+.footer-bottom {
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 5px;
+    padding-top: 5px;
+}
+
+.footer-bottom p {
+    opacity: 0.6;
+    font-size: 13px;
+}
+
+/* Removes blue color and underline from footer links */
+.footer a {
+    color: #ffffff !important;  
+    text-decoration: none !important; 
+}
+
+.footer a:hover {
+    color: var(--yellow-head) !important; 
+    text-decoration: none;
+}
+
+.footer ul {
+    list-style: none; 
+    padding: 0;       
+    margin: 0;
+}
+
+/* ==========================================================================
+   8. LOGOUT MODAL
+   ========================================================================== */
+.logout-modal-box {
+    text-align: center;
+    width: 380px;
+}
+
+.section-header {
+    color:#004d26;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.modal-actions-centered {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.btn-modal-yes {
+    background: var(--primary-green);
+    color: white !important;
+    padding: 10px 35px;
+    border-radius: 25px;
+    text-decoration: none !important;
+}
+
+.btn-modal-cancel {
+    background: var(--urgent-red);
+    color: white;
+    padding: 10px 35px;
+    border-radius: 25px;
+    border: none;
+    cursor: pointer;
+}
+
+/* Utility */
+.hidden { display: none !important; }
+
+/* Dashboard spacing */
+.info-box {
+    margin-bottom: 25px;
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.view-all-pill {
+    background-color: var(--primary-green);
+    color: white;
+    border: none;
+    padding: 5px 15px;
+    border-radius: 15px;
+    font-size: 12px;
+    cursor: pointer;
+    margin-top: 10px;
 }

@@ -29,6 +29,10 @@
 
                       @csrf
 
+                      <div class="login-logo">
+                         <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo-img">
+                     </div>
+
                         <span>WELCOME BACK</span>
 
                         <h2><b>Sign</b> in to your <b>account</b></h2>

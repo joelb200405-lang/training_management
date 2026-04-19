@@ -18,8 +18,8 @@
         </div>
         <ul class="nav-links">
             <li><a href="{{ route('index') }}">Home</a></li>
-            <li><a href="{{ route('landing.about') }}" class="active">About</a></li>
-            <li><a href="{{ route('landing.courses') }}">Courses</a></li>
+            <li><a href="{{ route('index') }}" class="active">About</a></li>
+            <li><a href="{{ route('index') }}">Courses</a></li>
             <li><a href="{{ route('landing.contact') }}">Contact</a></li>
         </ul>
         <div class="nav-actions">

@@ -3,117 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'LEDIPO Trainer Dashboard')</title>
+    <title>@yield('title', 'LEDIPO') — Trainer</title>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('stylesheet/trainer.css') }}">
+    <link rel="stylesheet" href="{{ asset('stylesheet/layout.css') }}">
+    @yield('css')
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+        integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-     <link rel="stylesheet" href="../bootstrap_folder/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../font-awesome-icon/css/all.min.css">
-
-    @yield('css')
 </head>
-
 <body>
 
-    <div class="top-strip">
-         <div class="language-selector">
-            English <i class="fas fa-chevron-down"></i>
-         </div>
-    </div>
+    {{-- ===== TOPBAR (same as student) ===== --}}
+    <nav class="topbar">
 
-    <div class="container" style="margin: 0; padding: 0;">
+        <div class="topbar-left">
+            <button class="hamburger" id="hamburger" aria-label="Toggle sidebar">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
 
-        <nav class="sidebar">
-            <div class="logo">
-                <img src="{{ asset('images/logo.png') }}" alt="logo">
-                <p class="sidebar-title">Dasmariñas City Training Center</p>
+            <a href="{{ route('teacher') }}" class="topbar-brand">
+                <img src="{{ asset('images/logo.png') }}" alt="logo" class="topbar-logo">
+                <span>LEDIPO</span>
+            </a>
+        </div>
+
+
+
+        <div class="topbar-right">
+            {{-- Avatar / Profile Dropdown --}}
+            <button class="avatar-btn" id="avatarBtn" aria-label="Open profile menu">
+                {{ strtoupper(substr(Auth::user()->firstname ?? 'T', 0, 1)) }}{{ strtoupper(substr(Auth::user()->lastname ?? '', 0, 1)) }}
+            </button>
+
+            <div class="dropdown" id="dropdown">
+                <div class="dropdown-header">
+                    <div class="dh-name">{{ Auth::user()->firstname }} {{ Auth::user()->lastname }}</div>
+                    <div class="dh-role">{{ ucfirst(Auth::user()->role) }}</div>
+                </div>
+
+                <a href="" class="dd-item">
+                    <i class="fa fa-user dd-icon"></i>
+                    Profile
+                </a>
+
+                <div class="dd-divider"></div>
+
+                <a href="#" class="dd-item dd-logout"
+                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                    <i class="fa fa-right-from-bracket dd-icon"></i>
+                    Log out
+                </a>
+
+                <form id="logout-form" action="{{ route('Logout') }}" method="POST" style="display:none;">
+                    @csrf
+                </form>
             </div>
-            <ul>
-                <li class="{{ request()->routeIs('teacher') ? 'active' : '' }}">
-                    <a href="{{ route('teacher') }}"><i class="fas fa-th-large"></i> Dashboard</a>
-                </li>
-                <li class="{{ request()->routeIs('trainer.courses') ? 'active' : '' }}">
-                    <a href="{{ route('trainer.courses') }}"><i class="fas fa-book"></i> Courses</a>
-                </li>
-                <li class="{{ request()->routeIs('learner') ? 'active' : '' }}">
-                    <a href="{{ route('learner') }}"><i class="fas fa-users"></i> Trainees</a>
-                </li>
-                <li class="{{ request()->routeIs('assessment') ? 'active' : '' }}">
-                    <a href="{{ route('assessment') }}"><i class="fas fa-clipboard-check"></i> Assessment</a>
-                </li>
-                <li class="{{ request()->routeIs('certificates') ? 'active' : '' }}">
-                    <a href="{{ route('certificates') }}"><i class="fas fa-certificate"></i> Certificates</a>
-                </li>
-                <li class="{{ request()->routeIs('reports') ? 'active' : '' }}">
-                    <a href="{{ route('reports') }}"><i class="fas fa-chart-line"></i> Reports</a>
-                </li>
-                <li class="{{ request()->routeIs('settings') ? 'active' : '' }}">
-                    <a href="{{ route('settings') }}"><i class="fas fa-gear"></i> Settings</a>
-                </li>
-            </ul>
-        </nav>
+        </div>
+    </nav>
 
-                <main class="main-content">
+    <div class="app-body">
 
-            <header class="main-header">
-                <div class="search-box">
-                    <input type="text" placeholder="What are you looking for?">
-                    <button type="submit"><i class="fas fa-search"></i></button>
-                </div>
-                <div class="icon-buttons">
-                    <div class="icon-item"><i class="fas fa-bell"></i></div>
-                    <form action="{{ route('Logout') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="icon-item logout" style="background:none; border:none; cursor:pointer;">
-                            <i class="fas fa-right-from-bracket"></i>
-                        </button>
-                    </form>
-                </div>
-            </header>
+        <div class="sidebar-overlay" id="overlay"></div>
 
+        {{-- ===== SIDEBAR (trainer links) ===== --}}
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-section-label">Menu</div>
+
+            <a href="{{ route('teacher') }}"
+               class="nav-item {{ request()->routeIs('teacher') ? 'active' : '' }}">
+                <i class="fa fa-table-cells nav-icon"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="{{ route('trainer.courses') }}"
+               class="nav-item {{ request()->routeIs('trainer.courses') ? 'active' : '' }}">
+                <i class="fa fa-book-open nav-icon"></i>
+                <span>Courses</span>
+            </a>
+
+            <a href="{{ route('learner') }}"
+               class="nav-item {{ request()->routeIs('learner') ? 'active' : '' }}">
+                <i class="fa fa-users nav-icon"></i>
+                <span>Trainees</span>
+            </a>
+
+            <div class="sidebar-section-label">Manage</div>
+
+            <a href="{{ route('assessment') }}"
+               class="nav-item {{ request()->routeIs('assessment') ? 'active' : '' }}">
+                <i class="fa fa-clipboard-check nav-icon"></i>
+                <span>Assessment</span>
+            </a>
+        </aside>
+
+        {{-- ===== MAIN CONTENT ===== --}}
+        <main class="main-content">
             @yield('content')
-
         </main>
+
     </div>
-
-            <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-col">
-                <h3>Support</h3>
-                <p>Barangay Burol Main, City of Dasmariñas, Cavite, Philippines.</p>
-                <p><a href="mailto:Regals@gmail.com">Regals@gmail.com</a></p>
-                <p>+88015-88888-9999</p>
-            </div>
-            <div class="footer-col">
-                <h3>Account</h3>
-                <ul>
-                    <li><a href="#">My Account</a></li>
-                    <li><a href="#">Login / Register</a></li>
-                    <li><a href="#">Likes</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h3>Quick Link</h3>
-                <ul>
-                    <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Terms Of Use</a></li>
-                    <li><a href="#">FAQ</a></li>
-                    <li><a href="#">Contact</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; Copyright Rimel 2022. All right reserved</p>
-        </div>
-    </footer>
-
-    @yield('scripts')
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>
+
+    <script>
+        const hamburger = document.getElementById('hamburger');
+        const sidebar   = document.getElementById('sidebar');
+        const overlay   = document.getElementById('overlay');
+        const avatarBtn = document.getElementById('avatarBtn');
+        const dropdown  = document.getElementById('dropdown');
+
+        hamburger.addEventListener('click', function () {
+            sidebar.classList.toggle('sidebar-open');
+            overlay.classList.toggle('show');
+        });
+
+        overlay.addEventListener('click', function () {
+            sidebar.classList.remove('sidebar-open');
+            overlay.classList.remove('show');
+        });
+
+        avatarBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            dropdown.classList.toggle('open');
+        });
+
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.topbar-right')) {
+                dropdown.classList.remove('open');
+            }
+        });
+    </script>
+
+    @yield('scripts')
 
 </body>
 </html>

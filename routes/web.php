@@ -2,8 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\TrainerController;
     
-Route::get('/', [UserController::class, 'landingCourses'])->name('index');   //The first you will see.
+Route::get('/', [UserController::class, 'index'])->name('index');   //The first you will see.
 // nilalagyan kolang ng ganto"//" kasi makakalimutan ako hehe joel*
 
 Route::get("/login", [UserController::class, "Login"])->name("Login");
@@ -20,6 +21,12 @@ Route::get("/handle", [UserController::class, "handle"])->name("handle");
 //new
 
 Route::get("/admin1", [UserController::class, "admin1"])->name("admin1")->middleware("admin");
+Route::post("/admin/course/{courseId}/assign-trainer", [UserController::class, "assignTrainer"])
+    ->name("admin.course.assignTrainer")
+    ->middleware("admin");
+Route::post("/admin/course/{courseId}/remove-trainer", [UserController::class, "removeTrainer"])
+    ->name("admin.course.removeTrainer")
+    ->middleware("admin");
 Route::get("/trainees", [UserController::class, "trainees"])->name("trainees")->middleware("admin");
 
 Route::get("/teacher", [UserController::class, "teacher"])->name("teacher");
@@ -68,4 +75,31 @@ Route::get("/about", [UserController::class, "landingAbout"])->name("landing.abo
 Route::get("/our-courses/{id}", [UserController::class, "landingCourseDetail"])->name("landing.course.detail");
 //student about
 Route::get("/student/about", [UserController::class, "about"])->name("about");
-?>
+//dashboard for trainee
+// Route::get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard');
+
+
+// ── MODULES & QUIZZES (Admin) ──
+Route::get("/admin/course/{courseId}/content", [UserController::class, "getCourseContent"])
+    ->name("admin.course.content")
+    ->middleware("admin");
+
+Route::post("/admin/module", [UserController::class, "storeModule"])
+    ->name("admin.module.store")
+    ->middleware("admin");
+
+Route::match(['POST', 'DELETE'], "/admin/module/{id}", [UserController::class, "destroyModule"])
+    ->name("admin.module.destroy")
+    ->middleware("admin");
+
+
+Route::post("/admin/quiz", [UserController::class, "storeQuiz"])
+    ->name("admin.quiz.store")
+    ->middleware("admin");
+
+Route::match(['POST', 'DELETE'], "/admin/quiz/{id}", [UserController::class, "destroyQuiz"])
+    ->name("admin.quiz.destroy")
+    ->middleware("admin");
+
+
+// trainer
