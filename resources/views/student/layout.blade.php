@@ -70,26 +70,36 @@
                 {{ strtoupper(substr(Auth::user()->firstname, 0, 1)) }}{{ strtoupper(substr(Auth::user()->lastname, 0, 1)) }}
             </button>
 
-            <div class="dropdown" id="dropdown">
-                <div class="dropdown-header">
+        <div class="dropdown" id="dropdown">
+            <div class="dropdown-header">
+                <div class="dd-avatar">
+                    {{ strtoupper(substr(Auth::user()->firstname, 0, 1)) }}{{ strtoupper(substr(Auth::user()->lastname, 0, 1)) }}
+                </div>
+                <div>
                     <div class="dh-name">{{ Auth::user()->firstname }} {{ Auth::user()->lastname }}</div>
                     <div class="dh-role">{{ ucfirst(Auth::user()->role) }}</div>
                 </div>
-
-                <a href="" class="dd-item">
+            </div>
+        
+            <div class="dd-items">
+                <a href="{{ route('student.profile') }}" class="dd-item">
                     <i class="fa fa-user dd-icon"></i>
                     Profile
                 </a>
-
+        
                 <div class="dd-divider"></div>
-                <a href="#" class="dd-item dd-logout" onclick="event.preventDefault(); openLogoutModal();">
+        
+                <a href="#" class="dd-item dd-logout"
+                onclick="event.preventDefault(); openLogoutModal();">
                     <i class="fa fa-right-from-bracket dd-icon"></i>
                     Log out
                 </a>
-                <form id="logout-form" action="{{ route('Logout') }}" method="POST" style="display:none;">
-                    @csrf
-                </form>
             </div>
+        
+            <form id="logout-form" action="{{ route('Logout') }}" method="POST" style="display:none;">
+                @csrf
+            </form>
+        </div>
         </div>
     </nav>
                         <div id="logoutModal" class="modal" style="display:none;">

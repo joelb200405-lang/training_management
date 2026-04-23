@@ -877,6 +877,121 @@ public function trainerStudents()
 
         return redirect()->route("handle");
     }
+
+    // ── STUDENT PROFILE ───────────────────────────────────────────────────────
+
+    public function studentProfile()
+    {
+        $user        = Auth::user();
+        $enrollments = \App\Models\Enrollment_tbl::with('course')
+                        ->where('user_id', $user->id)
+                        ->get();
+
+        $avgProgress    = $enrollments->count() > 0
+                            ? round($enrollments->avg('progress'))
+                            : 0;
+        $completedCount = $enrollments->where('status', 'completed')->count();
+
+        return view('student.profile', compact('user', 'enrollments', 'avgProgress', 'completedCount'));
+    }
+
+    public function studentProfileUpdate(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'firstname' => 'required|string|max:100',
+            'lastname'  => 'required|string|max:100',
+            'email'     => 'required|email|unique:user_tbls,email,' . $user->id,
+            'username'  => 'required|string|max:100|unique:user_tbls,username,' . $user->id,
+        ]);
+
+        User_tbl::where('id', $user->id)->update([
+            'firstname' => $request->firstname,
+            'lastname'  => $request->lastname,
+            'email'     => $request->email,
+            'username'  => $request->username,
+        ]);
+
+        return redirect()->route('student.profile')->with('success', 'Profile updated successfully!');
+    }
+
+    public function studentProfilePassword(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'current_password'      => 'required',
+            'password'              => 'required|min:8|confirmed',
+        ]);
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return redirect()->route('student.profile')
+                ->with('error', 'Current password is incorrect.');
+        }
+
+        User_tbl::where('id', $user->id)->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        return redirect()->route('student.profile')->with('success', 'Password updated successfully!');
+    }
+
+    // ── TRAINER PROFILE ───────────────────────────────────────────────────────
+
+    public function trainerProfile()
+    {
+        $user   = Auth::user();
+        $course = Course_tbl::where('trainer_id', $user->id)->first();
+
+        $totalStudents = $course
+            ? \App\Models\Enrollment_tbl::where('course_id', $course->id)->count()
+            : 0;
+
+        return view('trainer.profile', compact('user', 'course', 'totalStudents'));
+    }
+
+    public function trainerProfileUpdate(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'firstname' => 'required|string|max:100',
+            'lastname'  => 'required|string|max:100',
+            'email'     => 'required|email|unique:user_tbls,email,' . $user->id,
+            'username'  => 'required|string|max:100|unique:user_tbls,username,' . $user->id,
+        ]);
+
+        User_tbl::where('id', $user->id)->update([
+            'firstname' => $request->firstname,
+            'lastname'  => $request->lastname,
+            'email'     => $request->email,
+            'username'  => $request->username,
+        ]);
+
+        return redirect()->route('trainer.profile')->with('success', 'Profile updated successfully!');
+    }
+
+    public function trainerProfilePassword(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'current_password' => 'required',
+            'password'         => 'required|min:8|confirmed',
+        ]);
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return redirect()->route('trainer.profile')
+                ->with('error', 'Current password is incorrect.');
+        }
+
+        User_tbl::where('id', $user->id)->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        return redirect()->route('trainer.profile')->with('success', 'Password updated successfully!');
+    }
     
 
 }
