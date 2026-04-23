@@ -104,6 +104,28 @@
             text-align: center;
             padding: 8px 0;
         }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            width: 300px;
+            margin: 15% auto;
+            text-align: center;
+            border-radius: 10px;
+        }
+
+        .modal-actions-centered button {
+            margin: 10px;
+            padding: 8px 15px;
+        }
     </style>
 </head>
 
@@ -133,18 +155,27 @@
                 </div>
 
                 <div class="dd-divider"></div>
-
-                <form action="{{ route('Logout') }}" method="POST">
+                    <a href="#" class="dd-item dd-logout" onclick="event.preventDefault(); openLogoutModal();">
+                    <i class="fa fa-right-from-bracket dd-icon"></i>
+                    Log out
+                </a>
+                <form id="logout-form" action="{{ route('Logout') }}" method="POST" style="display:none;">
                     @csrf
-                    <button type="submit" class="dd-item dd-logout"
-                        style="width:100%; border:none; background:none; text-align:left; cursor:pointer; padding: 10px 16px; font-size: 14px; display: flex; align-items: center; gap: 8px;">
-                        <i class="fa fa-right-from-bracket dd-icon"></i>
-                        Log out
-                    </button>
                 </form>
             </div>
         </div>
     </nav>
+
+                        <div id="logoutModal" class="modal" style="display:none;">
+                <div class="modal-content">
+                    <p>Are you sure you want to log out?</p>
+
+                    <div class="modal-actions-centered">
+                        <button onclick="confirmLogout()" class="btn-modal-yes">Yes</button>
+                        <button onclick="closeLogoutModal()" class="btn-modal-no">Cancel</button>
+                    </div>
+                </div>
+            </div>
 
     {{-- ===== APP BODY ===== --}}
     <div class="app-body">
@@ -193,7 +224,7 @@
             <a href="#" class="nav-item" id="nav-analytics"
                onclick="showView('analytics'); setActive(this); return false;">
                 <i class="fa fa-chart-line nav-icon"></i>
-                <span>Analytics</span>
+                <span>Reports</span>
             </a>
 
             <a href="#" class="nav-item" id="nav-settings"
@@ -301,19 +332,52 @@
                         <h3>Trainee Directory</h3>
                     </div>
                     <div class="user-list-body" id="trainee-list-content">
-                        <div class="user-item">
-                            <i class="fa-solid fa-circle-user profile-icon"></i>
-                            <div class="user-info">
-                                <strong>MICHAELA BOCITA</strong><br>
-                                <small>mmsbocita@gmail.com</small>
+                        @forelse($trainees as $trainee)
+                            <div class="user-item">
+                                <i class="fa-solid fa-circle-user profile-icon"></i>
+                                <div class="user-info">
+                                    <strong>{{ strtoupper($trainee->firstname . ' ' . $trainee->lastname) }}</strong><br>
+                                    <small>{{ $trainee->email }}</small>
+                                </div>
+                                <button class="btn-view" onclick="openUserModal(
+                                    '{{ addslashes($trainee->firstname . ' ' . $trainee->lastname) }}',
+                                    '{{ addslashes($trainee->email) }}',
+                                    'student',
+                                    'Active'
+                                )">View</button>
                             </div>
-                            <button class="btn-view" onclick="openUserModal('MICHAELA BOCITA', 'mmsbocita@gmail.com', 'Trainee', 'Active')">View</button>
-                        </div>
+                        @empty
+                            <div style="text-align:center; color:#aaa; padding:20px; font-size:13px;">
+                                <i class="fa-solid fa-users-slash"></i> Walang trainees pa.
+                            </div>
+                        @endforelse
                     </div>
                     <div class="pagination-container">
-                        <button class="page-btn"><i class="fa-solid fa-chevron-left"></i></button>
-                        <div class="page-numbers"><button class="page-btn active">1</button></div>
-                        <button class="page-btn"><i class="fa-solid fa-chevron-right"></i></button>
+                        @if($trainees->onFirstPage())
+                            <button class="page-btn" disabled><i class="fa-solid fa-chevron-left"></i></button>
+                        @else
+                            <a href="{{ $trainees->previousPageUrl() }}" class="page-btn">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </a>
+                        @endif
+
+                        <div class="page-numbers">
+                            @for($i = 1; $i <= $trainees->lastPage(); $i++)
+                                @if($i == $trainees->currentPage())
+                                    <button class="page-btn active">{{ $i }}</button>
+                                @else
+                                    <a href="{{ $trainees->url($i) }}" class="page-btn">{{ $i }}</a>
+                                @endif
+                            @endfor
+                        </div>
+
+                        @if($trainees->hasMorePages())
+                            <a href="{{ $trainees->nextPageUrl() }}" class="page-btn">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </a>
+                        @else
+                            <button class="page-btn" disabled><i class="fa-solid fa-chevron-right"></i></button>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -325,14 +389,25 @@
                         <h3>Trainer Directory</h3>
                     </div>
                     <div class="user-list-body" id="trainer-list-content">
-                        <div class="user-item">
-                            <i class="fa-solid fa-user-tie profile-icon" style="color: #004d26;"></i>
-                            <div class="user-info">
-                                <strong>RUSSEL ROBERT</strong><br>
-                                <small>russel.r@example.com</small>
+                        @forelse($trainersList as $trainer)
+                            <div class="user-item">
+                                <i class="fa-solid fa-user-tie profile-icon" style="color: #004d26;"></i>
+                                <div class="user-info">
+                                    <strong>{{ strtoupper($trainer->firstname . ' ' . $trainer->lastname) }}</strong><br>
+                                    <small>{{ $trainer->email }}</small>
+                                </div>
+                                <button class="btn-view" onclick="openUserModal(
+                                    '{{ addslashes($trainer->firstname . ' ' . $trainer->lastname) }}',
+                                    '{{ addslashes($trainer->email) }}',
+                                    'trainer',
+                                    'Active'
+                                )">View</button>
                             </div>
-                            <button class="btn-view" onclick="openUserModal('RUSSEL ROBERT', 'russel.r@example.com', 'Trainer', 'Active')">View</button>
-                        </div>
+                        @empty
+                            <div style="text-align:center; color:#aaa; padding:20px; font-size:13px;">
+                                <i class="fa-solid fa-user-slash"></i> Walang trainers pa.
+                            </div>
+                        @endforelse
                     </div>
                     <div style="text-align: center; margin-bottom: 20px;">
                         <button class="btn-save-main" onclick="openAddTrainerModal()" style="width: auto; padding: 10px 15px;">
@@ -340,62 +415,32 @@
                         </button>
                     </div>
                     <div class="pagination-container">
-                        <button class="page-btn"><i class="fa-solid fa-chevron-left"></i></button>
-                        <div class="page-numbers"><button class="page-btn active">1</button></div>
-                        <button class="page-btn"><i class="fa-solid fa-chevron-right"></i></button>
-                    </div>
-                </div>
-            </div>
+                        @if($trainersList->onFirstPage())
+                            <button class="page-btn" disabled><i class="fa-solid fa-chevron-left"></i></button>
+                        @else
+                            <a href="{{ $trainersList->previousPageUrl() }}" class="page-btn">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </a>
+                        @endif
 
-            {{-- FACILITIES --}}
-            <div id="view-facilities" style="display: none;">
-                <div class="facility-grid">
-                    <div class="card facility-card">
-                        <div class="facility-header">
-                            <i class="fa-solid fa-building-circle-check"></i>
-                            <div>
-                                <strong>Brgy. Burol Main Barangay Hall</strong><br>
-                                <small>Zone 4, Dasmariñas, Cavite</small>
-                            </div>
+                        <div class="page-numbers">
+                            @for($i = 1; $i <= $trainersList->lastPage(); $i++)
+                                @if($i == $trainersList->currentPage())
+                                    <button class="page-btn active">{{ $i }}</button>
+                                @else
+                                    <a href="{{ $trainersList->url($i) }}" class="page-btn">{{ $i }}</a>
+                                @endif
+                            @endfor
                         </div>
-                        <div class="facility-body">
-                            <p><i class="fa-solid fa-users"></i> Capacity: 25/30</p>
-                            <p><i class="fa-solid fa-book-open"></i> Current: Dressmaking</p>
-                        </div>
-                        <button class="btn-all" onclick="openFacilityModal('Brgy. Burol Main Barangay Hall', 'Zone 4, Dasmariñas, Cavite', 30, 'Dressmaking')">
-                            Manage Facility
-                        </button>
+
+                        @if($trainersList->hasMorePages())
+                            <a href="{{ $trainersList->nextPageUrl() }}" class="page-btn">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </a>
+                        @else
+                            <button class="page-btn" disabled><i class="fa-solid fa-chevron-right"></i></button>
+                        @endif
                     </div>
-                    <div class="card facility-card">
-                        <div class="facility-header">
-                            <i class="fa-solid fa-building-columns"></i>
-                            <div>
-                                <strong>LEDIPO Main</strong><br>
-                                <small>City Hall Compound</small>
-                            </div>
-                        </div>
-                        <div class="facility-body">
-                            <p><i class="fa-solid fa-users"></i> Capacity: 10/20</p>
-                            <p><i class="fa-solid fa-book-open"></i> Current: Carpentry</p>
-                        </div>
-                        <button class="btn-all" onclick="openFacilityModal('LEDIPO Main', 'City Hall Compound', 20, 'Carpentry')">
-                            Manage Facility
-                        </button>
-                    </div>
-                </div>
-                <div style="text-align: center; margin-top: 20px;">
-                    <button class="btn-save-main" onclick="openAddFacilityModal()" style="width: auto; padding: 10px 15px;">
-                        <i class="fa-solid fa-plus"></i> Add New Facility
-                    </button>
-                </div>
-                <div class="pagination-container">
-                    <button class="page-btn prev"><i class="fa-solid fa-chevron-left"></i></button>
-                    <div class="page-numbers">
-                        <button class="page-btn active">1</button>
-                        <button class="page-btn">2</button>
-                        <button class="page-btn">3</button>
-                    </div>
-                    <button class="page-btn next"><i class="fa-solid fa-chevron-right"></i></button>
                 </div>
             </div>
 
@@ -639,9 +684,9 @@
                         <div class="input-wrapper">
                             <i class="fa-solid fa-book-open"></i>
                             <select id="newTrainerCourse" class="modal-input-select">
-                                @foreach($courses as $course)
-                                    <option value="{{ $course->id }}">{{ $course->title }}</option>
-                                @endforeach
+                            @foreach($allCourses as $course)
+                            <option value="{{ $course->id }}">{{ $course->title }}</option>
+                            @endforeach
                             </select>
                         </div>
                     </div>
@@ -748,10 +793,9 @@
                         <div class="input-wrapper">
                             <i class="fa-solid fa-book-open-reader"></i>
                             <select id="editFacCourse" class="modal-input-select">
-                                @foreach($courses as $course)
-                                    <option value="{{ $course->id }}">{{ $course->title }}</option>
-                                @endforeach
-                                <option value="">No Active Training</option>
+                            @foreach($allCourses as $course)
+                            <option value="{{ $course->id }}">{{ $course->title }}</option>
+                            @endforeach
                             </select>
                         </div>
                     </div>
@@ -1056,8 +1100,38 @@
 
         document.getElementById('addTrainerForm').onsubmit = function(e) {
             e.preventDefault();
-            alert('Trainer Added Successfully!');
-            closeAddTrainerModal();
+            const name     = document.getElementById('newTrainerName').value.trim().split(' ');
+            const email    = document.getElementById('newTrainerEmail').value.trim();
+            const password = document.getElementById('newTrainerPass').value.trim();
+
+            if (!name.length || !email || !password) {
+                alert('Punan ang lahat ng fields.'); return;
+            }
+
+            const courseId = document.getElementById('newTrainerCourse').value;
+
+            fetch('/admin/trainer/store', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+                body: JSON.stringify({
+                    firstname: name[0],
+                    lastname:  name.slice(1).join(' ') || '-',
+                    email,
+                    password,
+                    course_id: courseId || null,
+                })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Trainer account created successfully!');
+                    closeAddTrainerModal();
+                    location.reload();
+                } else {
+                    alert(data.message || 'May error. Subukan ulit.');
+                }
+            })
+            .catch(() => alert('May error. Subukan ulit.'));
         };
 
         document.getElementById('courseForm').onsubmit = function(e) {
@@ -1280,29 +1354,72 @@ function renderQuizzes() {
     }
     empty.style.display = 'none';
 
-    container.innerHTML = _contentQuizzes.map(q => `
-        <div style="display:flex; align-items:center; gap:10px; background:#fff;
-                    border:1px solid #eee; border-radius:10px; padding:10px 14px;">
-            <div style="width:32px; height:32px; border-radius:8px; background:#fff8e1;
-                        display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0;">
-                📝
-            </div>
-            <div style="flex:1; min-width:0;">
-                <div style="font-size:13px; font-weight:700; color:#1a1a1a;">${escHtml(q.title)}</div>
-                <div style="font-size:11px; color:#888;">
-                    ${q.module ? `<i class="fa-solid fa-cube"></i> ${escHtml(q.module.title)} &nbsp;·&nbsp;` : ''}
-                    <i class="fa-solid fa-clock"></i> ${q.time_limit}m &nbsp;·&nbsp;
-                    <i class="fa-solid fa-star"></i> ${q.passing_score}% passing
+        container.innerHTML = _contentQuizzes.map(q => `
+            <div style="display:flex; flex-direction:column; gap:0; background:#fff;
+                        border:1px solid #eee; border-radius:10px; overflow:hidden;">
+                <div style="display:flex; align-items:center; gap:10px; padding:10px 14px;">
+                    <div style="width:32px; height:32px; border-radius:8px; background:#fff8e1;
+                                display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0;">
+                        📝
+                    </div>
+                    <div style="flex:1; min-width:0;">
+                        <div style="font-size:13px; font-weight:700; color:#1a1a1a;">${escHtml(q.title)}</div>
+                        <div style="font-size:11px; color:#888;">
+                            ${q.module ? `<i class="fa-solid fa-cube"></i> ${escHtml(q.module.title)} &nbsp;·&nbsp;` : ''}
+                            <i class="fa-solid fa-clock"></i> ${q.time_limit}m &nbsp;·&nbsp;
+                            <i class="fa-solid fa-star"></i> ${q.passing_score}% passing
+                        </div>
+                    </div>
+                    <button onclick="toggleQuizQuestions(${q.id}, this)"
+                        style="font-size:11px; padding:4px 10px; border-radius:6px;
+                            background:#e8f5e9; color:#025628; border:none; cursor:pointer;
+                            font-family:inherit; font-weight:700; white-space:nowrap;">
+                        <i class="fa-solid fa-list"></i> Questions
+                    </button>
+                    <button onclick="deleteQuiz(${q.id})"
+                        style="font-size:11px; padding:4px 10px; border-radius:6px;
+                            background:#FCEBEB; color:#A32D2D; border:none; cursor:pointer;
+                            font-family:inherit; font-weight:700; white-space:nowrap;">
+                        <i class="fa-solid fa-trash"></i> Remove
+                    </button>
+                </div>
+                <div id="quiz-questions-${q.id}" style="display:none; border-top:1px solid #eee; padding:12px 14px; background:#fafafa;">
+                    <div id="qlist-${q.id}" style="display:flex; flex-direction:column; gap:6px; margin-bottom:10px;"></div>
+                    <div style="background:#fff; border:1px solid #eee; border-radius:8px; padding:12px;">
+                        <div style="font-size:12px; font-weight:700; color:#025628; margin-bottom:8px; text-transform:uppercase;">
+                            <i class="fa-solid fa-plus"></i> Add Question
+                        </div>
+                        <textarea id="qtext-${q.id}" placeholder="Question text..." rows="2"
+                            style="width:100%; border:1px solid #ddd; border-radius:8px; padding:8px; font-size:13px; font-family:inherit; margin-bottom:8px; resize:vertical;"></textarea>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:8px;">
+                            <input type="text" id="qa-${q.id}" placeholder="A. Choice A"
+                                style="border:1px solid #ddd; border-radius:8px; padding:7px 10px; font-size:13px; font-family:inherit;">
+                            <input type="text" id="qb-${q.id}" placeholder="B. Choice B"
+                                style="border:1px solid #ddd; border-radius:8px; padding:7px 10px; font-size:13px; font-family:inherit;">
+                            <input type="text" id="qc-${q.id}" placeholder="C. Choice C"
+                                style="border:1px solid #ddd; border-radius:8px; padding:7px 10px; font-size:13px; font-family:inherit;">
+                            <input type="text" id="qd-${q.id}" placeholder="D. Choice D"
+                                style="border:1px solid #ddd; border-radius:8px; padding:7px 10px; font-size:13px; font-family:inherit;">
+                        </div>
+                        <div style="display:flex; gap:8px; align-items:center;">
+                            <label style="font-size:12px; color:#666;">Correct answer:</label>
+                            <select id="qans-${q.id}"
+                                style="border:1px solid #ddd; border-radius:8px; padding:6px 10px; font-size:13px; font-family:inherit; background:#fff;">
+                                <option value="a">A</option>
+                                <option value="b">B</option>
+                                <option value="c">C</option>
+                                <option value="d">D</option>
+                            </select>
+                            <button onclick="addQuestion(${q.id})"
+                                style="background:#025628; color:#fff; border:none; border-radius:8px; padding:7px 16px;
+                                    font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; margin-left:auto;">
+                                <i class="fa-solid fa-plus"></i> Add
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <button onclick="deleteQuiz(${q.id})"
-                style="font-size:11px; padding:4px 10px; border-radius:6px;
-                       background:#FCEBEB; color:#A32D2D; border:none; cursor:pointer;
-                       font-family:inherit; font-weight:700; white-space:nowrap;">
-                <i class="fa-solid fa-trash"></i> Remove
-            </button>
-        </div>
-    `).join('');
+        `).join('');
 }
 
 // ── ADD MODULE ─────────────────────────────────────────────────────────────
@@ -1417,11 +1534,134 @@ function populateQuizModuleDropdown() {
 }
 
 // ── HELPER: escape HTML ────────────────────────────────────────────────────
-function escHtml(str) {
-    const div = document.createElement('div');
-    div.appendChild(document.createTextNode(str || ''));
-    return div.innerHTML;
-}
+    function escHtml(str) {
+        const div = document.createElement('div');
+        div.appendChild(document.createTextNode(str || ''));
+        return div.innerHTML;
+    }
+
+    // ── QUIZ QUESTIONS ─────────────────────────────────────────────────────────
+        function toggleQuizQuestions(quizId, btn) {
+            const panel = document.getElementById(`quiz-questions-${quizId}`);
+            const isOpen = panel.style.display !== 'none';
+            panel.style.display = isOpen ? 'none' : 'block';
+            if (!isOpen) loadQuizQuestions(quizId);
+        }
+
+        function loadQuizQuestions(quizId) {
+            fetch(`/admin/quiz/${quizId}/questions`, {
+                headers: { 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' }
+            })
+            .then(r => r.json())
+            .then(data => renderQuizQuestions(quizId, data.questions || []))
+            .catch(() => alert('Hindi ma-load ang questions.'));
+        }
+
+        function renderQuizQuestions(quizId, questions) {
+            const container = document.getElementById(`qlist-${quizId}`);
+            if (!questions.length) {
+                container.innerHTML = '<div style="font-size:12px; color:#aaa; text-align:center; padding:8px;">Walang questions pa.</div>';
+                return;
+            }
+            container.innerHTML = questions.map((q, i) => `
+                <div style="display:flex; align-items:flex-start; gap:8px; background:#fff;
+                            border:1px solid #eee; border-radius:8px; padding:8px 12px;">
+                    <div style="width:22px; height:22px; border-radius:50%; background:#e8f5e9;
+                                display:flex; align-items:center; justify-content:center;
+                                font-size:11px; font-weight:700; color:#025628; flex-shrink:0; margin-top:1px;">
+                        ${i+1}
+                    </div>
+                    <div style="flex:1; min-width:0;">
+                        <div style="font-size:13px; font-weight:600; color:#1a1a1a; margin-bottom:4px;">${escHtml(q.question)}</div>
+                        <div style="font-size:11px; color:#555; display:grid; grid-template-columns:1fr 1fr; gap:2px;">
+                            <span ${q.correct_answer==='a' ? 'style="color:#025628; font-weight:700;"' : ''}>A. ${escHtml(q.choice_a)}</span>
+                            <span ${q.correct_answer==='b' ? 'style="color:#025628; font-weight:700;"' : ''}>B. ${escHtml(q.choice_b)}</span>
+                            <span ${q.correct_answer==='c' ? 'style="color:#025628; font-weight:700;"' : ''}>C. ${escHtml(q.choice_c)}</span>
+                            <span ${q.correct_answer==='d' ? 'style="color:#025628; font-weight:700;"' : ''}>D. ${escHtml(q.choice_d)}</span>
+                        </div>
+                    </div>
+                    <button onclick="deleteQuestion(${q.id}, ${quizId})"
+                        style="font-size:11px; padding:3px 8px; border-radius:6px; background:#FCEBEB;
+                            color:#A32D2D; border:none; cursor:pointer; font-family:inherit; font-weight:700; flex-shrink:0;">
+                        ✕
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function addQuestion(quizId) {
+            const question = document.getElementById(`qtext-${quizId}`).value.trim();
+            const a        = document.getElementById(`qa-${quizId}`).value.trim();
+            const b        = document.getElementById(`qb-${quizId}`).value.trim();
+            const c        = document.getElementById(`qc-${quizId}`).value.trim();
+            const d        = document.getElementById(`qd-${quizId}`).value.trim();
+            const ans      = document.getElementById(`qans-${quizId}`).value;
+
+            if (!question || !a || !b || !c || !d) {
+                alert('Punan ang lahat ng fields.'); return;
+            }
+
+            fetch('/admin/quiz-question', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+                body: JSON.stringify({ quiz_id: quizId, question, choice_a: a, choice_b: b, choice_c: c, choice_d: d, correct_answer: ans })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById(`qtext-${quizId}`).value = '';
+                    document.getElementById(`qa-${quizId}`).value    = '';
+                    document.getElementById(`qb-${quizId}`).value    = '';
+                    document.getElementById(`qc-${quizId}`).value    = '';
+                    document.getElementById(`qd-${quizId}`).value    = '';
+                    loadQuizQuestions(quizId);
+                }
+            })
+            .catch(() => alert('May error. Subukan ulit.'));
+        }
+
+        function deleteQuestion(id, quizId) {
+            if (!confirm('I-remove ang question na ito?')) return;
+            fetch(`/admin/quiz-question/${id}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+                body: JSON.stringify({ _method: 'DELETE' })
+            })
+            .then(r => r.json())
+            .then(data => { if (data.success) loadQuizQuestions(quizId); })
+            .catch(() => alert('May error. Subukan ulit.'));
+        }
+
 </script>
+            </script>
+                <script>
+            function openLogoutModal() {
+                document.getElementById('logoutModal').style.display = 'block';
+            }
+
+            function closeLogoutModal() {
+                document.getElementById('logoutModal').style.display = 'none';
+            }
+
+            function confirmLogout() {
+                document.getElementById('logout-form').submit();
+            }
+            // for admin trainee list
+                const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('page')) {
+                showView('courses');
+                setActive(document.getElementById('nav-courses'));
+            }
+            if (urlParams.get('trainee_page')) {
+                showView('all-trainees');
+                setActive(document.getElementById('nav-trainees'));
+            }
+            if (urlParams.get('trainer_page')) {
+                showView('all-trainers');
+                setActive(document.getElementById('nav-trainers'));
+            }
+            </script>
+
+            
 </body>
 </html>

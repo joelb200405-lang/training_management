@@ -1,268 +1,154 @@
-@font-face {
-    font-family: 'Poppins';
-    src: url('../Poppins/Poppins-Regular.ttf') format('truetype');
-    font-weight: 400;
-}
-
 * {
-    font-family: 'Poppins', sans-serif;
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
-.container-fluid .login-parent{
-    height: 100vh;
+body {
+    min-height: 100vh;
+    background: #f0f4f0;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    overflow: hidden; 
+    justify-content: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 24px 16px;
 }
 
-.container-fluid .login-parent .image-container{
-     /* background-image: url(images/logo.png); */
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover; */
-    border-right: 1px solid rgba(0,0,0,0.1);
-}
-
-.container-fluid .login-parent .image-container img{
+.signup-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 40px;
     width: 100%;
-    height: 100%;
-    display: block;
+    max-width: 480px;
+    box-shadow: 0 8px 32px rgba(2, 86, 40, 0.10);
 }
 
-.container-fluid .login-parent .form-extension{
-    width: calc(100% / 2);
-    height: 100%;
-}
-
-.container-fluid .login-parent .form{
-    overflow-y: auto;
+.card-logo {
     display: flex;
-    justify-content: flex-start;
-    align-items: left;
     flex-direction: column;
-    padding: 2rem 4rem;
-    height: 100%;
-}
-
-.container-fluid .login-parent .form .form-logo{
-    display: flex;
     align-items: center;
-    flex-direction: column;
-    margin-top: 1.5rem;
-} 
+    margin-bottom: 24px;
+}
 
-.container-fluid .login-parent .form .form-logo h2 {
+.card-logo img {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    margin-bottom: 12px;
+}
+
+.card-logo h2 {
     font-size: 20px;
-    text-align: center;
-    margin-top: 0.5rem;
+    font-weight: 700;
+    color: #025628;
+    margin-bottom: 4px;
 }
 
-/* .container-fluid .login-parent .form .form-logo{
-    margin-top: 20rem;
-} */
-
-.container-fluid .login-parent .form .form-logo .parent-logo{
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 0.5rem;
-    gap: 0.5rem;
-}
-
-.container-fluid .login-parent .form .form-logo .parent-logo .logo-img {
-    width: 60px;
-    height: 60px;
-    border-radius: 7px;
-    object-fit: contain;
-}
-
-.container-fluid .login-parent .form .form-logo .parent-logo h2{
-    margin-left: 0;
-    font-size: 18px;
-}
-
-.container-fluid .login-parent .form p{
-    margin-left: 1.5rem;
-}
-
-.container-fluid .login-parent .form .form-logo .parent-logo .logo-img{
-    width: 60px;
-    height: 60px;
-    border-radius: 7px;
-    object-fit: contain;
-}
-
-.container-fluid .login-parent .form .form-logo p{
-    font-size: 14.5px;
-    color: #808080;
+.card-logo p {
+    font-size: 13px;
+    color: #888;
     text-align: center;
 }
 
-.container-fluid .login-parent .form{
-    /* padding-top: 13rem; */
-    /* padding-top: 4.5rem;
-    padding-left: 4.5rem;
-    padding-right: 4.5rem; */
-
+.divider {
+    height: 1px;
+    background: #f0f0f0;
+    margin-bottom: 20px;
 }
 
- .container-fluid .login-parent .form .text-box{
-    margin-top: 1.r8em;
-    margin-left: 0;
-} 
-
-/* .container-fluid .login-parent .form .text-box:nth-child(3){
-    margin-top: 1.5rem;
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
 }
 
-.container-fluid .login-parent .form .text-box:nth-child(4){
-    margin-top: 1.5rem;
+.form-group {
+    margin-bottom: 14px;
 }
 
-.container-fluid .login-parent .form .text-box:nth-child(5){
-    margin-top: 1.5rem;
-} */
-
-.container-fluid .login-parent .form .text-box input, 
-.container-fluid .login-parent .form .text-box label,
-.container-fluid .login-parent .form .text-box select{
-    font-size: 14.5px;
-}
-
-.container-fluid .login-parent .form .text-box input {
-    margin-top: 0.3rem;
-    border: 1px solid rgba(0,0,0,0.3);
-    border-radius: 7px;
-}
-
-.container-fluid .login-parent .form .text-box select {
-    margin-top: 0.3rem;
-    border: 1px solid rgba(0,0,0,0.3);
-    border-radius: 7px;
-    color: #6F7174;
-}
-
-.container-fluid .login-parent .form .text-box select:valid{
-    color: #212529;
-}
-
-/* .container-fluid .login-parent .form .text-box .input-group .input-group-text{
-    background-color: #dfdfdf;
-    color: white;
-} */
-
-.container-fluid .login-parent .form h2{
-    font-size: 23px;
-    margin-top: 1.8rem;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-}
-
-.container-fluid .login-parent .form .forgot{
-    margin-top: 1.5rem;
-}
-
-.container-fluid .login-parent .form .forgot a{
-    font-size: 14.5px;
-    color: #212529;
-}
-
-.container-fluid .login-parent .form .button{
-    margin-top: 1.5rem;
-    margin-left: 1.5rem;    
-    margin-right: 1.5rem;    
-}
-
-.container-fluid .login-parent .form .button button{
-    padding: 7px;
-    border: 1px solid rgba(0,0,0,0.1);
-    outline: none;
-    width: 100%;
-    border-radius: 7px;
-    font-size: 14.5px;
+.form-group label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #444;
+    margin-bottom: 5px;
     text-transform: uppercase;
-    background-color: #025628;
-    color: white;
-    font-weight: bold;
+    letter-spacing: .04em;
 }
 
-.container-fluid .login-parent .form h4{
-    margin-top: 1rem;
-    text-align: center;
-    font-size: 14.5px;
-    font-weight: normal;
+.input-wrap {
+    position: relative;
 }
 
-.container-fluid .login-parent .form .accounts{
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.input-wrap i {
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #aaa;
+    font-size: 13px;
+}
+
+.input-wrap input {
     width: 100%;
-    margin-top: 2rem;
-    gap: 1rem;
+    padding: 10px 14px 10px 36px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: inherit;
+    color: #1a1a1a;
+    outline: none;
+    transition: border-color 0.2s;
 }
 
-.container-fluid .login-parent .form .accounts a{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.5rem;
-    text-decoration: none;
-    color: #212529;
-    border: 1px solid #212529;
-    padding: 0.5rem 0.8rem;
-    border-radius: 7px;
+.input-wrap input:focus {
+    border-color: #025628;
 }
 
-.container-fluid .login-parent .form .accounts a p{
-    font-size: 14.5px;
+.error-box {
+    background: #FCEBEB;
+    color: #A32D2D;
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    font-size: 13px;
 }
 
-.container-fluid .login-parent .form .change{
+.error-box div { margin-bottom: 2px; }
+
+.btn-submit {
     width: 100%;
-    text-align: center;
-    margin-top: 1.5rem;
-}
-
-.container-fluid .login-parent .form .change label, .container-fluid .login-parent .form .change a{
-    color: #212529;
+    background: #025628;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 13px;
     font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    margin-top: 6px;
+    transition: background 0.2s;
 }
 
+.btn-submit:hover { background: #014d20; }
 
-@media only screen and (max-width: 1020px) {
-    .container-fluid .login-parent .image-container {
-        display: none;
-    }
-
-    .container-fluid .login-parent .form-extension {
-        width: 100%;
-    }
-
-    .container-fluid .login-parent .form {
-        padding: 2rem 4rem; /* dating 38rem — napakalaki nito! */
-    }
+.login-link {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 13px;
+    color: #888;
 }
 
-@media only screen and (max-width: 990px) {
-    .container-fluid .login-parent .form {
-        padding: 2rem 4rem; /* dating 47rem */
-    }
+.login-link a {
+    color: #025628;
+    font-weight: 700;
+    text-decoration: none;
 }
 
-@media only screen and (max-width: 700px) {
-    .container-fluid .login-parent .form {
-        padding: 2rem 3rem; /* dating 45rem */
-    }
-}
+.login-link a:hover { text-decoration: underline; }
 
-@media only screen and (max-width: 500px) {
-    .container-fluid .login-parent .form {
-        padding: 2rem 1.5rem; /* dating 45rem */
-    }
+@media (max-width: 480px) {
+    .signup-card { padding: 28px 20px; }
+    .form-row { grid-template-columns: 1fr; }
 }

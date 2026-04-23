@@ -22,6 +22,31 @@
     <link rel="stylesheet" href="../font-awesome-icon/css/all.min.css">
 
     @yield('css')
+
+            <style>
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            width: 300px;
+            margin: 15% auto;
+            text-align: center;
+            border-radius: 10px;
+        }
+
+        .modal-actions-centered button {
+            margin: 10px;
+            padding: 8px 15px;
+        }
+        </style>
 </head>
 <body>
 
@@ -57,19 +82,26 @@
                 </a>
 
                 <div class="dd-divider"></div>
-
-                <a href="#" class="dd-item dd-logout"
-                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                <a href="#" class="dd-item dd-logout" onclick="event.preventDefault(); openLogoutModal();">
                     <i class="fa fa-right-from-bracket dd-icon"></i>
                     Log out
                 </a>
-
                 <form id="logout-form" action="{{ route('Logout') }}" method="POST" style="display:none;">
                     @csrf
                 </form>
             </div>
         </div>
     </nav>
+                        <div id="logoutModal" class="modal" style="display:none;">
+                <div class="modal-content">
+                    <p>Are you sure you want to log out?</p>
+
+                    <div class="modal-actions-centered">
+                        <button onclick="confirmLogout()" class="btn-modal-yes">Yes</button>
+                        <button onclick="closeLogoutModal()" class="btn-modal-no">Cancel</button>
+                    </div>
+                </div>
+            </div>
 
     <div class="app-body">
 
@@ -90,21 +122,6 @@
                class="nav-item {{ request()->routeIs('all.courses') ? 'active' : '' }}">
                 <i class="fa fa-book-open nav-icon"></i>
                 <span>Courses</span>
-            </a>
-
-            <div class="sidebar-section-label">Monitor</div>
-
-
-            <a href="{{ route('about') }}"
-               class="nav-item {{ request()->routeIs('about') ? 'active' : '' }}">
-                <i class="fa fa-circle-info nav-icon"></i>
-                <span>About</span>
-            </a>
-
-            <a href="{{ route('contact') }}"
-               class="nav-item {{ request()->routeIs('contact') ? 'active' : '' }}">
-                <i class="fa fa-envelope nav-icon"></i>
-                <span>Contact</span>
             </a>
         </aside>
 
@@ -147,6 +164,20 @@
             }
         });
     </script>
+        </script>
+                <script>
+            function openLogoutModal() {
+                document.getElementById('logoutModal').style.display = 'block';
+            }
+
+            function closeLogoutModal() {
+                document.getElementById('logoutModal').style.display = 'none';
+            }
+
+            function confirmLogout() {
+                document.getElementById('logout-form').submit();
+            }
+            </script>
 
     @yield('scripts')
 

@@ -28,4 +28,14 @@ class Quiz extends Model
     {
         return $this->belongsTo(Module::class, 'module_id');
     }
+
+    public function questions()
+    {
+    return $this->hasMany(QuizQuestion::class)->orderBy('order');
+    }
+
+public function results()
+{
+    return $this->hasMany(QuizResult::class);
+}
 }

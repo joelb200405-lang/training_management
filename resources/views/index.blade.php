@@ -176,15 +176,7 @@
                 <img src="{{ asset('images/8.jpg') }}" alt="About Us">
             </div>
         </div>
-
-                {{-- CONTROLS --}}
-                <button class="carousel-control-prev" type="button" data-bs-target="#communityCarousel" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon"></span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#communityCarousel" data-bs-slide="next">
-                    <span class="carousel-control-next-icon"></span>
-                </button>
-            </div>
+        </div>
         </section>
     </div>
 

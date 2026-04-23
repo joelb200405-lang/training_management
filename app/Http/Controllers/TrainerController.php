@@ -141,4 +141,44 @@ class TrainerController extends Controller
             'assessments' => collect(), // replace with real query
         ]);
     }
+
+        // Ilagay ito sa iyong existing TrainerController.php
+        // (o kung anong controller ang nag-hahandle ng teacher route)
+
+        public function dashboard()
+        {
+            $trainer = Auth::user();
+
+            // Assigned course ng trainer (isa lang)
+            $course = Course::where('trainer_id', $trainer->id)
+                ->withCount('students')
+                ->first();
+
+            // Stat counts
+            $totalStudents  = $course ? $course->students_count : 0;
+            $totalCourses   = Course::where('trainer_id', $trainer->id)->count();
+
+            // Completion rate
+            $totalEnrolled  = $course ? $course->students()->count() : 0;
+            $totalCompleted = $course ? $course->students()->wherePivot('status', 'completed')->count() : 0;
+            $completionRate = $totalEnrolled > 0
+                ? round(($totalCompleted / $totalEnrolled) * 100)
+                : 0;
+
+            // Recent 5 students sa course ng trainer
+            $recentStudents = $course
+                ? $course->students()
+                    ->orderByPivot('created_at', 'desc')
+                    ->take(5)
+                    ->get()
+                : collect();
+
+            return view('trainer.teacher', compact(
+                'course',
+                'totalStudents',
+                'totalCourses',
+                'completionRate',
+                'recentStudents',
+            ));
+        }
 }

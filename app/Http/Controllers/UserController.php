@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Validation\Rule;
-use App\Models\product_table;
 use App\Models\User_tbl;
+use App\Models\Course_tbl;
 use Illuminate\Http\Request;
 use Auth;
 use Illuminate\support\Facades\DB;
@@ -42,19 +42,21 @@ class UserController extends Controller
                 "email" => ["required", Rule::unique("user_tbls", "email")],
                 "username" => "required",
                 "password" => "required|confirmed",
-                "role" => "required",
+                "role" => "in:student",
             ]);
 
-            User_tbl::create([
+            $user = User_tbl::create([
                 "firstname" => $request->firstname,
-                "lastname" => $request->lastname,
-                "email" => $request->email,
-                "username" => $request->username,
-                "password" => bcrypt($request->password),
-                "role" => $request->role,
+                "lastname"  => $request->lastname,
+                "email"     => $request->email,
+                "username"  => $request->username,
+                "password"  => bcrypt($request->password),
+                "role"      => $request->role,
             ]);
 
-            return redirect()->route("Login");
+            $user->sendEmailVerificationNotification();
+
+            return redirect()->route("Login")->with('status', 'Account created! Please check your email to verify your account.');
 
         } catch (\Exception $e) {
             dd($e->getMessage(), $e->getLine(), $e->getFile());
@@ -83,7 +85,15 @@ class UserController extends Controller
     public function handle(){
         $user = Auth::user();
 
+        // Check if must reset password (first time trainer login)
+        if($user->must_reset_password) {
+            return redirect()->route("first.reset");
+        }
+
         if($user->role === "student"){
+        if(!$user->hasVerifiedEmail()) {
+       return redirect()->route("verification.notice");
+        }
             return redirect()->route("homepage");
         } else if($user->role === "trainer"){
             return redirect()->route("teacher");
@@ -96,42 +106,62 @@ class UserController extends Controller
         //new (temporary)
 // I-update ang homepage() method sa UserController.php
 
-public function homepage()
-{
-    $userId = Auth::id();
+        public function homepage()
+        {
+            $userId = Auth::id();
 
-    $enrollment = \App\Models\Enrollment_tbl::with('course')
-                    ->where('user_id', $userId)
-                    ->where('status', 'active')
-                    ->first();
+            // Kunin LAHAT ng enrollments ng student
+            $enrollments = \App\Models\Enrollment_tbl::with('course')
+                            ->where('user_id', $userId)
+                            ->get();
 
-    $upcomingDeadlines = \App\Models\Deadline_tbl::where('due_date', '>=', now())
-                            ->where('due_date', '<=', now()->addDays(30))
-                            ->count();
+            // Default — yung pinaka-active o pinakabago
+            $selectedId  = request('course_id');
+            $enrollment  = $selectedId
+                ? $enrollments->firstWhere('course_id', $selectedId)
+                : $enrollments->where('status', 'active')->first() ?? $enrollments->first();
 
-    $announcements = \App\Models\Announcement::active()->latest()->take(5)->get();
+            $upcomingDeadlines = \App\Models\Deadline_tbl::where('due_date', '>=', now())
+                                    ->where('due_date', '<=', now()->addDays(30))
+                                    ->count();
 
-    if ($enrollment) {
-        $modules = \App\Models\Module::where('course_id', $enrollment->course_id)
-                    ->active()->ordered()->get();
-    } else {
-        $modules = collect();
-    }
+            $announcements = \App\Models\Announcement::active()->latest()->take(5)->get();
 
-    return view('student.homepage', compact(
-        'enrollment',
-        'upcomingDeadlines',
-        'announcements',
-        'modules'
-    ));
-}
-public function admin1()
-{
-    $courses = \App\Models\Course_tbl::paginate(3);
-    $trainers = \App\Models\User_tbl::where('role', 'trainer')->get();
+            if ($enrollment) {
+                $modules = \App\Models\Module::where('course_id', $enrollment->course_id)
+                            ->active()->ordered()->get();
 
-    return view("admin.admin1", compact('courses', 'trainers'));
-}
+                $quizzes = \App\Models\Quiz::where('course_id', $enrollment->course_id)->get();
+
+                $quizResults = \App\Models\QuizResult::where('user_id', $userId)
+                                ->whereIn('quiz_id', $quizzes->pluck('id'))
+                                ->get();
+            } else {
+                $modules     = collect();
+                $quizzes     = collect();
+                $quizResults = collect();
+            }
+
+            return view('student.homepage', compact(
+                'enrollments',
+                'enrollment',
+                'upcomingDeadlines',
+                'announcements',
+                'modules',
+                'quizzes',
+                'quizResults'
+            ));
+        }
+        public function admin1()
+        {
+            $courses  = \App\Models\Course_tbl::paginate(3);
+            $allCourses   = \App\Models\Course_tbl::all(); 
+            $trainers = \App\Models\User_tbl::where('role', 'trainer')->get();
+            $trainees = \App\Models\User_tbl::where('role', 'student')->paginate(10, ['*'], 'trainee_page');
+            $trainersList = \App\Models\User_tbl::where('role', 'trainer')->paginate(10, ['*'], 'trainer_page');
+
+            return view("admin.admin1", compact('courses', 'allCourses', 'trainers', 'trainees', 'trainersList'));
+        }
 
 public function assignTrainer(Request $request, $courseId)
 {
@@ -317,11 +347,19 @@ public function ResetPassword(Request $request)
         'graduates',
         'urgentAssessments'
     ));
-}
-     public function courses()
-    {
+    }
 
-        return view("trainer.courses");
+    public function courses()
+    {
+        $trainer = Auth::user();
+
+        $course = Course_tbl::where('trainer_id', $trainer->id)->first();
+
+        $totalStudents = $course
+            ? \App\Models\Enrollment_tbl::where('course_id', $course->id)->count()
+            : 0;
+
+        return view('trainer.courses', compact('course', 'totalStudents'));
     }
 
        public function assessment()
@@ -582,6 +620,263 @@ public function dashboard()
         return response()->json(['success' => true]);
     }
 
+    // ── QUIZ QUESTIONS (Admin) ────────────────────────────────────────────────
+
+public function getQuizQuestions($quizId)
+{
+    $questions = \App\Models\QuizQuestion::where('quiz_id', $quizId)
+                    ->orderBy('order')
+                    ->get();
+    return response()->json(['success' => true, 'questions' => $questions]);
+}
+
+public function storeQuizQuestion(Request $request)
+{
+    $request->validate([
+        'quiz_id'        => 'required|exists:quizzes,id',
+        'question'       => 'required|string',
+        'choice_a'       => 'required|string',
+        'choice_b'       => 'required|string',
+        'choice_c'       => 'required|string',
+        'choice_d'       => 'required|string',
+        'correct_answer' => 'required|in:a,b,c,d',
+    ]);
+
+    $order = \App\Models\QuizQuestion::where('quiz_id', $request->quiz_id)->max('order') + 1;
+
+    $question = \App\Models\QuizQuestion::create([
+        'quiz_id'        => $request->quiz_id,
+        'question'       => $request->question,
+        'choice_a'       => $request->choice_a,
+        'choice_b'       => $request->choice_b,
+        'choice_c'       => $request->choice_c,
+        'choice_d'       => $request->choice_d,
+        'correct_answer' => $request->correct_answer,
+        'order'          => $order,
+    ]);
+
+    return response()->json(['success' => true, 'question' => $question]);
+}
+
+public function destroyQuizQuestion($id)
+{
+    $question = \App\Models\QuizQuestion::findOrFail($id);
+    $question->delete();
+    return response()->json(['success' => true]);
+}
+
+// ── QUIZ TAKING (Student) ─────────────────────────────────────────────────
+
+public function getQuizForStudent($quizId)
+{
+    $userId = \Auth::id();
+
+    // Check if already taken
+    $existing = \App\Models\QuizResult::where('quiz_id', $quizId)
+                    ->where('user_id', $userId)
+                    ->first();
+
+    $quiz = \App\Models\Quiz::with('questions')->findOrFail($quizId);
+
+    return response()->json([
+        'success'  => true,
+        'quiz'     => $quiz,
+        'taken'    => $existing ? true : false,
+        'result'   => $existing,
+    ]);
+}
+
+    public function submitQuiz(Request $request)
+    {
+    $request->validate([
+        'quiz_id' => 'required|exists:quizzes,id',
+        'answers' => 'required|array',
+    ]);
+
+    $userId = \Auth::id();
+    $quiz   = \App\Models\Quiz::with('questions')->findOrFail($request->quiz_id);
+
+    // Check if already taken
+    $existing = \App\Models\QuizResult::where('quiz_id', $request->quiz_id)
+                    ->where('user_id', $userId)
+                    ->first();
+    if ($existing) {
+        return response()->json(['success' => false, 'message' => 'Already taken.']);
+    }
+
+    // Score
+    $score = 0;
+    $total = $quiz->questions->count();
+
+    foreach ($quiz->questions as $q) {
+        $answer = $request->answers[$q->id] ?? null;
+        if ($answer && strtolower($answer) === $q->correct_answer) {
+            $score++;
+        }
+    }
+
+    $percentage = $total > 0 ? round(($score / $total) * 100) : 0;
+    $status     = $percentage >= $quiz->passing_score ? 'passed' : 'failed';
+
+    $result = \App\Models\QuizResult::create([
+        'quiz_id'     => $request->quiz_id,
+        'user_id'     => $userId,
+        'score'       => $score,
+        'total_items' => $total,
+        'percentage'  => $percentage,
+        'status'      => $status,
+    ]);
+
+        // I-update ang enrollment progress
+    $enrollment = \App\Models\Enrollment_tbl::where('user_id', $userId)
+        ->where('course_id', $quiz->course_id)
+        ->first();
+
+    if ($enrollment) {
+        // Kunin lahat ng quizzes ng course
+        $totalQuizzes = \App\Models\Quiz::where('course_id', $quiz->course_id)->count();
+        
+        // Kunin kung ilan na ang natapos ng student
+        $completedQuizzes = \App\Models\QuizResult::where('user_id', $userId)
+            ->whereIn('quiz_id', \App\Models\Quiz::where('course_id', $quiz->course_id)->pluck('id'))
+            ->count();
+
+        // I-compute ang progress percentage
+        $progress = $totalQuizzes > 0
+            ? round(($completedQuizzes / $totalQuizzes) * 100)
+            : 0;
+
+        $enrollment->progress = $progress;
+
+        // Kung 100% na, i-mark as completed
+        if ($progress >= 100) {
+            $enrollment->status = 'completed';
+            $enrollment->completed_at = now();
+        }
+
+        $enrollment->save();
+    }
+
+    return response()->json([
+        'success'    => true,
+        'score'      => $score,
+        'total'      => $total,
+        'percentage' => $percentage,
+        'status'     => $status,
+        'passing'    => $quiz->passing_score,
+        'progress'   => $progress ?? 0, 
+    ]);
+    }
+
+
+// Ilagay sa UserController.php (o TrainerController.php)
+// Huwag kalimutang i-import ang models sa itaas ng file:
+// use App\Models\Course_tbl;
+// use App\Models\User_tbl;
+
+public function trainerStudents()
+{
+    $trainer = Auth::user();
+
+    // Kunin ang course na naka-assign sa trainer
+    $course = Course_tbl::where('trainer_id', $trainer->id)->first();
+
+    // Kung walang course, i-return agad ng empty
+    if (!$course) {
+        return view('trainer.students', [
+            'course'   => null,
+            'students' => collect(),
+        ]);
+    }
+
+    // Kunin lahat ng students enrolled sa course ng trainer
+    // via enrollment_tbls JOIN user_tbls
+    $students = User_tbl::join('enrollment_tbls', 'user_tbls.id', '=', 'enrollment_tbls.user_id')
+        ->where('enrollment_tbls.course_id', $course->id)
+        ->where('user_tbls.role', 'student')   // i-adjust kung iba ang role name mo
+        ->select(
+            'user_tbls.id',
+            'user_tbls.firstname',
+            'user_tbls.lastname',
+            'user_tbls.email',
+            'enrollment_tbls.status',
+            'enrollment_tbls.progress',
+            'enrollment_tbls.enrolled_at',
+        )
+        ->orderBy('enrollment_tbls.enrolled_at', 'desc')
+        ->get();
+
+    return view('trainer.students', compact('course', 'students'));
+    }
+
+    public function trainerSchedule()
+{
+    $trainer = Auth::user();
+ 
+    $course = Course_tbl::where('trainer_id', $trainer->id)->first();
+ 
+    $totalStudents = $course
+        ? \App\Models\Enrollment_tbl::where('course_id', $course->id)->count()
+        : 0;
+ 
+    return view('trainer.schedule', compact('course', 'totalStudents'));
+}
+
+    public function storeTrainer(Request $request)
+    {
+        $request->validate([
+            'firstname' => 'required|string',
+            'lastname'  => 'required|string',
+            'email'     => 'required|email|unique:user_tbls,email',
+            'password'  => 'required|min:6',
+            'course_id' => 'nullable|exists:course_tbls,id',
+        ]);
+
+        $trainer = \App\Models\User_tbl::create([
+            'firstname'            => $request->firstname,
+            'lastname'             => $request->lastname,
+            'email'                => $request->email,
+            'username'             => strtolower($request->firstname . '.' . $request->lastname),
+            'password'             => bcrypt($request->password),
+            'role'                 => 'trainer',
+            'must_reset_password'  => true,
+        ]);
+
+        // I-assign sa course kung may pinili
+        if ($request->course_id) {
+            \App\Models\Course_tbl::where('id', $request->course_id)
+                ->update(['trainer_id' => $trainer->id]);
+        }
+
+        return response()->json(['success' => true]);
+    }
+
+    // ── FIRST TIME RESET PASSWORD ─────────────────────────────────────────────
+    public function firstResetPage()
+    {
+        if (!Auth::check() || !Auth::user()->must_reset_password) {
+            return redirect()->route("Login");
+        }
+        return view("student.first_reset");
+    }
+
+    public function firstResetSave(Request $request)
+    {
+        $request->validate([
+            'password' => 'required|min:6|confirmed',
+        ], [
+            'password.min'       => 'Ang password ay dapat hindi bababa sa 6 na characters.',
+            'password.confirmed' => 'Hindi magkatugma ang mga password. Subukan ulit.',
+            'password.required'  => 'Kailangan ng password.',
+        ]);
+
+        $user = Auth::user();
+        $user->password            = bcrypt($request->password);
+        $user->must_reset_password = false;
+        $user->save();
+
+        return redirect()->route("handle");
+    }
     
 
 }

@@ -351,3 +351,67 @@ a {
         display: none;
     }
 }
+/* new for logout style */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: none;
+}
+
+.modal-content {
+    background: #ffffff;
+    padding: 25px;
+    width: 320px;
+    margin: 15% auto;
+    text-align: center;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+/* Text */
+.modal-content p {
+    color: #025628;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+/* Buttons container */
+.modal-actions-centered {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* YES button */
+.btn-modal-yes {
+    background-color: #025628;
+    color: #fff;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-modal-yes:hover {
+    background-color: #01441f;
+}
+
+/* CANCEL button */
+.btn-modal-no {
+    background-color: #ccc;
+    color: #333;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-modal-no:hover {
+    background-color: #aaa;
+}

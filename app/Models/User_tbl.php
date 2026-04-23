@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Notifications\Notifiable;
 
-class User_tbl extends Authenticatable
+class User_tbl extends Authenticatable implements MustVerifyEmail
 {
+    use Notifiable;
+
     protected $table = "user_tbls";
 
     protected $fillable = [
@@ -14,6 +18,10 @@ class User_tbl extends Authenticatable
         "email",
         "username",
         "password",
-        "role"
+        "role",
+        "must_reset_password",
+        "email_verified_at",
     ];
+
+    protected $dates = ['email_verified_at'];
 }
