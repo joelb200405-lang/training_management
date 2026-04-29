@@ -131,7 +131,7 @@
 
 <body>
 
-    {{-- ===== TOPBAR (katulad ng student layout) ===== --}}
+    {{-- ===== TOPBAR ===== --}}
     <nav class="topbar">
         <div class="topbar-left">
             <button class="hamburger" id="hamburger" aria-label="Toggle sidebar">
@@ -166,23 +166,22 @@
         </div>
     </nav>
 
-                        <div id="logoutModal" class="modal" style="display:none;">
-                <div class="modal-content">
-                    <p>Are you sure you want to log out?</p>
-
-                    <div class="modal-actions-centered">
-                        <button onclick="confirmLogout()" class="btn-modal-yes">Yes</button>
-                        <button onclick="closeLogoutModal()" class="btn-modal-no">Cancel</button>
-                    </div>
-                </div>
+    <div id="logoutModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <p>Are you sure you want to log out?</p>
+            <div class="modal-actions-centered">
+                <button onclick="confirmLogout()" class="btn-modal-yes">Yes</button>
+                <button onclick="closeLogoutModal()" class="btn-modal-no">Cancel</button>
             </div>
+        </div>
+    </div>
 
     {{-- ===== APP BODY ===== --}}
     <div class="app-body">
 
         <div class="sidebar-overlay" id="overlay"></div>
 
-        {{-- ===== SIDEBAR (katulad ng student layout) ===== --}}
+        {{-- ===== SIDEBAR ===== --}}
         <aside class="sidebar" id="sidebar">
 
             <div class="sidebar-section-label">Menu</div>
@@ -221,6 +220,12 @@
 
             <div class="sidebar-section-label">System</div>
 
+            <a href="#" class="nav-item" id="nav-announcements"
+            onclick="showView('announcements'); setActive(this); return false;">
+                <i class="fa fa-bell nav-icon"></i>
+                <span>Announcements</span>
+            </a>
+
             <a href="#" class="nav-item" id="nav-analytics"
                onclick="showView('analytics'); setActive(this); return false;">
                 <i class="fa fa-chart-line nav-icon"></i>
@@ -233,7 +238,11 @@
                 <span>Settings </span>
             </a>
 
-
+            <a href="#" class="nav-item" id="nav-certificate"
+               onclick="showView('certificate'); setActive(this); return false;">
+                <i class="fa fa-award nav-icon"></i>
+                <span>Certificate</span>
+            </a>
 
         </aside>
 
@@ -292,10 +301,9 @@
                         </button>
                     </div>
 
-                                {{-- Calendar sa sidebar bottom --}}
-            <div class="sidebar-calendar">
-                <div id="calendar"></div>
-            </div>
+                    <div class="sidebar-calendar">
+                        <div id="calendar"></div>
+                    </div>
                 </div>
             </div>
 
@@ -444,6 +452,56 @@
                 </div>
             </div>
 
+            {{-- FACILITIES --}}
+            <div id="view-facilities" style="display: none;">
+                <div class="facility-grid">
+                    <div class="card facility-card">
+                        <div class="facility-header">
+                            <i class="fa-solid fa-building-circle-check"></i>
+                            <div>
+                                <strong>Brgy. Burol Main Barangay Hall</strong><br>
+                                <small>Zone 4, Dasmariñas, Cavite</small>
+                            </div>
+                        </div>
+                        <div class="facility-body">
+                            <p><i class="fa-solid fa-users"></i> Capacity: 25/30</p>
+                            <p><i class="fa-solid fa-book-open"></i> Current: Dressmaking</p>
+                        </div>
+                        <button class="btn-all" onclick="openFacilityModal('Brgy. Burol Main Barangay Hall', 'Zone 4, Dasmariñas, Cavite', 30, 'Dressmaking')">
+                            Manage Facility
+                        </button>
+                    </div>
+                    <div class="card facility-card">
+                        <div class="facility-header">
+                            <i class="fa-solid fa-building-columns"></i>
+                            <div>
+                                <strong>LEDIPO Main</strong><br>
+                                <small>City Hall Compound</small>
+                            </div>
+                        </div>
+                        <div class="facility-body">
+                            <p><i class="fa-solid fa-users"></i> Capacity: 10/20</p>
+                            <p><i class="fa-solid fa-book-open"></i> Current: Carpentry</p>
+                        </div>
+                        <button class="btn-all" onclick="openFacilityModal('LEDIPO Main', 'City Hall Compound', 20, 'Carpentry')">
+                            Manage Facility
+                        </button>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn-save-main" onclick="openAddFacilityModal()" style="width: auto; padding: 10px 15px;">
+                        <i class="fa-solid fa-plus"></i> Add New Facility
+                    </button>
+                </div>
+                <div class="pagination-container">
+                    <button class="page-btn prev"><i class="fa-solid fa-chevron-left"></i></button>
+                    <div class="page-numbers">
+                        <button class="page-btn active">1</button>
+                    </div>
+                    <button class="page-btn next"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+            </div>
+
             {{-- COURSES --}}
             <div id="view-courses" style="display: none;">
                 <div class="courses-grid">
@@ -490,7 +548,7 @@
                                     <i class="fa-solid fa-layer-group"></i> Modules
                                 </button>
                             </div>
-                          </div>{{-- end course-card --}}
+                          </div>
                     @empty
                         <p style="color:#aaa; font-size:13px;">No courses found.</p>
                     @endforelse
@@ -500,38 +558,121 @@
                         <i class="fa-solid fa-plus"></i> Add New Course
                     </button>
                 </div>
-<div class="pagination-container">
-    {{-- Previous --}}
-    @if($courses->onFirstPage())
-        <button class="page-btn" disabled><i class="fa-solid fa-chevron-left"></i></button>
-    @else
-        <a href="{{ $courses->previousPageUrl() }}&view=courses" 
-           onclick="setActive(document.getElementById('nav-courses'))"
-           class="page-btn"><i class="fa-solid fa-chevron-left"></i></a>
-    @endif
+                <div class="pagination-container">
+                    @if($courses->onFirstPage())
+                        <button class="page-btn" disabled><i class="fa-solid fa-chevron-left"></i></button>
+                    @else
+                        <a href="{{ $courses->previousPageUrl() }}&view=courses" 
+                           onclick="setActive(document.getElementById('nav-courses'))"
+                           class="page-btn"><i class="fa-solid fa-chevron-left"></i></a>
+                    @endif
 
-    {{-- Page numbers --}}
-    <div class="page-numbers">
-        @for($i = 1; $i <= $courses->lastPage(); $i++)
-            @if($i == $courses->currentPage())
-                <button class="page-btn active">{{ $i }}</button>
-            @else
-                <a href="{{ $courses->url($i) }}&view=courses"
-                   onclick="setActive(document.getElementById('nav-courses'))"
-                   class="page-btn">{{ $i }}</a>
-            @endif
-        @endfor
-    </div>
+                    <div class="page-numbers">
+                        @for($i = 1; $i <= $courses->lastPage(); $i++)
+                            @if($i == $courses->currentPage())
+                                <button class="page-btn active">{{ $i }}</button>
+                            @else
+                                <a href="{{ $courses->url($i) }}&view=courses"
+                                   onclick="setActive(document.getElementById('nav-courses'))"
+                                   class="page-btn">{{ $i }}</a>
+                            @endif
+                        @endfor
+                    </div>
 
-    {{-- Next --}}
-    @if($courses->hasMorePages())
-        <a href="{{ $courses->nextPageUrl() }}&view=courses"
-           onclick="setActive(document.getElementById('nav-courses'))"
-           class="page-btn"><i class="fa-solid fa-chevron-right"></i></a>
-    @else
-        <button class="page-btn" disabled><i class="fa-solid fa-chevron-right"></i></button>
-    @endif
-</div>
+                    @if($courses->hasMorePages())
+                        <a href="{{ $courses->nextPageUrl() }}&view=courses"
+                        onclick="setActive(document.getElementById('nav-courses'))"
+                        class="page-btn"><i class="fa-solid fa-chevron-right"></i></a>
+                    @else
+                        <button class="page-btn" disabled><i class="fa-solid fa-chevron-right"></i></button>
+                    @endif  
+                </div>
+            </div>
+
+            {{-- ANNOUNCEMENTS --}}
+            <div id="view-announcements" style="display: none;">
+                <div class="section-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                    <span style="font-size:15px; font-weight:600; color:#025628;">All Announcements</span>
+                    <button class="btn-save-main" onclick="openAnnouncementModal()" style="width:auto; padding:8px 16px;">
+                        <i class="fa-solid fa-plus"></i> Add Announcement
+                    </button>
+                </div>
+
+                <div class="card list-card">
+                    @forelse($announcements as $ann)
+                        @php
+                            $badgeColor = match($ann->type) {
+                                'urgent'   => '#A32D2D',
+                                'notice'   => '#854F0B',
+                                default    => '#025628',
+                            };
+                            $bgColor = match($ann->type) {
+                                'urgent'   => '#FCEBEB',
+                                'notice'   => '#FFF8E1',
+                                default    => '#E8F5E9',
+                            };
+                        @endphp
+                        <div class="user-item">
+                            <div style="width:36px; height:36px; border-radius:50%; background:{{ $bgColor }};
+                                        display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                <i class="fa-solid fa-bell" style="color:{{ $badgeColor }}; font-size:14px;"></i>
+                            </div>
+                            <div class="user-info" style="flex:1;">
+                                <strong>{{ $ann->title }}</strong>
+                                <span style="margin-left:8px; padding:2px 8px; border-radius:20px; font-size:10px; font-weight:700;
+                                            background:{{ $bgColor }}; color:{{ $badgeColor }};">
+                                    {{ ucfirst($ann->type) }}
+                                </span><br>
+                                <small style="color:#888;">{{ $ann->message }}</small><br>
+                                <small style="color:#bbb;">{{ $ann->created_at->diffForHumans() }} · 
+                                    {{ $ann->is_active ? '✅ Active' : '⏸ Inactive' }}
+                                </small>
+                            </div>
+                            <div style="display:flex; gap:6px;">
+                                <button class="btn-view" onclick="editAnnouncement({{ $ann->id }}, '{{ addslashes($ann->title) }}', '{{ addslashes($ann->message) }}', '{{ $ann->type }}')">
+                                    Edit
+                                </button>
+                                <button onclick="toggleAnn({{ $ann->id }}, this)"
+                                    style="padding:5px 12px; border-radius:4px; font-size:12px; font-weight:700; cursor:pointer; border:none;
+                                        background:{{ $ann->is_active ? '#FFF8E1' : '#E8F5E9' }};
+                                        color:{{ $ann->is_active ? '#854F0B' : '#025628' }};">
+                                    {{ $ann->is_active ? 'Deactivate' : 'Activate' }}
+                                </button>
+                                <button onclick="deleteAnn({{ $ann->id }})"
+                                    style="padding:5px 12px; border-radius:4px; font-size:12px; font-weight:700; cursor:pointer; border:none;
+                                        background:#FCEBEB; color:#A32D2D;">
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    @empty
+                        <div style="text-align:center; color:#aaa; padding:30px; font-size:13px;">
+                            <i class="fa-solid fa-bell-slash"></i> Walang announcements pa.
+                        </div>
+                    @endforelse
+                </div>
+
+                <div class="pagination-container">
+                    @if($announcements->onFirstPage())
+                        <button class="page-btn" disabled><i class="fa-solid fa-chevron-left"></i></button>
+                    @else
+                        <a href="{{ $announcements->previousPageUrl() }}&view=announcements" class="page-btn"><i class="fa-solid fa-chevron-left"></i></a>
+                    @endif
+                    <div class="page-numbers">
+                        @for($i = 1; $i <= $announcements->lastPage(); $i++)
+                            @if($i == $announcements->currentPage())
+                                <button class="page-btn active">{{ $i }}</button>
+                            @else
+                                <a href="{{ $announcements->url($i) }}&view=announcements" class="page-btn">{{ $i }}</a>
+                            @endif
+                        @endfor
+                    </div>
+                    @if($announcements->hasMorePages())
+                        <a href="{{ $announcements->nextPageUrl() }}&view=announcements" class="page-btn"><i class="fa-solid fa-chevron-right"></i></a>
+                    @else
+                        <button class="page-btn" disabled><i class="fa-solid fa-chevron-right"></i></button>
+                    @endif
+                </div>
             </div>
 
             {{-- SETTINGS --}}
@@ -569,7 +710,7 @@
 
 
     {{-- ============================================================ --}}
-    {{-- MODALS (unchanged)                                           --}}
+    {{-- MODALS                                                        --}}
     {{-- ============================================================ --}}
 
     {{-- COURSE MODAL --}}
@@ -812,14 +953,160 @@
         </div>
     </div>
 
+    {{-- ANNOUNCEMENT MODAL --}}
+    <div id="announcementModal" class="modal">
+        <div class="modal-content card">
+            <div class="modal-header">
+                <h3 id="annModalTitle"><i class="fa-solid fa-bell"></i> Add Announcement</h3>
+                <span class="close-modal" onclick="closeAnnouncementModal()">&times;</span>
+            </div>
+            <form id="announcementForm" class="modal-body">
+                <input type="hidden" id="annId">
+                <div class="input-field">
+                    <label>Title</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-heading"></i>
+                        <input type="text" id="annTitle" placeholder="Announcement title" required>
+                    </div>
+                </div>
+                <div class="input-field">
+                    <label>Message</label>
+                    <textarea id="annMessage" placeholder="Announcement message..."
+                        style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; font-size:14px; font-family:inherit; resize:vertical; min-height:80px;" required></textarea>
+                </div>
+                <div class="input-field">
+                    <label>Type</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-tag"></i>
+                        <select id="annType" class="modal-input-select">
+                            <option value="reminder">Reminder</option>
+                            <option value="notice">Notice</option>
+                            <option value="urgent">Urgent</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div></div>
+                    <div class="action-buttons">
+                        <button type="button" class="btn-cancel" onclick="closeAnnouncementModal()">Cancel</button>
+                        <button type="submit" class="btn-save-main">Save</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 
+    {{-- COURSE CONTENT MODAL (Modules & Quizzes) --}}
+    <div id="contentModal" class="modal">
+        <div class="modal-content card" style="max-width:680px; width:95%;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-layer-group"></i> Manage: <span id="contentModalCourseTitle"></span></h3>
+                <span class="close-modal" onclick="closeContentModal()">&times;</span>
+            </div>
+
+            <div class="modal-body" style="padding-bottom:0;">
+                <div style="display:flex; gap:0; border-bottom:2px solid #e5e5e5; margin-bottom:16px;">
+                    <button id="tab-btn-modules" onclick="switchContentTab('modules')"
+                        style="flex:1; padding:10px; border:none; background:none; font-weight:700; font-size:13px;
+                               border-bottom:2px solid #025628; margin-bottom:-2px; color:#025628; cursor:pointer;">
+                        <i class="fa-solid fa-cubes"></i> Modules
+                    </button>
+                    <button id="tab-btn-quizzes" onclick="switchContentTab('quizzes')"
+                        style="flex:1; padding:10px; border:none; background:none; font-weight:600; font-size:13px;
+                               color:#aaa; cursor:pointer;">
+                        <i class="fa-solid fa-clipboard-question"></i> Quizzes
+                    </button>
+                </div>
+
+                <div id="content-tab-modules">
+                    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:14px;">
+                        <div style="display:flex; gap:8px;">
+                            <input type="text" id="newModuleTitle" placeholder="Module title"
+                                style="flex:1; border:1px solid #ddd; border-radius:8px; padding:8px 12px; font-size:13px; font-family:inherit;">
+                            <input type="text" id="newModuleDesc" placeholder="Description (optional)"
+                                style="flex:2; border:1px solid #ddd; border-radius:8px; padding:8px 12px; font-size:13px; font-family:inherit;">
+                        </div>
+                        <div style="display:flex; gap:8px; align-items:center;">
+                            <label style="font-size:12px; color:#666; white-space:nowrap;">📎 PDF File:</label>
+                            <input type="file" id="newModuleFile" accept=".pdf,.doc,.docx"
+                                style="flex:1; border:1px solid #ddd; border-radius:8px; padding:6px 12px; font-size:13px; font-family:inherit; background:#fff;">
+                            <button onclick="addModule()"
+                                style="background:#025628; color:#fff; border:none; border-radius:8px; padding:9px 16px;
+                                    font-size:13px; font-weight:700; cursor:pointer; white-space:nowrap; font-family:inherit;">
+                                <i class="fa-solid fa-plus"></i> Add
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="moduleListContainer" style="display:flex; flex-direction:column; gap:8px; max-height:320px; overflow-y:auto;">
+                        <div style="text-align:center; color:#bbb; font-size:13px; padding:20px 0;" id="modulesEmptyState">
+                            <i class="fa-solid fa-inbox"></i> Walang modules pa.
+                        </div>
+                    </div>
+                </div>
+
+                <div id="content-tab-quizzes" style="display:none;">
+                    <div style="background:#f9f9f9; border:1px solid #eee; border-radius:10px; padding:14px; margin-bottom:14px;">
+                        <div style="font-size:12px; font-weight:700; color:#025628; margin-bottom:10px; text-transform:uppercase; letter-spacing:.04em;">
+                            <i class="fa-solid fa-plus-circle"></i> New Quiz
+                        </div>
+                        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                            <input type="text" id="newQuizTitle" placeholder="Quiz title"
+                                style="flex:2; min-width:140px; border:1px solid #ddd; border-radius:8px; padding:8px 12px; font-size:13px; font-family:inherit;">
+                            <select id="newQuizModule"
+                                style="flex:1.5; min-width:130px; border:1px solid #ddd; border-radius:8px; padding:8px 12px; font-size:13px; font-family:inherit; background:#fff;">
+                                <option value="">— Link to module (optional) —</option>
+                            </select>
+                        </div>
+                        <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; align-items:center;">
+                            <div style="flex:1; min-width:100px;">
+                                <label style="font-size:11px; color:#888; display:block; margin-bottom:2px;">Passing score (%)</label>
+                                <input type="number" id="newQuizPass" value="75" min="1" max="100"
+                                    style="width:100%; border:1px solid #ddd; border-radius:8px; padding:8px 10px; font-size:13px; font-family:inherit;">
+                            </div>
+                            <div style="flex:1; min-width:100px;">
+                                <label style="font-size:11px; color:#888; display:block; margin-bottom:2px;">Time limit (mins)</label>
+                                <input type="number" id="newQuizTime" value="30" min="1"
+                                    style="width:100%; border:1px solid #ddd; border-radius:8px; padding:8px 10px; font-size:13px; font-family:inherit;">
+                            </div>
+                            <button onclick="addQuiz()"
+                                style="background:#025628; color:#fff; border:none; border-radius:8px; padding:9px 20px;
+                                       font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; margin-top:14px;">
+                                <i class="fa-solid fa-plus"></i> Add Quiz
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="quizListContainer" style="display:flex; flex-direction:column; gap:8px; max-height:280px; overflow-y:auto;">
+                        <div style="text-align:center; color:#bbb; font-size:13px; padding:20px 0;" id="quizzesEmptyState">
+                            <i class="fa-solid fa-inbox"></i> Walang quizzes pa.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer" style="margin-top:16px;">
+                <div class="action-buttons">
+                    <button class="btn-cancel" onclick="closeContentModal()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- ============================================================ --}}
+    {{-- SCRIPTS                                                       --}}
+    {{-- ============================================================ --}}
     <script>
-        let traineeHistoryInstance = null;
-        let courseHistoryInstance = null;
-        let currentCourseId = null;
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        // ── GLOBALS ────────────────────────────────────────────────────────────────
+        // FIX: urlParams declared at the very top so all scripts below can use it
+        const urlParams  = new URLSearchParams(window.location.search);
+        const csrfToken  = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-        // ===== TOPBAR: hamburger + avatar dropdown =====
+        let traineeHistoryInstance = null;
+        let courseHistoryInstance  = null;
+        let currentCourseId        = null;
+
+        // ── TOPBAR ─────────────────────────────────────────────────────────────────
         const hamburger = document.getElementById('hamburger');
         const sidebar   = document.getElementById('sidebar');
         const overlay   = document.getElementById('overlay');
@@ -847,13 +1134,13 @@
             }
         });
 
-        // ===== SIDEBAR active state =====
+        // ── SIDEBAR ACTIVE ─────────────────────────────────────────────────────────
         function setActive(el) {
             document.querySelectorAll('.sidebar .nav-item').forEach(i => i.classList.remove('active'));
             el.classList.add('active');
         }
 
-        // ===== Charts =====
+        // ── CHARTS ─────────────────────────────────────────────────────────────────
         function initHistoryChart() {
             const traineeCanvas = document.getElementById('traineeHistoryChart');
             if (traineeCanvas) {
@@ -885,7 +1172,7 @@
             }
         }
 
-        // ===== Page Load =====
+        // ── PAGE LOAD ──────────────────────────────────────────────────────────────
         document.addEventListener('DOMContentLoaded', function () {
             var calendarEl = document.getElementById('calendar');
             if (calendarEl) {
@@ -901,13 +1188,6 @@
                 });
                 calendar.render();
             }
-
-            // Auto-show courses view if paginating
-                const urlParams = new URLSearchParams(window.location.search);
-                if (urlParams.get('view') === 'courses' || urlParams.get('page')) {
-                    showView('courses');
-                    setActive(document.getElementById('nav-courses'));
-                }
 
             const ctxBar = document.getElementById('traineeChart')?.getContext('2d');
             if (ctxBar) {
@@ -935,11 +1215,32 @@
             }
         });
 
-        // ===== View Management =====
+        // ── URL PARAM AUTO-VIEW ────────────────────────────────────────────────────
+        // FIX: All URL param checks are here (outside DOMContentLoaded), AFTER urlParams is declared
+        if (urlParams.get('view') === 'courses' || urlParams.get('page')) {
+            showView('courses');
+            setActive(document.getElementById('nav-courses'));
+        }
+        if (urlParams.get('trainee_page')) {
+            showView('all-trainees');
+            setActive(document.getElementById('nav-trainees'));
+        }
+        if (urlParams.get('trainer_page')) {
+            showView('all-trainers');
+            setActive(document.getElementById('nav-trainers'));
+        }
+        // FIX: announcement_page check moved here from inside DOMContentLoaded
+        if (urlParams.get('view') === 'announcements' || urlParams.get('announcement_page')) {
+            showView('announcements');
+            setActive(document.getElementById('nav-announcements'));
+        }
+
+        // ── VIEW MANAGEMENT ────────────────────────────────────────────────────────
         function showView(viewName) {
             const allViews = [
                 'view-overview','view-trainee-list','view-trainer-list',
-                'view-facilities','view-courses','view-settings','view-analytics'
+                'view-facilities','view-courses','view-settings','view-analytics',
+                'view-announcements'
             ];
             allViews.forEach(id => {
                 const el = document.getElementById(id);
@@ -950,34 +1251,34 @@
             const breadcrumb = document.getElementById('breadcrumb-current');
 
             const map = {
-                overview:       ['view-overview',      'System Overview',       'System Overview'],
-                analytics:      ['view-analytics',     'Detailed Analytics',    `<a href="#" onclick="showView('overview');return false;">System Overview</a> / Analytics`],
-                'all-trainees': ['view-trainee-list',  'Trainee Management',    `<a href="#" onclick="showView('overview');return false;">System Overview</a> / Trainees`],
-                'all-trainers': ['view-trainer-list',  'Trainer Management',    `<a href="#" onclick="showView('overview');return false;">System Overview</a> / Trainers`],
-                facilities:     ['view-facilities',    'Facilities',            `<a href="#" onclick="showView('overview');return false;">System Overview</a> / Facilities`],
-                courses:        ['view-courses',       'Available Courses',     `<a href="#" onclick="showView('overview');return false;">System Overview</a> / Courses`],
-                settings:       ['view-settings',      'System Settings',       `<a href="#" onclick="showView('overview');return false;">System Overview</a> / Settings`],
+                overview:        ['view-overview',      'System Overview',    'System Overview'],
+                analytics:       ['view-analytics',     'Detailed Analytics', `<a href="#" onclick="showView('overview');return false;">System Overview</a> / Analytics`],
+                'all-trainees':  ['view-trainee-list',  'Trainee Management', `<a href="#" onclick="showView('overview');return false;">System Overview</a> / Trainees`],
+                'all-trainers':  ['view-trainer-list',  'Trainer Management', `<a href="#" onclick="showView('overview');return false;">System Overview</a> / Trainers`],
+                facilities:      ['view-facilities',    'Facilities',         `<a href="#" onclick="showView('overview');return false;">System Overview</a> / Facilities`],
+                courses:         ['view-courses',       'Available Courses',  `<a href="#" onclick="showView('overview');return false;">System Overview</a> / Courses`],
+                settings:        ['view-settings',      'System Settings',    `<a href="#" onclick="showView('overview');return false;">System Overview</a> / Settings`],
+                announcements:   ['view-announcements', 'Announcements',      `<a href="#" onclick="showView('overview');return false;">System Overview</a> / Announcements`],
             };
 
             const entry = map[viewName] || map['overview'];
             const el = document.getElementById(entry[0]);
             if (el) el.style.display = 'block';
-            title.innerText = entry[1];
+            title.innerText    = entry[1];
             breadcrumb.innerHTML = entry[2];
 
             if (viewName === 'analytics') setTimeout(initHistoryChart, 100);
 
-            // Close sidebar on mobile after nav
             if (window.innerWidth <= 768) {
                 sidebar.classList.remove('sidebar-open');
                 overlay.classList.remove('show');
             }
         }
 
-        // ===== Utilities =====
+        // ── UTILITIES ──────────────────────────────────────────────────────────────
         function toggleUpdates() {
             const extra = document.getElementById("extra-updates");
-            const btn = document.getElementById("viewMoreBtn");
+            const btn   = document.getElementById("viewMoreBtn");
             if (extra.style.display === "none") {
                 extra.style.display = "block";
                 btn.innerHTML = `View Less <i class="fa-solid fa-chevron-up"></i>`;
@@ -987,16 +1288,21 @@
             }
         }
 
-        // ===== Course Modal =====
+        // ── LOGOUT ─────────────────────────────────────────────────────────────────
+        function openLogoutModal()  { document.getElementById('logoutModal').style.display = 'block'; }
+        function closeLogoutModal() { document.getElementById('logoutModal').style.display = 'none'; }
+        function confirmLogout()    { document.getElementById('logout-form').submit(); }
+
+        // ── COURSE MODAL ───────────────────────────────────────────────────────────
         function openCourseModal(id, name, duration, slots, trainerId, trainerName) {
             currentCourseId = id;
             document.getElementById('courseModal').style.display = 'block';
             document.querySelector('#courseModal h3').innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Manage Course';
             document.querySelector('#courseModal .btn-delete-text').style.display = 'inline-block';
-            document.getElementById('editCourseId').value = id;
+            document.getElementById('editCourseId').value   = id;
             document.getElementById('editCourseName').value = name;
-            document.getElementById('editDuration').value = duration;
-            document.getElementById('editSlots').value = slots;
+            document.getElementById('editDuration').value   = duration;
+            document.getElementById('editSlots').value      = slots;
             document.getElementById('trainerDropdown').value = trainerId || '';
             trainerId && trainerName ? showCurrentTrainer(trainerName) : showNoTrainer();
         }
@@ -1017,22 +1323,22 @@
 
         function showCurrentTrainer(name) {
             const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-            document.getElementById('trainerInitials').textContent = initials;
-            document.getElementById('trainerFullName').textContent = name;
+            document.getElementById('trainerInitials').textContent  = initials;
+            document.getElementById('trainerFullName').textContent  = name;
             document.getElementById('currentTrainerBox').style.display = 'flex';
-            document.getElementById('noTrainerBox').style.display = 'none';
+            document.getElementById('noTrainerBox').style.display   = 'none';
         }
 
         function showNoTrainer() {
             document.getElementById('currentTrainerBox').style.display = 'none';
-            document.getElementById('noTrainerBox').style.display = 'block';
+            document.getElementById('noTrainerBox').style.display      = 'block';
         }
 
         function assignTrainer() {
-            const trainerId = document.getElementById('trainerDropdown').value;
+            const trainerId   = document.getElementById('trainerDropdown').value;
             const trainerName = document.getElementById('trainerDropdown').selectedOptions[0].text;
-            if (!trainerId) { alert('Please select a trainer first.'); return; }
-            if (!currentCourseId) { alert('Please save the course first before assigning a trainer.'); return; }
+            if (!trainerId)      { alert('Please select a trainer first.'); return; }
+            if (!currentCourseId){ alert('Please save the course first before assigning a trainer.'); return; }
             fetch(`/admin/course/${currentCourseId}/assign-trainer`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
@@ -1057,33 +1363,33 @@
             .catch(() => alert('Something went wrong. Please try again.'));
         }
 
-        // ===== Other Modals =====
+        // ── OTHER MODALS ───────────────────────────────────────────────────────────
         function openUserModal(name, email, role, status) {
-            document.getElementById('userModal').style.display = 'block';
-            document.getElementById('editUserName').value = name;
-            document.getElementById('editUserEmail').value = email;
-            document.getElementById('editUserRole').value = role;
-            document.getElementById('editUserStatus').value = status;
+            document.getElementById('userModal').style.display   = 'block';
+            document.getElementById('editUserName').value        = name;
+            document.getElementById('editUserEmail').value       = email;
+            document.getElementById('editUserRole').value        = role;
+            document.getElementById('editUserStatus').value      = status;
         }
         function closeUserModal() { document.getElementById('userModal').style.display = 'none'; }
 
         function openFacilityModal(name, address, capacity, course) {
             document.getElementById('facilityModal').style.display = 'block';
-            document.querySelector('#facilityModal h3').innerHTML = '<i class="fa-solid fa-building-circle-gear"></i> Manage Facility';
+            document.querySelector('#facilityModal h3').innerHTML   = '<i class="fa-solid fa-building-circle-gear"></i> Manage Facility';
             document.querySelector('#facilityModal .btn-delete-text').style.display = 'inline-block';
-            document.getElementById('editFacName').value = name;
+            document.getElementById('editFacName').value    = name;
             document.getElementById('editFacAddress').value = address;
-            document.getElementById('editFacCap').value = capacity;
+            document.getElementById('editFacCap').value     = capacity;
         }
         function openAddFacilityModal() {
             document.getElementById('facilityModal').style.display = 'block';
-            document.querySelector('#facilityModal h3').innerHTML = '<i class="fa-solid fa-building-circle-plus"></i> Add New Facility';
+            document.querySelector('#facilityModal h3').innerHTML   = '<i class="fa-solid fa-building-circle-plus"></i> Add New Facility';
             document.getElementById('facilityForm').reset();
             document.querySelector('#facilityModal .btn-delete-text').style.display = 'none';
         }
         function closeFacilityModal() { document.getElementById('facilityModal').style.display = 'none'; }
 
-        function openAddTrainerModal() { document.getElementById('addTrainerModal').style.display = 'block'; }
+        function openAddTrainerModal()  { document.getElementById('addTrainerModal').style.display = 'block'; }
         function closeAddTrainerModal() {
             document.getElementById('addTrainerModal').style.display = 'none';
             document.getElementById('addTrainerForm').reset();
@@ -1095,6 +1401,7 @@
                 closeUserModal();
                 closeFacilityModal();
                 closeAddTrainerModal();
+                closeAnnouncementModal();
             }
         };
 
@@ -1145,404 +1452,358 @@
             alert('Facility Details Updated!');
             closeFacilityModal();
         };
-    </script>
 
-    {{-- ============================================================ --}}
-{{-- COURSE CONTENT MODAL (Modules & Quizzes)                    --}}
-{{-- I-PASTE ITO BAGO ANG </body> TAG SA Admin1.blade.php        --}}
-{{-- ============================================================ --}}
+        // ── ANNOUNCEMENTS ──────────────────────────────────────────────────────────
+        function openAnnouncementModal() {
+            document.getElementById('annId').value      = '';
+            document.getElementById('annTitle').value   = '';
+            document.getElementById('annMessage').value = '';
+            document.getElementById('annType').value    = 'reminder';
+            document.getElementById('annModalTitle').innerHTML = '<i class="fa-solid fa-bell"></i> Add Announcement';
+            document.getElementById('announcementModal').style.display = 'block';
+        }
 
-<div id="contentModal" class="modal">
-    <div class="modal-content card" style="max-width:680px; width:95%;">
-        <div class="modal-header">
-            <h3><i class="fa-solid fa-layer-group"></i> Manage: <span id="contentModalCourseTitle"></span></h3>
-            <span class="close-modal" onclick="closeContentModal()">&times;</span>
-        </div>
+        function editAnnouncement(id, title, message, type) {
+            document.getElementById('annId').value      = id;
+            document.getElementById('annTitle').value   = title;
+            document.getElementById('annMessage').value = message;
+            document.getElementById('annType').value    = type;
+            document.getElementById('annModalTitle').innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Edit Announcement';
+            document.getElementById('announcementModal').style.display = 'block';
+        }
 
-        <div class="modal-body" style="padding-bottom:0;">
-            {{-- Tabs --}}
-            <div style="display:flex; gap:0; border-bottom:2px solid #e5e5e5; margin-bottom:16px;">
-                <button id="tab-btn-modules" onclick="switchContentTab('modules')"
-                    style="flex:1; padding:10px; border:none; background:none; font-weight:700; font-size:13px;
-                           border-bottom:2px solid #025628; margin-bottom:-2px; color:#025628; cursor:pointer;">
-                    <i class="fa-solid fa-cubes"></i> Modules
-                </button>
-                <button id="tab-btn-quizzes" onclick="switchContentTab('quizzes')"
-                    style="flex:1; padding:10px; border:none; background:none; font-weight:600; font-size:13px;
-                           color:#aaa; cursor:pointer;">
-                    <i class="fa-solid fa-clipboard-question"></i> Quizzes
-                </button>
-            </div>
+        function closeAnnouncementModal() {
+            document.getElementById('announcementModal').style.display = 'none';
+        }
 
-            {{-- MODULES TAB --}}
-            <div id="content-tab-modules">
-                {{-- Add Module Form --}}
-                    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:14px;">
-                        <div style="display:flex; gap:8px;">
-                            <input type="text" id="newModuleTitle" placeholder="Module title"
-                                style="flex:1; border:1px solid #ddd; border-radius:8px; padding:8px 12px; font-size:13px; font-family:inherit;">
-                            <input type="text" id="newModuleDesc" placeholder="Description (optional)"
-                                style="flex:2; border:1px solid #ddd; border-radius:8px; padding:8px 12px; font-size:13px; font-family:inherit;">
-                        </div>
-                        <div style="display:flex; gap:8px; align-items:center;">
-                            <label style="font-size:12px; color:#666; white-space:nowrap;">📎 PDF File:</label>
-                            <input type="file" id="newModuleFile" accept=".pdf,.doc,.docx"
-                                style="flex:1; border:1px solid #ddd; border-radius:8px; padding:6px 12px; font-size:13px; font-family:inherit; background:#fff;">
-                            <button onclick="addModule()"
-                                style="background:#025628; color:#fff; border:none; border-radius:8px; padding:9px 16px;
-                                    font-size:13px; font-weight:700; cursor:pointer; white-space:nowrap; font-family:inherit;">
-                                <i class="fa-solid fa-plus"></i> Add
-                            </button>
-                        </div>
-                    </div>
+        document.getElementById('announcementForm').onsubmit = function(e) {
+            e.preventDefault();
+            const id      = document.getElementById('annId').value;
+            const title   = document.getElementById('annTitle').value.trim();
+            const message = document.getElementById('annMessage').value.trim();
+            const type    = document.getElementById('annType').value;
 
-                {{-- Module List --}}
-                <div id="moduleListContainer" style="display:flex; flex-direction:column; gap:8px; max-height:320px; overflow-y:auto;">
-                    <div style="text-align:center; color:#bbb; font-size:13px; padding:20px 0;" id="modulesEmptyState">
-                        <i class="fa-solid fa-inbox"></i> Walang modules pa.
-                    </div>
-                </div>
-            </div>
+            const isEdit = id !== '';
+            const url    = isEdit ? `/admin/announcement/${id}` : '/admin/announcement';
+            const method = isEdit ? 'PUT' : 'POST';
 
-            {{-- QUIZZES TAB --}}
-            <div id="content-tab-quizzes" style="display:none;">
-                {{-- Add Quiz Form --}}
-                <div style="background:#f9f9f9; border:1px solid #eee; border-radius:10px; padding:14px; margin-bottom:14px;">
-                    <div style="font-size:12px; font-weight:700; color:#025628; margin-bottom:10px; text-transform:uppercase; letter-spacing:.04em;">
-                        <i class="fa-solid fa-plus-circle"></i> New Quiz
-                    </div>
-                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                        <input type="text" id="newQuizTitle" placeholder="Quiz title"
-                            style="flex:2; min-width:140px; border:1px solid #ddd; border-radius:8px; padding:8px 12px; font-size:13px; font-family:inherit;">
-                        <select id="newQuizModule"
-                            style="flex:1.5; min-width:130px; border:1px solid #ddd; border-radius:8px; padding:8px 12px; font-size:13px; font-family:inherit; background:#fff;">
-                            <option value="">— Link to module (optional) —</option>
-                        </select>
-                    </div>
-                    <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; align-items:center;">
-                        <div style="flex:1; min-width:100px;">
-                            <label style="font-size:11px; color:#888; display:block; margin-bottom:2px;">Passing score (%)</label>
-                            <input type="number" id="newQuizPass" value="75" min="1" max="100"
-                                style="width:100%; border:1px solid #ddd; border-radius:8px; padding:8px 10px; font-size:13px; font-family:inherit;">
-                        </div>
-                        <div style="flex:1; min-width:100px;">
-                            <label style="font-size:11px; color:#888; display:block; margin-bottom:2px;">Time limit (mins)</label>
-                            <input type="number" id="newQuizTime" value="30" min="1"
-                                style="width:100%; border:1px solid #ddd; border-radius:8px; padding:8px 10px; font-size:13px; font-family:inherit;">
-                        </div>
-                        <button onclick="addQuiz()"
-                            style="background:#025628; color:#fff; border:none; border-radius:8px; padding:9px 20px;
-                                   font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; margin-top:14px;">
-                            <i class="fa-solid fa-plus"></i> Add Quiz
-                        </button>
-                    </div>
-                </div>
+            fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+                body: JSON.stringify({ title, message, type })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    closeAnnouncementModal();
+                    // FIX: redirect with view=announcements so the page auto-shows the announcements tab
+                    window.location.href = window.location.pathname + '?view=announcements';
+                } else {
+                    alert('May error: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('May error sa pag-save. Tingnan ang console.');
+            });
+        };
 
-                {{-- Quiz List --}}
-                <div id="quizListContainer" style="display:flex; flex-direction:column; gap:8px; max-height:280px; overflow-y:auto;">
-                    <div style="text-align:center; color:#bbb; font-size:13px; padding:20px 0;" id="quizzesEmptyState">
-                        <i class="fa-solid fa-inbox"></i> Walang quizzes pa.
-                    </div>
-                </div>
-            </div>
+        function toggleAnn(id, btn) {
+            fetch(`/admin/announcement/${id}/toggle`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken }
+            })
+            .then(r => r.json())
+            .then(data => { if (data.success) location.reload(); })
+            .catch(() => alert('May error. Subukan ulit.'));
+        }
 
-        </div>{{-- end modal-body --}}
-        <div class="modal-footer" style="margin-top:16px;">
-            <div class="action-buttons">
-                <button class="btn-cancel" onclick="closeContentModal()">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
+        function deleteAnn(id) {
+            if (!confirm('I-delete ang announcement na ito?')) return;
+            fetch(`/admin/announcement/${id}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken }
+            })
+            .then(r => r.json())
+            .then(data => { if (data.success) location.reload(); })
+            .catch(() => alert('May error. Subukan ulit.'));
+        }
 
-<script>
-// ── STATE ──────────────────────────────────────────────────────────────────
-let _contentCourseId  = null;
-let _contentModules   = [];
-let _contentQuizzes   = [];
+        // ── COURSE CONTENT (Modules & Quizzes) ────────────────────────────────────
+        let _contentCourseId = null;
+        let _contentModules  = [];
+        let _contentQuizzes  = [];
 
-// ── OPEN / CLOSE ───────────────────────────────────────────────────────────
-function openContentModal(courseId, courseTitle) {
-    _contentCourseId = courseId;
-    document.getElementById('contentModalCourseTitle').textContent = courseTitle;
-    document.getElementById('contentModal').style.display = 'block';
-    switchContentTab('modules');
-    fetchCourseContent(courseId);
-}
+        function openContentModal(courseId, courseTitle) {
+            _contentCourseId = courseId;
+            document.getElementById('contentModalCourseTitle').textContent = courseTitle;
+            document.getElementById('contentModal').style.display = 'block';
+            switchContentTab('modules');
+            fetchCourseContent(courseId);
+        }
 
-function closeContentModal() {
-    document.getElementById('contentModal').style.display = 'none';
-    _contentCourseId = null;
-    _contentModules  = [];
-    _contentQuizzes  = [];
-}
+        function closeContentModal() {
+            document.getElementById('contentModal').style.display = 'none';
+            _contentCourseId = null;
+            _contentModules  = [];
+            _contentQuizzes  = [];
+        }
 
-// ── TABS ───────────────────────────────────────────────────────────────────
-function switchContentTab(tab) {
-    const isMod = tab === 'modules';
-    document.getElementById('content-tab-modules').style.display = isMod ? 'block' : 'none';
-    document.getElementById('content-tab-quizzes').style.display = isMod ? 'none'  : 'block';
+        function switchContentTab(tab) {
+            const isMod = tab === 'modules';
+            document.getElementById('content-tab-modules').style.display = isMod ? 'block' : 'none';
+            document.getElementById('content-tab-quizzes').style.display = isMod ? 'none'  : 'block';
 
-    const styleActive   = 'border-bottom:2px solid #025628; margin-bottom:-2px; color:#025628;';
-    const styleInactive = 'border-bottom:none; color:#aaa;';
-    document.getElementById('tab-btn-modules').style.cssText += isMod ? styleActive : styleInactive;
-    document.getElementById('tab-btn-quizzes').style.cssText += isMod ? styleInactive : styleActive;
+            const styleActive   = 'border-bottom:2px solid #025628; margin-bottom:-2px; color:#025628;';
+            const styleInactive = 'border-bottom:none; color:#aaa;';
+            document.getElementById('tab-btn-modules').style.cssText += isMod ? styleActive : styleInactive;
+            document.getElementById('tab-btn-quizzes').style.cssText += isMod ? styleInactive : styleActive;
 
-    if (tab === 'quizzes') populateQuizModuleDropdown();
-}
+            if (tab === 'quizzes') populateQuizModuleDropdown();
+        }
 
-// ── FETCH ──────────────────────────────────────────────────────────────────
-function fetchCourseContent(courseId) {
-    fetch(`/admin/course/${courseId}/content`, {
-        headers: { 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' }
-    })
-    .then(r => r.json())
-    .then(data => {
-        _contentModules = data.modules || [];
-        _contentQuizzes = data.quizzes || [];
-        renderModules();
-        renderQuizzes();
-    })
-    .catch(() => alert('Hindi ma-load ang content. Subukan ulit.'));
-}
+        function fetchCourseContent(courseId) {
+            fetch(`/admin/course/${courseId}/content`, {
+                headers: { 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' }
+            })
+            .then(r => r.json())
+            .then(data => {
+                _contentModules = data.modules || [];
+                _contentQuizzes = data.quizzes || [];
+                renderModules();
+                renderQuizzes();
+            })
+            .catch(() => alert('Hindi ma-load ang content. Subukan ulit.'));
+        }
 
-// ── RENDER MODULES ─────────────────────────────────────────────────────────
-function renderModules() {
-    const container = document.getElementById('moduleListContainer');
-    const empty     = document.getElementById('modulesEmptyState');
+        function renderModules() {
+            const container = document.getElementById('moduleListContainer');
+            const empty     = document.getElementById('modulesEmptyState');
 
-    if (!_contentModules.length) {
-        empty.style.display = 'block';
-        container.innerHTML = '';
-        container.appendChild(empty);
-        return;
-    }
-    empty.style.display = 'none';
+            if (!_contentModules.length) {
+                empty.style.display = 'block';
+                container.innerHTML = '';
+                container.appendChild(empty);
+                return;
+            }
+            empty.style.display = 'none';
 
-    container.innerHTML = _contentModules.map((m, i) => `
-        <div style="display:flex; align-items:center; gap:10px; background:#fff;
-                    border:1px solid #eee; border-radius:10px; padding:10px 14px;">
-            <div style="width:28px; height:28px; border-radius:50%; background:#e8f5e9;
-                        display:flex; align-items:center; justify-content:center;
-                        font-size:12px; font-weight:700; color:#025628; flex-shrink:0;">
-                ${i + 1}
-            </div>
-            <div style="flex:1; min-width:0;">
-                <div style="font-size:13px; font-weight:700; color:#1a1a1a;">${escHtml(m.title)}</div>
-                ${m.description ? `<div style="font-size:11px; color:#888; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escHtml(m.description)}</div>` : ''}
-            </div>
-            <button onclick="deleteModule(${m.id})"
-                style="font-size:11px; padding:4px 10px; border-radius:6px;
-                       background:#FCEBEB; color:#A32D2D; border:none; cursor:pointer;
-                       font-family:inherit; font-weight:700; white-space:nowrap;">
-                <i class="fa-solid fa-trash"></i> Remove
-            </button>
-        </div>
-    `).join('');
-}
-
-// ── RENDER QUIZZES ─────────────────────────────────────────────────────────
-function renderQuizzes() {
-    const container = document.getElementById('quizListContainer');
-    const empty     = document.getElementById('quizzesEmptyState');
-
-    if (!_contentQuizzes.length) {
-        empty.style.display = 'block';
-        container.innerHTML = '';
-        container.appendChild(empty);
-        return;
-    }
-    empty.style.display = 'none';
-
-        container.innerHTML = _contentQuizzes.map(q => `
-            <div style="display:flex; flex-direction:column; gap:0; background:#fff;
-                        border:1px solid #eee; border-radius:10px; overflow:hidden;">
-                <div style="display:flex; align-items:center; gap:10px; padding:10px 14px;">
-                    <div style="width:32px; height:32px; border-radius:8px; background:#fff8e1;
-                                display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0;">
-                        📝
+            container.innerHTML = _contentModules.map((m, i) => `
+                <div style="display:flex; align-items:center; gap:10px; background:#fff;
+                            border:1px solid #eee; border-radius:10px; padding:10px 14px;">
+                    <div style="width:28px; height:28px; border-radius:50%; background:#e8f5e9;
+                                display:flex; align-items:center; justify-content:center;
+                                font-size:12px; font-weight:700; color:#025628; flex-shrink:0;">
+                        ${i + 1}
                     </div>
                     <div style="flex:1; min-width:0;">
-                        <div style="font-size:13px; font-weight:700; color:#1a1a1a;">${escHtml(q.title)}</div>
-                        <div style="font-size:11px; color:#888;">
-                            ${q.module ? `<i class="fa-solid fa-cube"></i> ${escHtml(q.module.title)} &nbsp;·&nbsp;` : ''}
-                            <i class="fa-solid fa-clock"></i> ${q.time_limit}m &nbsp;·&nbsp;
-                            <i class="fa-solid fa-star"></i> ${q.passing_score}% passing
-                        </div>
+                        <div style="font-size:13px; font-weight:700; color:#1a1a1a;">${escHtml(m.title)}</div>
+                        ${m.description ? `<div style="font-size:11px; color:#888; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escHtml(m.description)}</div>` : ''}
                     </div>
-                    <button onclick="toggleQuizQuestions(${q.id}, this)"
+                    <button onclick="deleteModule(${m.id})"
                         style="font-size:11px; padding:4px 10px; border-radius:6px;
-                            background:#e8f5e9; color:#025628; border:none; cursor:pointer;
-                            font-family:inherit; font-weight:700; white-space:nowrap;">
-                        <i class="fa-solid fa-list"></i> Questions
-                    </button>
-                    <button onclick="deleteQuiz(${q.id})"
-                        style="font-size:11px; padding:4px 10px; border-radius:6px;
-                            background:#FCEBEB; color:#A32D2D; border:none; cursor:pointer;
-                            font-family:inherit; font-weight:700; white-space:nowrap;">
+                               background:#FCEBEB; color:#A32D2D; border:none; cursor:pointer;
+                               font-family:inherit; font-weight:700; white-space:nowrap;">
                         <i class="fa-solid fa-trash"></i> Remove
                     </button>
                 </div>
-                <div id="quiz-questions-${q.id}" style="display:none; border-top:1px solid #eee; padding:12px 14px; background:#fafafa;">
-                    <div id="qlist-${q.id}" style="display:flex; flex-direction:column; gap:6px; margin-bottom:10px;"></div>
-                    <div style="background:#fff; border:1px solid #eee; border-radius:8px; padding:12px;">
-                        <div style="font-size:12px; font-weight:700; color:#025628; margin-bottom:8px; text-transform:uppercase;">
-                            <i class="fa-solid fa-plus"></i> Add Question
+            `).join('');
+        }
+
+        function renderQuizzes() {
+            const container = document.getElementById('quizListContainer');
+            const empty     = document.getElementById('quizzesEmptyState');
+
+            if (!_contentQuizzes.length) {
+                empty.style.display = 'block';
+                container.innerHTML = '';
+                container.appendChild(empty);
+                return;
+            }
+            empty.style.display = 'none';
+
+            container.innerHTML = _contentQuizzes.map(q => `
+                <div style="display:flex; flex-direction:column; gap:0; background:#fff;
+                            border:1px solid #eee; border-radius:10px; overflow:hidden;">
+                    <div style="display:flex; align-items:center; gap:10px; padding:10px 14px;">
+                        <div style="width:32px; height:32px; border-radius:8px; background:#fff8e1;
+                                    display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0;">
+                            📝
                         </div>
-                        <textarea id="qtext-${q.id}" placeholder="Question text..." rows="2"
-                            style="width:100%; border:1px solid #ddd; border-radius:8px; padding:8px; font-size:13px; font-family:inherit; margin-bottom:8px; resize:vertical;"></textarea>
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:8px;">
-                            <input type="text" id="qa-${q.id}" placeholder="A. Choice A"
-                                style="border:1px solid #ddd; border-radius:8px; padding:7px 10px; font-size:13px; font-family:inherit;">
-                            <input type="text" id="qb-${q.id}" placeholder="B. Choice B"
-                                style="border:1px solid #ddd; border-radius:8px; padding:7px 10px; font-size:13px; font-family:inherit;">
-                            <input type="text" id="qc-${q.id}" placeholder="C. Choice C"
-                                style="border:1px solid #ddd; border-radius:8px; padding:7px 10px; font-size:13px; font-family:inherit;">
-                            <input type="text" id="qd-${q.id}" placeholder="D. Choice D"
-                                style="border:1px solid #ddd; border-radius:8px; padding:7px 10px; font-size:13px; font-family:inherit;">
+                        <div style="flex:1; min-width:0;">
+                            <div style="font-size:13px; font-weight:700; color:#1a1a1a;">${escHtml(q.title)}</div>
+                            <div style="font-size:11px; color:#888;">
+                                ${q.module ? `<i class="fa-solid fa-cube"></i> ${escHtml(q.module.title)} &nbsp;·&nbsp;` : ''}
+                                <i class="fa-solid fa-clock"></i> ${q.time_limit}m &nbsp;·&nbsp;
+                                <i class="fa-solid fa-star"></i> ${q.passing_score}% passing
+                            </div>
                         </div>
-                        <div style="display:flex; gap:8px; align-items:center;">
-                            <label style="font-size:12px; color:#666;">Correct answer:</label>
-                            <select id="qans-${q.id}"
-                                style="border:1px solid #ddd; border-radius:8px; padding:6px 10px; font-size:13px; font-family:inherit; background:#fff;">
-                                <option value="a">A</option>
-                                <option value="b">B</option>
-                                <option value="c">C</option>
-                                <option value="d">D</option>
-                            </select>
-                            <button onclick="addQuestion(${q.id})"
-                                style="background:#025628; color:#fff; border:none; border-radius:8px; padding:7px 16px;
-                                    font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; margin-left:auto;">
-                                <i class="fa-solid fa-plus"></i> Add
-                            </button>
+                        <button onclick="toggleQuizQuestions(${q.id}, this)"
+                            style="font-size:11px; padding:4px 10px; border-radius:6px;
+                                background:#e8f5e9; color:#025628; border:none; cursor:pointer;
+                                font-family:inherit; font-weight:700; white-space:nowrap;">
+                            <i class="fa-solid fa-list"></i> Questions
+                        </button>
+                        <button onclick="deleteQuiz(${q.id})"
+                            style="font-size:11px; padding:4px 10px; border-radius:6px;
+                                background:#FCEBEB; color:#A32D2D; border:none; cursor:pointer;
+                                font-family:inherit; font-weight:700; white-space:nowrap;">
+                            <i class="fa-solid fa-trash"></i> Remove
+                        </button>
+                    </div>
+                    <div id="quiz-questions-${q.id}" style="display:none; border-top:1px solid #eee; padding:12px 14px; background:#fafafa;">
+                        <div id="qlist-${q.id}" style="display:flex; flex-direction:column; gap:6px; margin-bottom:10px;"></div>
+                        <div style="background:#fff; border:1px solid #eee; border-radius:8px; padding:12px;">
+                            <div style="font-size:12px; font-weight:700; color:#025628; margin-bottom:8px; text-transform:uppercase;">
+                                <i class="fa-solid fa-plus"></i> Add Question
+                            </div>
+                            <textarea id="qtext-${q.id}" placeholder="Question text..." rows="2"
+                                style="width:100%; border:1px solid #ddd; border-radius:8px; padding:8px; font-size:13px; font-family:inherit; margin-bottom:8px; resize:vertical;"></textarea>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:8px;">
+                                <input type="text" id="qa-${q.id}" placeholder="A. Choice A"
+                                    style="border:1px solid #ddd; border-radius:8px; padding:7px 10px; font-size:13px; font-family:inherit;">
+                                <input type="text" id="qb-${q.id}" placeholder="B. Choice B"
+                                    style="border:1px solid #ddd; border-radius:8px; padding:7px 10px; font-size:13px; font-family:inherit;">
+                                <input type="text" id="qc-${q.id}" placeholder="C. Choice C"
+                                    style="border:1px solid #ddd; border-radius:8px; padding:7px 10px; font-size:13px; font-family:inherit;">
+                                <input type="text" id="qd-${q.id}" placeholder="D. Choice D"
+                                    style="border:1px solid #ddd; border-radius:8px; padding:7px 10px; font-size:13px; font-family:inherit;">
+                            </div>
+                            <div style="display:flex; gap:8px; align-items:center;">
+                                <label style="font-size:12px; color:#666;">Correct answer:</label>
+                                <select id="qans-${q.id}"
+                                    style="border:1px solid #ddd; border-radius:8px; padding:6px 10px; font-size:13px; font-family:inherit; background:#fff;">
+                                    <option value="a">A</option>
+                                    <option value="b">B</option>
+                                    <option value="c">C</option>
+                                    <option value="d">D</option>
+                                </select>
+                                <button onclick="addQuestion(${q.id})"
+                                    style="background:#025628; color:#fff; border:none; border-radius:8px; padding:7px 16px;
+                                        font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; margin-left:auto;">
+                                    <i class="fa-solid fa-plus"></i> Add
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        `).join('');
-}
-
-// ── ADD MODULE ─────────────────────────────────────────────────────────────
-function addModule() {
-    const title = document.getElementById('newModuleTitle').value.trim();
-    const desc  = document.getElementById('newModuleDesc').value.trim();
-    const file  = document.getElementById('newModuleFile').files[0];
-    if (!title) { alert('Lagyan ng title ang module.'); return; }
-
-    const formData = new FormData();
-    formData.append('course_id', _contentCourseId);
-    formData.append('title', title);
-    formData.append('description', desc);
-    if (file) formData.append('file', file);
-
-    fetch('/admin/module', {
-        method: 'POST',
-        headers: { 'X-CSRF-TOKEN': csrfToken },
-        body: formData
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.success) {
-            _contentModules.push(data.module);
-            document.getElementById('newModuleTitle').value = '';
-            document.getElementById('newModuleDesc').value  = '';
-            document.getElementById('newModuleFile').value  = '';
-            renderModules();
-            populateQuizModuleDropdown();
+            `).join('');
         }
-    })
-    .catch(() => alert('May error. Subukan ulit.'));
-}
 
-// ── DELETE MODULE ──────────────────────────────────────────────────────────
-function deleteModule(id) {
-    if (!confirm('I-remove ang module na ito?')) return;
-    fetch(`/admin/module/${id}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
-        body: JSON.stringify({ _method: 'DELETE' })
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.success) {
-            _contentModules = _contentModules.filter(m => m.id !== id);
-            renderModules();
-            populateQuizModuleDropdown();
+        function addModule() {
+            const title = document.getElementById('newModuleTitle').value.trim();
+            const desc  = document.getElementById('newModuleDesc').value.trim();
+            const file  = document.getElementById('newModuleFile').files[0];
+            if (!title) { alert('Lagyan ng title ang module.'); return; }
+
+            const formData = new FormData();
+            formData.append('course_id', _contentCourseId);
+            formData.append('title', title);
+            formData.append('description', desc);
+            if (file) formData.append('file', file);
+
+            fetch('/admin/module', {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': csrfToken },
+                body: formData
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    _contentModules.push(data.module);
+                    document.getElementById('newModuleTitle').value = '';
+                    document.getElementById('newModuleDesc').value  = '';
+                    document.getElementById('newModuleFile').value  = '';
+                    renderModules();
+                    populateQuizModuleDropdown();
+                }
+            })
+            .catch(() => alert('May error. Subukan ulit.'));
         }
-    })
-    .catch(() => alert('May error. Subukan ulit.'));
-}
 
-// ── ADD QUIZ ───────────────────────────────────────────────────────────────
-function addQuiz() {
-    const title    = document.getElementById('newQuizTitle').value.trim();
-    const moduleId = document.getElementById('newQuizModule').value || null;
-    const passing  = parseInt(document.getElementById('newQuizPass').value);
-    const time     = parseInt(document.getElementById('newQuizTime').value);
-    if (!title) { alert('Lagyan ng title ang quiz.'); return; }
-
-    fetch('/admin/quiz', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
-        body: JSON.stringify({
-            course_id: _contentCourseId,
-            module_id: moduleId,
-            title,
-            passing_score: passing,
-            time_limit: time
-        })
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.success) {
-            _contentQuizzes.push(data.quiz);
-            document.getElementById('newQuizTitle').value = '';
-            renderQuizzes();
+        function deleteModule(id) {
+            if (!confirm('I-remove ang module na ito?')) return;
+            fetch(`/admin/module/${id}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+                body: JSON.stringify({ _method: 'DELETE' })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    _contentModules = _contentModules.filter(m => m.id !== id);
+                    renderModules();
+                    populateQuizModuleDropdown();
+                }
+            })
+            .catch(() => alert('May error. Subukan ulit.'));
         }
-    })
-    .catch(() => alert('May error. Subukan ulit.'));
-}
 
-// ── DELETE QUIZ ────────────────────────────────────────────────────────────
-function deleteQuiz(id) {
-    if (!confirm('I-remove ang quiz na ito?')) return;
-    fetch(`/admin/quiz/${id}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
-        body: JSON.stringify({ _method: 'DELETE' })
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.success) {
-            _contentQuizzes = _contentQuizzes.filter(q => q.id !== id);
-            renderQuizzes();
+        function addQuiz() {
+            const title    = document.getElementById('newQuizTitle').value.trim();
+            const moduleId = document.getElementById('newQuizModule').value || null;
+            const passing  = parseInt(document.getElementById('newQuizPass').value);
+            const time     = parseInt(document.getElementById('newQuizTime').value);
+            if (!title) { alert('Lagyan ng title ang quiz.'); return; }
+
+            fetch('/admin/quiz', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+                body: JSON.stringify({
+                    course_id: _contentCourseId,
+                    module_id: moduleId,
+                    title,
+                    passing_score: passing,
+                    time_limit: time
+                })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    _contentQuizzes.push(data.quiz);
+                    document.getElementById('newQuizTitle').value = '';
+                    renderQuizzes();
+                }
+            })
+            .catch(() => alert('May error. Subukan ulit.'));
         }
-    })
-    .catch(() => alert('May error. Subukan ulit.'));
-}
 
-// ── HELPER: populate quiz module dropdown ──────────────────────────────────
-function populateQuizModuleDropdown() {
-    const sel = document.getElementById('newQuizModule');
-    sel.innerHTML = '<option value="">— Link to module (optional) —</option>';
-    _contentModules.forEach(m => {
-        const opt = document.createElement('option');
-        opt.value       = m.id;
-        opt.textContent = m.title;
-        sel.appendChild(opt);
-    });
-}
+        function deleteQuiz(id) {
+            if (!confirm('I-remove ang quiz na ito?')) return;
+            fetch(`/admin/quiz/${id}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+                body: JSON.stringify({ _method: 'DELETE' })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    _contentQuizzes = _contentQuizzes.filter(q => q.id !== id);
+                    renderQuizzes();
+                }
+            })
+            .catch(() => alert('May error. Subukan ulit.'));
+        }
 
-// ── HELPER: escape HTML ────────────────────────────────────────────────────
-    function escHtml(str) {
-        const div = document.createElement('div');
-        div.appendChild(document.createTextNode(str || ''));
-        return div.innerHTML;
-    }
+        function populateQuizModuleDropdown() {
+            const sel = document.getElementById('newQuizModule');
+            sel.innerHTML = '<option value="">— Link to module (optional) —</option>';
+            _contentModules.forEach(m => {
+                const opt       = document.createElement('option');
+                opt.value       = m.id;
+                opt.textContent = m.title;
+                sel.appendChild(opt);
+            });
+        }
 
-    // ── QUIZ QUESTIONS ─────────────────────────────────────────────────────────
+        function escHtml(str) {
+            const div = document.createElement('div');
+            div.appendChild(document.createTextNode(str || ''));
+            return div.innerHTML;
+        }
+
         function toggleQuizQuestions(quizId, btn) {
-            const panel = document.getElementById(`quiz-questions-${quizId}`);
+            const panel  = document.getElementById(`quiz-questions-${quizId}`);
             const isOpen = panel.style.display !== 'none';
             panel.style.display = isOpen ? 'none' : 'block';
             if (!isOpen) loadQuizQuestions(quizId);
@@ -1632,36 +1893,9 @@ function populateQuizModuleDropdown() {
             .catch(() => alert('May error. Subukan ulit.'));
         }
 
-</script>
-            </script>
-                <script>
-            function openLogoutModal() {
-                document.getElementById('logoutModal').style.display = 'block';
-            }
+    </script>
 
-            function closeLogoutModal() {
-                document.getElementById('logoutModal').style.display = 'none';
-            }
+    
 
-            function confirmLogout() {
-                document.getElementById('logout-form').submit();
-            }
-            // for admin trainee list
-                const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('page')) {
-                showView('courses');
-                setActive(document.getElementById('nav-courses'));
-            }
-            if (urlParams.get('trainee_page')) {
-                showView('all-trainees');
-                setActive(document.getElementById('nav-trainees'));
-            }
-            if (urlParams.get('trainer_page')) {
-                showView('all-trainers');
-                setActive(document.getElementById('nav-trainers'));
-            }
-            </script>
-
-            
 </body>
 </html>

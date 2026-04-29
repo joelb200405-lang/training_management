@@ -125,7 +125,21 @@
             <a href="{{ route('homepage') }}"
                class="nav-item {{ request()->routeIs('homepage') ? 'active' : '' }}">
                 <i class="fa fa-house nav-icon"></i>
-                <span>Home</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="{{ route('student.modules') }}"
+                class="nav-item {{ request()->routeIs('student.modules') ? 'active' : '' }}">
+                <i class="fa fa-book nav-icon"></i>
+                <span>My Modules</span>
+            </a>
+
+            <div class="sidebar-section-label">Monitor</div>
+
+            <a href="{{ route('contact') }}"
+                class="nav-item {{ request()->routeIs('contact') ? 'active' : '' }}">
+                <i class="fa fa-headset nav-icon"></i>
+                <span>Contact</span>
             </a>
 
             <a href="{{ route('all.courses') }}"
@@ -133,6 +147,7 @@
                 <i class="fa fa-book-open nav-icon"></i>
                 <span>Courses</span>
             </a>
+
         </aside>
 
         

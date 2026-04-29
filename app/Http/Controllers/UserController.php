@@ -91,9 +91,9 @@ class UserController extends Controller
         }
 
         if($user->role === "student"){
-        if(!$user->hasVerifiedEmail()) {
-       return redirect()->route("verification.notice");
-        }
+            // if(!$user->hasVerifiedEmail()) {
+            //     return redirect()->route("verification.notice");
+            // }
             return redirect()->route("homepage");
         } else if($user->role === "trainer"){
             return redirect()->route("teacher");
@@ -103,36 +103,36 @@ class UserController extends Controller
             return redirect()->route("Login");
         }
     }
-        //new (temporary)
-// I-update ang homepage() method sa UserController.php
 
         public function homepage()
         {
             $userId = Auth::id();
-
-            // Kunin LAHAT ng enrollments ng student
+        
+            // ── Enrollments ───────────────────────────────────────────────────────────
             $enrollments = \App\Models\Enrollment_tbl::with('course')
                             ->where('user_id', $userId)
                             ->get();
-
-            // Default — yung pinaka-active o pinakabago
-            $selectedId  = request('course_id');
-            $enrollment  = $selectedId
+        
+            $selectedId = request('course_id');
+            $enrollment = $selectedId
                 ? $enrollments->firstWhere('course_id', $selectedId)
                 : $enrollments->where('status', 'active')->first() ?? $enrollments->first();
-
+        
+            // ── Deadlines ─────────────────────────────────────────────────────────────
             $upcomingDeadlines = \App\Models\Deadline_tbl::where('due_date', '>=', now())
                                     ->where('due_date', '<=', now()->addDays(30))
                                     ->count();
-
+        
+            // ── Announcements ─────────────────────────────────────────────────────────
             $announcements = \App\Models\Announcement::active()->latest()->take(5)->get();
-
+        
+            // ── Modules / Quizzes / Results ───────────────────────────────────────────
             if ($enrollment) {
                 $modules = \App\Models\Module::where('course_id', $enrollment->course_id)
                             ->active()->ordered()->get();
-
+        
                 $quizzes = \App\Models\Quiz::where('course_id', $enrollment->course_id)->get();
-
+        
                 $quizResults = \App\Models\QuizResult::where('user_id', $userId)
                                 ->whereIn('quiz_id', $quizzes->pluck('id'))
                                 ->get();
@@ -141,7 +141,52 @@ class UserController extends Controller
                 $quizzes     = collect();
                 $quizResults = collect();
             }
-
+        
+            // ── Personal Analytics ────────────────────────────────────────────────────
+        
+            // 1. Stat cards
+            $totalEnrolled  = $enrollments->count();
+            $totalCompleted = $enrollments->where('status', 'completed')->count();
+            $avgProgress    = $totalEnrolled > 0 ? round($enrollments->avg('progress')) : 0;
+        
+            // Total quizzes taken across all enrolled courses
+            $allCourseIds   = $enrollments->pluck('course_id');
+            $allQuizIds     = \App\Models\Quiz::whereIn('course_id', $allCourseIds)->pluck('id');
+            $quizzesTaken   = \App\Models\QuizResult::where('user_id', $userId)
+                                ->whereIn('quiz_id', $allQuizIds)
+                                ->count();
+            $quizzesPassed  = \App\Models\QuizResult::where('user_id', $userId)
+                                ->whereIn('quiz_id', $allQuizIds)
+                                ->where('status', 'passed')
+                                ->count();
+        
+            // 2. Weekly progress — quiz results per day this week (Mon–Sun)
+            $weeklyProgress = \App\Models\QuizResult::where('user_id', $userId)
+                                ->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])
+                                ->selectRaw('DAYOFWEEK(created_at) as dow, COUNT(*) as count')
+                                ->groupBy('dow')
+                                ->pluck('count', 'dow');
+        
+            // Build a Mon(2)–Sun(1) array, remap to index 0–6
+            $weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            $dowMap   = [2, 3, 4, 5, 6, 7, 1]; // MySQL DAYOFWEEK: 1=Sun, 2=Mon...
+            $weeklyData = [];
+            foreach ($dowMap as $dow) {
+                $weeklyData[] = $weeklyProgress[$dow] ?? 0;
+            }
+        
+            // 3. Donut chart — completion breakdown across all enrollments
+            $notStarted  = $enrollments->where('progress', 0)->count();
+            $inProgress  = $enrollments->where('progress', '>', 0)->where('status', '!=', 'completed')->count();
+            $donutData   = [$totalCompleted, $inProgress, $notStarted];
+        
+            // 4. Recent activity — last 5 quiz results with quiz title
+            $recentActivity = \App\Models\QuizResult::with('quiz')
+                                ->where('user_id', $userId)
+                                ->latest()
+                                ->take(5)
+                                ->get();
+        
             return view('student.homepage', compact(
                 'enrollments',
                 'enrollment',
@@ -149,7 +194,17 @@ class UserController extends Controller
                 'announcements',
                 'modules',
                 'quizzes',
-                'quizResults'
+                'quizResults',
+                // analytics
+                'totalEnrolled',
+                'totalCompleted',
+                'avgProgress',
+                'quizzesTaken',
+                'quizzesPassed',
+                'weekDays',
+                'weeklyData',
+                'donutData',
+                'recentActivity'
             ));
         }
         public function admin1()
@@ -159,8 +214,9 @@ class UserController extends Controller
             $trainers = \App\Models\User_tbl::where('role', 'trainer')->get();
             $trainees = \App\Models\User_tbl::where('role', 'student')->paginate(10, ['*'], 'trainee_page');
             $trainersList = \App\Models\User_tbl::where('role', 'trainer')->paginate(10, ['*'], 'trainer_page');
+            $announcements = \App\Models\Announcement::latest()->paginate(10, ['*'], 'announcement_page');
 
-            return view("admin.admin1", compact('courses', 'allCourses', 'trainers', 'trainees', 'trainersList'));
+            return view("admin.admin1", compact('courses', 'allCourses', 'trainers', 'trainees', 'trainersList', 'announcements'));
         }
 
 public function assignTrainer(Request $request, $courseId)
@@ -193,43 +249,52 @@ public function removeTrainer($courseId)
         'message' => 'Trainer removed successfully!',
     ]);
 }
-public function teacher(){
-    // Stat cards
-    $totalTrainees     = \App\Models\Enrollment_tbl::where('status', 'active')->count();
-    $monthlyEnrollment = \App\Models\Enrollment_tbl::whereMonth('enrolled_at', now()->month)
-                         ->whereYear('enrolled_at', now()->year)
-                         ->count();
-    $completionRate    = \App\Models\Enrollment_tbl::count() > 0
-                         ? round(\App\Models\Enrollment_tbl::where('status', 'completed')->count()
-                         / \App\Models\Enrollment_tbl::count() * 100) . '%'
-                         : '0%';
-    $urgentAssessments = \App\Models\Deadline_tbl::where('due_date', '<=', now()->addDays(3))
-                         ->where('due_date', '>=', now())
-                         ->count();
-
-    // Low performing trainees (progress below 50%)
-    $lowPerforming = \App\Models\Enrollment_tbl::with(['user', 'course'])
-                     ->where('status', 'active')
-                     ->where('progress', '<', 50)
-                     ->orderBy('progress', 'asc')
-                     ->take(5)
-                     ->get();
-
-    // Upcoming deadlines
-    $deadlines = \App\Models\Deadline_tbl::where('due_date', '>=', now())
-                 ->orderBy('due_date', 'asc')
-                 ->take(5)
-                 ->get();
-
-    return view("trainer.teacher", compact(
-        'totalTrainees',
-        'monthlyEnrollment',
-        'completionRate',
-        'urgentAssessments',
-        'lowPerforming',
-        'deadlines'
-    ));
-}
+    public function teacher()
+    {
+        // ── Existing stat cards ───────────────────────────────────────────────
+        $totalTrainees     = \App\Models\Enrollment_tbl::where('status', 'active')->count();
+    
+        $monthlyEnrollment = \App\Models\Enrollment_tbl::whereMonth('enrolled_at', now()->month)
+                            ->whereYear('enrolled_at', now()->year)
+                            ->count();
+    
+        $completionRate    = \App\Models\Enrollment_tbl::count() > 0
+                            ? round(\App\Models\Enrollment_tbl::where('status', 'completed')->count()
+                            / \App\Models\Enrollment_tbl::count() * 100) . '%'
+                            : '0%';
+    
+        $urgentAssessments = \App\Models\Deadline_tbl::where('due_date', '<=', now()->addDays(3))
+                            ->where('due_date', '>=', now())
+                            ->count();
+    
+        // ── Low performing trainees ───────────────────────────────────────────
+        $lowPerforming = \App\Models\Enrollment_tbl::with(['user', 'course'])
+                        ->where('status', 'active')
+                        ->where('progress', '<', 50)
+                        ->orderBy('progress', 'asc')
+                        ->take(5)
+                        ->get();
+    
+        // ── NEW: Progress distribution for donut chart ────────────────────────
+        // Counts students in each progress bracket across all enrollments
+        $allEnrollments = \App\Models\Enrollment_tbl::all();
+    
+        $progressDistribution = [
+            $allEnrollments->where('status', 'completed')->count(),                                          // Completed
+            $allEnrollments->where('status', '!=', 'completed')->where('progress', '>=', 50)->count(),      // 50–99%
+            $allEnrollments->where('status', '!=', 'completed')->where('progress', '>', 0)->where('progress', '<', 50)->count(), // Below 50%
+            $allEnrollments->where('progress', 0)->where('status', '!=', 'completed')->count(),              // Not started
+        ];
+    
+        return view("trainer.teacher", compact(
+            'totalTrainees',
+            'monthlyEnrollment',
+            'completionRate',
+            'urgentAssessments',
+            'lowPerforming',
+            'progressDistribution'   // NEW
+        ));
+    }
 
 
     //forgotpassword
@@ -362,10 +427,56 @@ public function ResetPassword(Request $request)
         return view('trainer.courses', compact('course', 'totalStudents'));
     }
 
-       public function assessment()
+    public function assessment()
     {
+        $trainer = Auth::user();
+        $course  = Course_tbl::where('trainer_id', $trainer->id)->first();
 
-        return view("trainer.assessment");
+        if (!$course) {
+            return view('trainer.assessment', [
+                'course'       => null,
+                'results'      => collect(),
+                'totalTaken'   => 0,
+                'avgScore'     => 0,
+                'passingRate'  => 0,
+                'topPerformers'=> collect(),
+                'quizzes'      => collect(),
+            ]);
+        }
+
+        // Kunin lahat ng quiz results ng course
+        $results = \App\Models\QuizResult::with(['user', 'quiz'])
+            ->whereHas('quiz', fn($q) => $q->where('course_id', $course->id))
+            ->orderByDesc('created_at')
+            ->get();
+
+        // Stats
+        $totalTaken  = $results->count();
+        $avgScore    = $totalTaken > 0 ? round($results->avg('percentage')) : 0;
+        $passed      = $results->where('status', 'passed')->count();
+        $passingRate = $totalTaken > 0 ? round(($passed / $totalTaken) * 100) : 0;
+
+        // Top performers — pinaka-mataas na average per student
+        $topPerformers = \App\Models\QuizResult::with('user')
+            ->whereHas('quiz', fn($q) => $q->where('course_id', $course->id))
+            ->select('user_id', \DB::raw('ROUND(AVG(percentage)) as avg_score'), \DB::raw('COUNT(*) as total_taken'))
+            ->groupBy('user_id')
+            ->orderByDesc('avg_score')
+            ->take(5)
+            ->get();
+
+        // Quizzes ng course
+        $quizzes = \App\Models\Quiz::where('course_id', $course->id)->get();
+
+        return view('trainer.assessment', compact(
+            'course',
+            'results',
+            'totalTaken',
+            'avgScore',
+            'passingRate',
+            'topPerformers',
+            'quizzes'
+        ));
     }
 
       public function certificates()
@@ -398,6 +509,14 @@ public function courseDetail($id){
 
 public function enroll(Request $request, $id){
     $course = \App\Models\Course_tbl::findOrFail($id);
+
+    // Count current enrollments
+    $enrolledCount = \App\Models\Enrollment_tbl::where('course_id', $id)->count();
+
+    // Check if no more slots
+    if($enrolledCount >= $course->slots){
+        return back()->with('error', 'Sorry, no more slots available for this course!');
+    }
 
     // Check if already enrolled
     $existing = \App\Models\Enrollment_tbl::where('user_id', Auth::id())
@@ -991,7 +1110,97 @@ public function trainerStudents()
         ]);
 
         return redirect()->route('trainer.profile')->with('success', 'Password updated successfully!');
+        }
+
+        // ── ANNOUNCEMENTS ─────────────────────────────────────────────────────────
+            public function storeAnnouncement(Request $request)
+            {
+                $request->validate([
+                    'title'   => 'required|string|max:255',
+                    'message' => 'required|string',
+                    'type'    => 'required|in:reminder,notice,urgent',
+                ]);
+
+                \App\Models\Announcement::create([
+                    'title'     => $request->title,
+                    'message'   => $request->message,
+                    'type'      => $request->type,
+                    'is_active' => true,
+                ]);
+
+                return response()->json(['success' => true]);
+            }
+
+            public function updateAnnouncement(Request $request, $id)
+            {
+                $request->validate([
+                    'title'   => 'required|string|max:255',
+                    'message' => 'required|string',
+                    'type'    => 'required|in:reminder,notice,urgent',
+                ]);
+
+                $announcement = \App\Models\Announcement::findOrFail($id);
+                $announcement->update($request->only('title', 'message', 'type'));
+
+                return response()->json(['success' => true]);
+            }
+
+            public function destroyAnnouncement($id)
+            {
+                $announcement = \App\Models\Announcement::findOrFail($id);
+                $announcement->delete();
+                return response()->json(['success' => true]);
+            }
+
+            public function toggleAnnouncement($id)
+            {
+                $announcement = \App\Models\Announcement::findOrFail($id);
+                $announcement->is_active = !$announcement->is_active;
+                $announcement->save();
+                return response()->json(['success' => true, 'is_active' => $announcement->is_active]);
+        
+            }
+
+            public function studentModules(Request $request)
+    {
+        $userId = Auth::id();
+    
+        // Lahat ng enrollments ng student
+        $enrollments = \App\Models\Enrollment_tbl::with('course')
+                        ->where('user_id', $userId)
+                        ->get();
+    
+        // Piliin ang course — mula sa ?course_id= o default sa active/first
+        $selectedId  = $request->get('course_id');
+        $enrollment  = $selectedId
+            ? $enrollments->firstWhere('course_id', $selectedId)
+            : $enrollments->where('status', 'active')->first() ?? $enrollments->first();
+    
+        if ($enrollment) {
+            $modules = \App\Models\Module::where('course_id', $enrollment->course_id)
+                        ->active()
+                        ->ordered()
+                        ->get();
+    
+            $quizzes = \App\Models\Quiz::where('course_id', $enrollment->course_id)->get();
+    
+            $quizResults = \App\Models\QuizResult::where('user_id', $userId)
+                            ->whereIn('quiz_id', $quizzes->pluck('id'))
+                            ->get();
+        } else {
+            $modules     = collect();
+            $quizzes     = collect();
+            $quizResults = collect();
+        }
+    
+        return view('student.modules', compact(
+            'enrollments',
+            'enrollment',
+            'modules',
+            'quizzes',
+            'quizResults'
+        ));
+    }
     }
     
 
-}

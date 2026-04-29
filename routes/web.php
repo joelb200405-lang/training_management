@@ -19,7 +19,7 @@ Route::get("/our-courses/{id}", [UserController::class, "landingCourseDetail"])-
 
     // Email Verification
     Route::get('/email/verify', function () {
-        return view('auth.verify-email');
+    return view('student.verify_email');
     })->middleware('auth')->name('verification.notice');
 
     Route::get('/email/verify/{id}/{hash}', function (\Illuminate\Foundation\Auth\EmailVerificationRequest $request) {
@@ -111,4 +111,12 @@ Route::middleware("student")->group(function () {
     Route::get("/student/profile", [UserController::class, "studentProfile"])->name("student.profile");
     Route::post("/student/profile/update", [UserController::class, "studentProfileUpdate"])->name("student.profile.update");
     Route::post("/student/profile/password", [UserController::class, "studentProfilePassword"])->name("student.profile.password");
+    Route::get("/student/modules", [UserController::class, "studentModules"])->name("student.modules");
+
+    // Announcements
+    Route::get("/admin/announcements", [UserController::class, "admin1"])->name("admin.announcements");
+    Route::post("/admin/announcement", [UserController::class, "storeAnnouncement"])->name("admin.announcement.store")->middleware("admin");
+    Route::put("/admin/announcement/{id}", [UserController::class, "updateAnnouncement"])->name("admin.announcement.update")->middleware("admin");
+    Route::delete("/admin/announcement/{id}", [UserController::class, "destroyAnnouncement"])->name("admin.announcement.destroy")->middleware("admin");
+    Route::post("/admin/announcement/{id}/toggle", [UserController::class, "toggleAnnouncement"])->name("admin.announcement.toggle")->middleware("admin");
 });
