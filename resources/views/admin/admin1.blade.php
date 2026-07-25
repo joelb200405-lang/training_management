@@ -482,6 +482,9 @@
                                 </div>
                                 <a href="{{ route('admin.registrations.show', $reg->id) }}"
                                 target="_blank" class="btn-view">View</a>
+                                <a href="{{ route('admin.registrations.pdf', $reg->id) }}" class="btn-view">
+                                    <i class="fa-solid fa-file-pdf"></i> PDF
+                                </a>
                             </div>
                         @empty
                             <div style="text-align:center; color:#aaa; padding:20px; font-size:13px;">

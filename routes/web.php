@@ -46,6 +46,7 @@ Route::post("/first-reset", [UserController::class, "firstResetSave"])->name("fi
 // ── ADMIN ROUTES ──────────────────────────────────────────────────────────────
 Route::middleware("admin")->group(function () {
     Route::get("/admin/registrations/export/csv", [RegistrationController::class, "exportCsv"])->name("admin.registrations.export");
+    Route::get("/admin/registrations/{registration}/pdf", [RegistrationController::class, "downloadPdf"])->name("admin.registrations.pdf");
     Route::get("/admin/registrations/{registration}", [RegistrationController::class, "adminShow"])->name("admin.registrations.show");
     Route::get("/admin1", [UserController::class, "admin1"])->name("admin1");
     Route::get("/trainees", [UserController::class, "trainees"])->name("trainees");

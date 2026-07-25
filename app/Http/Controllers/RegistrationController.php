@@ -188,6 +188,13 @@ class RegistrationController extends Controller
                 };
 
                 return response()->stream($callback, 200, $headers);
-            }
+                    }
 
-}
+                    public function downloadPdf(Registration $registration)
+                    {
+                        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.registrations_pdf', compact('registration'))
+                            ->setPaper('a4', 'portrait');
+
+                        return $pdf->download('registration_' . $registration->id . '.pdf');
+                    }
+                }
