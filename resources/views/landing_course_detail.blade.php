@@ -11,7 +11,7 @@
 </head>
 <body>
 
-    <nav class="navbar">
+    <nav class="main-nav">
         <div class="nav-logo">
             <a href="index.php" class="logo-link">
             <img src="{{ asset('images/logo.png') }}" alt="Logo"></a>

@@ -13,12 +13,32 @@
     }
     .greeting-banner h2 { font-size: 24px; font-weight: 700; color: white; margin: 0; }
     .greeting-banner p  { font-size: 13px; color: #b6d9c0; margin: 4px 0 0; }
-    .banner-stats { display: flex; gap: 12px; flex-wrap: wrap; }
+    .banner-stats { display: flex; gap: 12px; flex-wrap: wrap; align-items: stretch; }
     .banner-stat  { background: rgba(255,255,255,0.12); border-radius: 10px; padding: 10px 18px; text-align: center; min-width: 90px; }
     .banner-stat .bval { font-size: 20px; font-weight: 700; color: #f5c842; display: block; }
     .banner-stat .blbl { font-size: 11px; color: #cde8d4; margin-top: 2px; display: block; }
     .prog-bar-wrap { background: rgba(255,255,255,0.2); border-radius: 999px; height: 6px; margin-top: 10px; overflow: hidden; width: 220px; }
     .prog-bar-fill { background: #f5c842; height: 6px; border-radius: 999px; }
+
+    /* ── Register CTA button, sits beside the stat pills ─────────────────── */
+    .banner-register-btn {
+        background: #f5c842;
+        color: #1a4d2e;
+        border-radius: 10px;
+        padding: 10px 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        text-decoration: none;
+        min-width: 110px;
+        font-family: inherit;
+        transition: background 0.15s ease, transform 0.1s ease;
+    }
+    .banner-register-btn:hover { background: #ffd75e; color: #1a4d2e; transform: translateY(-1px); }
+    .banner-register-btn .rb-icon { font-size: 18px; line-height: 1; margin-bottom: 4px; }
+    .banner-register-btn .rb-label { font-size: 12px; font-weight: 700; letter-spacing: 0.02em; }
 
     .section-heading { font-size: 13px; font-weight: 600; color: #4a5568; text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 12px; }
 
@@ -94,6 +114,10 @@
             @endif
         </div>
         <div class="banner-stats">
+            <a href="{{ route('registration.step1') }}" class="banner-register-btn">
+                <span class="rb-icon">📝</span>
+                <span class="rb-label">Register</span>
+            </a>
             <div class="banner-stat">
                 <span class="bval">{{ $enrollment ? ucfirst($enrollment->status) : 'N/A' }}</span>
                 <span class="blbl">Status</span>
@@ -131,19 +155,6 @@
             <div class="sc-label">Quizzes taken</div>
             <div class="sc-value">{{ $quizzesTaken }}</div>
             <div class="sc-sub">{{ $quizzesPassed }} passed</div>
-        </div>
-        <div class="stat-card">
-            <div class="sc-label">Days into course</div>
-            <div class="sc-value">
-                @if($enrollment && $enrollment->enrolled_at)
-                    {{ min((int) now()->diffInDays($enrollment->enrolled_at) + 1, $enrollment->course->duration ?? 15) }}
-                @else
-                    —
-                @endif
-            </div>
-            <div class="sc-sub">
-                of {{ $enrollment && $enrollment->course ? ($enrollment->course->duration ?? 15) : '—' }} days total
-            </div>
         </div>
     </div>
 

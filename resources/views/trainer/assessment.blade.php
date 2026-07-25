@@ -429,9 +429,9 @@
         <button class="as-btn outline" onclick="exportToExcel()">
             <i class="fa fa-file-excel"></i> Export to Excel
         </button>
-        <button class="as-btn primary" onclick="openModal('gradeModal')">
+        <!-- <button class="as-btn primary" onclick="openModal('gradeModal')">
             <i class="fa fa-plus"></i> Add New Grade
-        </button>
+        </button> -->
     </div>
 
 </div>

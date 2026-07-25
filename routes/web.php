@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\RegistrationController;
 
 // ── PUBLIC ROUTES (walang login needed) ──────────────────────────────────────
 Route::get('/', [UserController::class, 'index'])->name('index');
@@ -44,26 +45,23 @@ Route::post("/first-reset", [UserController::class, "firstResetSave"])->name("fi
 
 // ── ADMIN ROUTES ──────────────────────────────────────────────────────────────
 Route::middleware("admin")->group(function () {
+    Route::get("/admin/registrations/export/csv", [RegistrationController::class, "exportCsv"])->name("admin.registrations.export");
+    Route::get("/admin/registrations/{registration}", [RegistrationController::class, "adminShow"])->name("admin.registrations.show");
     Route::get("/admin1", [UserController::class, "admin1"])->name("admin1");
     Route::get("/trainees", [UserController::class, "trainees"])->name("trainees");
 
-    // Trainer management
     Route::post("/admin/trainer/store", [UserController::class, "storeTrainer"])->name("admin.trainer.store");
 
-    // Course management
     Route::post("/admin/course/{courseId}/assign-trainer", [UserController::class, "assignTrainer"])->name("admin.course.assignTrainer");
     Route::post("/admin/course/{courseId}/remove-trainer", [UserController::class, "removeTrainer"])->name("admin.course.removeTrainer");
 
-    // Modules
     Route::get("/admin/course/{courseId}/content", [UserController::class, "getCourseContent"])->name("admin.course.content");
     Route::post("/admin/module", [UserController::class, "storeModule"])->name("admin.module.store");
     Route::match(['POST', 'DELETE'], "/admin/module/{id}", [UserController::class, "destroyModule"])->name("admin.module.destroy");
 
-    // Quizzes
     Route::post("/admin/quiz", [UserController::class, "storeQuiz"])->name("admin.quiz.store");
     Route::match(['POST', 'DELETE'], "/admin/quiz/{id}", [UserController::class, "destroyQuiz"])->name("admin.quiz.destroy");
 
-    // Quiz Questions
     Route::get("/admin/quiz/{quizId}/questions", [UserController::class, "getQuizQuestions"])->name("admin.quiz.questions");
     Route::post("/admin/quiz-question", [UserController::class, "storeQuizQuestion"])->name("admin.quiz.question.store");
     Route::match(['POST', 'DELETE'], "/admin/quiz-question/{id}", [UserController::class, "destroyQuizQuestion"])->name("admin.quiz.question.destroy");
@@ -83,9 +81,7 @@ Route::middleware("trainer")->group(function () {
     Route::get("/trainer/profile", [UserController::class, "trainerProfile"])->name("trainer.profile");
     Route::post("/trainer/profile/update", [UserController::class, "trainerProfileUpdate"])->name("trainer.profile.update");
     Route::post("/trainer/profile/password", [UserController::class, "trainerProfilePassword"])->name("trainer.profile.password");
- 
 
-    // Trainer course content
     Route::get("/trainer/course/{courseId}/content", [UserController::class, "getCourseContent"])->name("trainer.course.content");
     Route::post("/trainer/module", [UserController::class, "storeModule"])->name("trainer.module.store");
     Route::match(['POST', 'DELETE'], "/trainer/module/{id}", [UserController::class, "destroyModule"])->name("trainer.module.destroy");
@@ -113,10 +109,22 @@ Route::middleware("student")->group(function () {
     Route::post("/student/profile/password", [UserController::class, "studentProfilePassword"])->name("student.profile.password");
     Route::get("/student/modules", [UserController::class, "studentModules"])->name("student.modules");
 
-    // Announcements
     Route::get("/admin/announcements", [UserController::class, "admin1"])->name("admin.announcements");
     Route::post("/admin/announcement", [UserController::class, "storeAnnouncement"])->name("admin.announcement.store")->middleware("admin");
     Route::put("/admin/announcement/{id}", [UserController::class, "updateAnnouncement"])->name("admin.announcement.update")->middleware("admin");
     Route::delete("/admin/announcement/{id}", [UserController::class, "destroyAnnouncement"])->name("admin.announcement.destroy")->middleware("admin");
     Route::post("/admin/announcement/{id}/toggle", [UserController::class, "toggleAnnouncement"])->name("admin.announcement.toggle")->middleware("admin");
+
+    // Registration form (student must be logged in)
+    Route::get('/register', [RegistrationController::class, 'showStep1'])
+        ->name('registration.step1');
+
+    Route::post('/register/step-2', [RegistrationController::class, 'saveStep1'])
+        ->name('registration.step2');
+
+    Route::get('/register/step-2', [RegistrationController::class, 'showStep2'])
+        ->name('registration.step2.show');
+
+    Route::post('/register/submit', [RegistrationController::class, 'store'])
+        ->name('registration.submit');
 });

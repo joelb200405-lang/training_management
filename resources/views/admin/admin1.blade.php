@@ -7,10 +7,11 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Admin Dashboard - System Overview</title>
     <link rel="stylesheet" href="{{ asset('stylesheet/admin-dashboard.css') }}">
+    <link rel="stylesheet" href="{{ asset('stylesheet/certificates.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
         .assign-trainer-section {
@@ -204,6 +205,12 @@
                onclick="showView('all-trainers'); setActive(this); return false;">
                 <i class="fa fa-chalkboard-user nav-icon"></i>
                 <span>Trainers</span>
+            </a>
+
+            <a href="#" class="nav-item" id="nav-registrations"
+            onclick="showView('registrations'); setActive(this); return false;">
+                <i class="fa fa-clipboard-list nav-icon"></i>
+                <span>Registrations</span>
             </a>
 
             <a href="#" class="nav-item" id="nav-courses"
@@ -443,6 +450,64 @@
 
                         @if($trainersList->hasMorePages())
                             <a href="{{ $trainersList->nextPageUrl() }}" class="page-btn">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </a>
+                        @else
+                            <button class="page-btn" disabled><i class="fa-solid fa-chevron-right"></i></button>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            {{-- REGISTRATIONS --}}
+            <div id="view-registrations" style="display: none;">
+                <div class="card list-card">
+                <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+                    <h3>Submitted Registrations</h3>
+                    <a href="{{ route('admin.registrations.export') }}" class="btn-save-main" style="width:auto; padding:8px 16px; text-decoration:none;">
+                        <i class="fa-solid fa-file-excel"></i> Export to Excel
+                    </a>
+                </div>
+                    <div class="user-list-body" id="registrations-list-content">
+                        @forelse($registrations as $reg)
+                            <div class="user-item">
+                                <i class="fa-solid fa-id-card profile-icon"></i>
+                                <div class="user-info">
+                                    <strong>{{ $reg->last_name }}, {{ $reg->first_name }} {{ $reg->middle_name }}</strong><br>
+                                    <small>
+                                        ULI: {{ $reg->uli_number ?? '—' }} &nbsp;·&nbsp;
+                                        Course: {{ $reg->course_name }} &nbsp;·&nbsp;
+                                        {{ $reg->created_at->format('M j, Y g:i A') }}
+                                    </small>
+                                </div>
+                                <a href="{{ route('admin.registrations.show', $reg->id) }}"
+                                target="_blank" class="btn-view">View</a>
+                            </div>
+                        @empty
+                            <div style="text-align:center; color:#aaa; padding:20px; font-size:13px;">
+                                <i class="fa-solid fa-clipboard-list"></i> Walang registrations pa.
+                            </div>
+                        @endforelse
+                    </div>
+                    <div class="pagination-container">
+                        @if($registrations->onFirstPage())
+                            <button class="page-btn" disabled><i class="fa-solid fa-chevron-left"></i></button>
+                        @else
+                            <a href="{{ $registrations->previousPageUrl() }}" class="page-btn">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </a>
+                        @endif
+                        <div class="page-numbers">
+                            @for($i = 1; $i <= $registrations->lastPage(); $i++)
+                                @if($i == $registrations->currentPage())
+                                    <button class="page-btn active">{{ $i }}</button>
+                                @else
+                                    <a href="{{ $registrations->url($i) }}" class="page-btn">{{ $i }}</a>
+                                @endif
+                            @endfor
+                        </div>
+                        @if($registrations->hasMorePages())
+                            <a href="{{ $registrations->nextPageUrl() }}" class="page-btn">
                                 <i class="fa-solid fa-chevron-right"></i>
                             </a>
                         @else
@@ -703,6 +768,297 @@
                         <button class="btn-all" style="width: auto; padding: 10px 20px;">Backup Now</button>
                     </div>
                 </div>
+            </div>
+
+            {{-- CERTIFICATE --}}
+            <div id="view-certificate" style="display: none;">
+
+                <section class="stats-grid">
+                    <div class="stat-card"><h3>67</h3><p>Certificates Issued</p></div>
+                    <div class="stat-card"><h3>07</h3><p>Pending Claim</p></div>
+                    <div class="stat-card"><h3>67</h3><p>Monthly Graduates</p></div>
+                    <div class="stat-card urgent"><h3>67</h3><p>Archive Size</p></div>
+                </section>
+
+                <div class="filter-controls">
+                    <div class="dropdown-group">
+                        <select class="filter-dropdown">
+                            <option>Filter by: Course</option>
+                        </select>
+                        <select class="filter-dropdown">
+                            <option>Filter by: Month</option>
+                        </select>
+                        <select class="filter-dropdown">
+                            <option>Filter by: Status</option>
+                        </select>
+                    </div>
+                    <div class="selection-group">
+                        <label class="custom-checkbox">
+                            <input type="checkbox" id="toggleMultiple"> <span>Select Multiple</span>
+                        </label>
+                        <label class="custom-checkbox">
+                            <input type="checkbox" id="selectAll"> <span>Select All</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="table-outline">
+                    <table class="trainee-data-table" id="certTable">
+                        <thead>
+                            <tr>
+                                <th class="select-col hidden"><i class="fas fa-check-square"></i></th>
+                                <th>Fullname</th>
+                                <th>Course</th>
+                                <th>Date Issued</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="select-col hidden"><input type="checkbox" class="row-checkbox"></td>
+                                <td>Nelmida, Rheyan</td>
+                                <td>Dressmaking</td>
+                                <td>April 3, 2026</td>
+                                <td>Claimed</td>
+                                <td class="action-icons">
+                                    <i class="fas fa-eye view-icon" onclick="openCertModal('Nelmida, Rheyan', 'Dressmaking', 'D-LED-TES-2026-081')"></i>
+                                    <i class="fas fa-edit edit-icon"></i>
+                                    <i class="fas fa-trash-alt delete-icon" onclick="deleteCert(this)"></i>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="action-footer">
+                    <button class="text-btn-add" onclick="openAddModal()">
+                        <i class="fas fa-plus-square"></i> Issue New Certificate
+                    </button>
+                    <button class="pill-btn-export">Export Certificate</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="certificateModal" class="modal-overlay">
+        <div class="modal-box-fixed">
+            <div class="modal-split">
+                <div class="split-left-preview">
+                    <h3 class="modal-section-header">Certificate Preview</h3>
+                    <div class="ui-cert-frame" id="printableCert">
+                        <div class="ui-cert-inner">
+                            <div class="cert-logos-header">
+                                <img src="/images/logo.png" alt="Logo" class="cert-logo-img">
+                                <img src="/images/tesda.png" alt="TESDA" class="cert-logo-img">
+                                <img src="/images/logo_ledipo.png" alt="LEDIPO" class="cert-logo-img">
+                            </div>
+                            <p class="cert-authority-text">
+                                TECHNICAL EDUCATION AND SKILLS DEVELOPMENT AUTHORITY<br>
+                                CITY GOVERNMENT OF DASMARIÑAS - LEDIPO
+                            </p>
+                            <h1 class="cert-title-primary">CERTIFICATE OF COMPLETION</h1>
+                            <p class="cert-certify-line">THIS CERTIFIES THAT</p>
+                            <h2 id="vName" class="cert-recipient-name">Nelmida, Rheyan</h2>
+                            <p class="cert-training-msg">HAS SUCCESSFULLY COMPLETED THE TRAINING IN</p>
+                            <h3 id="vCourse" class="cert-course-name">DRESSMAKING</h3>
+                            <div class="cert-signatures">
+                                <div class="sig-item">
+                                    <p class="sig-name">HON. JENNIFER A. BARZAGA</p>
+                                    <p class="sig-rank">City Mayor</p>
+                                </div>
+                                <div class="sig-item">
+                                    <p class="sig-name">MR. CARLOS H. LEGASPI</p>
+                                    <p class="sig-rank">LEDIPO Head</p>
+                                </div>
+                            </div>
+                            <div class="cert-serial-footer">
+                                <span id="vID">CERT. NO.: D-LED-TES-2026-081</span>
+                                <span>TRAINING ID: NCIIDRM-26-032</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="split-right-info">
+                    <h2 class="modal-title">Certificate Details</h2>
+                    <div class="info-block">
+                        <span class="info-label">Trainee Performance</span>
+                        <p class="info-value grade-success">94% - Passed</p>
+                    </div>
+                    <div class="info-block">
+                        <span class="info-label">Official Signatories</span>
+                        <ul class="sig-list">
+                            <li><i class="fas fa-check-circle"></i> Hon. Jennifer Austria-Barzaga</li>
+                            <li><i class="fas fa-check-circle"></i> Mr. Carlos H. Legaspi</li>
+                        </ul>
+                    </div>
+                    <div class="modal-actions-container">
+                        <button class="modal-action-btn btn-pdf" onclick="handleDownload('printableCert')">Download PDF</button>
+                        <button class="modal-action-btn btn-print" onclick="handlePrint()">Re-Print</button>
+                        <button class="modal-action-btn" onclick="closeCertModal()">Close View</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="addTraineeModal" class="modal-overlay">
+        <div class="modal-box-fixed">
+            <div class="modal-split">
+                <div class="split-right-info border-right">
+                    <h2 class="modal-title">Issue New Certificate</h2>
+                    <form id="issueForm">
+                        <div class="ui-form-group">
+                            <label>1. Trainee Selection</label>
+                            <select class="ui-select" id="traineeSelect" onchange="updateLivePreview()">
+                                <option value="" disabled selected>Search Trainee...</option>
+                                <option data-course="Dressmaking">Nelmida, Rheyan (94%)</option>
+                                <option data-course="Nail Care">Bong, Marcos (88%)</option>
+                            </select>
+                        </div>
+                        <div class="ui-form-group">
+                            <label>2. Record Details</label>
+                            <input type="text" id="certIDInput" class="ui-select" placeholder="Control Number" oninput="updateLivePreview()">
+                            <input type="date" class="ui-select" value="2026-03-31">
+                        </div>
+                        <div class="ui-form-group">
+                            <label>3. Document Options</label>
+                            <select class="ui-select">
+                                <option>Certificate of Completion</option>
+                            </select>
+                            <textarea class="ui-select resizable-none" placeholder="Remarks"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="split-left-preview bg-white">
+                    <h3 class="modal-section-header">Live Preview</h3>
+                    <div class="ui-cert-frame scale-down" id="livePreviewCert">
+                        <div class="ui-cert-inner">
+                            <div class="cert-logos-header">
+                                <img src="/images/logo.png" alt="Logo" class="cert-logo-img">
+                                <img src="/images/tesda.png" alt="TESDA" class="cert-logo-img">
+                                <img src="/images/logo_ledipo.png" alt="LEDIPO" class="cert-logo-img">
+                            </div>
+                            <p class="cert-authority-text">
+                                TECHNICAL EDUCATION AND SKILLS DEVELOPMENT AUTHORITY<br>
+                                CITY GOVERNMENT OF DASMARIÑAS - LEDIPO
+                            </p>
+                            <h1 class="cert-title-primary" style="font-size: 18px;">CERTIFICATE OF COMPLETION</h1>
+                            <p class="cert-certify-line">THIS CERTIFIES THAT</p>
+                            <h2 id="pName" class="cert-recipient-name" style="font-size: 24px;">[NAME]</h2>
+                            <p class="cert-training-msg">HAS SUCCESSFULLY COMPLETED THE TRAINING IN</p>
+                            <h3 id="pCourse" class="cert-course-name" style="font-size: 16px;">[COURSE]</h3>
+                            <div class="cert-signatures">
+                                <div class="sig-item" style="width: 120px;">
+                                    <p class="sig-name" style="font-size: 8px;">HON. JENNIFER A. BARZAGA</p>
+                                </div>
+                                <div class="sig-item" style="width: 120px;">
+                                    <p class="sig-name" style="font-size: 8px;">MR. CARLOS H. LEGASPI</p>
+                                </div>
+                            </div>
+                            <div class="cert-serial-footer">
+                                <span id="pID" style="font-size: 7px;">CERT. NO.: [ID]</span>
+                                <span style="font-size: 7px;">TRAINING ID: NCIIDRM-26-032</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-actions-container margin-top-20">
+                        <button class="modal-action-btn btn-print full-width" onclick="alert('Saving...')">Save & Issue</button>
+                        <button class="modal-action-btn btn-pdf full-width" onclick="handleDownload('livePreviewCert')">Download PDF</button>
+                        <button class="modal-action-btn full-width" onclick="closeAddModal()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="logoutModal" class="modal-overlay">
+        <div class="modal-box">
+            <p>Are you sure you want to log out?</p>
+            <div class="modal-actions-centered">
+                <a href="login.php" class="btn-modal-yes">Yes</a>
+                <button type="button" class="btn-modal-cancel" onclick="hideLogoutModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/logout.js"></script>
+    <script>
+        function openAddModal() { document.getElementById('addTraineeModal').style.display = 'flex'; }
+        function closeAddModal() { document.getElementById('addTraineeModal').style.display = 'none'; }
+        
+        function openCertModal(n, c, i) {
+            document.getElementById('vName').innerText = n;
+            document.getElementById('vCourse').innerText = c.toUpperCase();
+            document.getElementById('vID').innerText = "CERT. NO.: " + i;
+            document.getElementById('certificateModal').style.display = 'flex';
+        }
+        
+        function closeCertModal() { document.getElementById('certificateModal').style.display = 'none'; }
+        
+        function updateLivePreview() {
+            const s = document.getElementById('traineeSelect');
+            const idInput = document.getElementById('certIDInput').value;
+            if(s.selectedIndex > 0) {
+                const n = s.value.split(' (')[0];
+                const c = s.options[s.selectedIndex].getAttribute('data-course');
+                document.getElementById('pName').innerText = n.toUpperCase();
+                document.getElementById('pCourse').innerText = c.toUpperCase();
+            }
+            document.getElementById('pID').innerText = "CERT. NO.: " + (idInput || "[ID]");
+        }
+
+        async function handleDownload(elementId) {
+            const { jsPDF } = window.jspdf;
+            const element = document.getElementById(elementId);
+            
+            // Capture the certificate as a canvas
+            const canvas = await html2canvas(element, { scale: 2 });
+            const imgData = canvas.toDataURL('image/png');
+            
+            // Create PDF (Landscape)
+            const pdf = new jsPDF('l', 'mm', 'a4');
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+            
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save("Certificate.pdf");
+        }
+
+        function handlePrint() { 
+            window.print(); 
+        }
+
+        window.onclick = function(e) { 
+            if (e.target.classList.contains('modal-overlay')) { 
+                e.target.style.display = 'none'; 
+            } 
+        };
+
+        async function handleDownload(id) {
+        const { jsPDF } = window.jspdf;
+        const element = document.getElementById(id);
+        
+        // Add these options to fix the "not working on other laptops" issue
+        const canvas = await html2canvas(element, { 
+            scale: 2,
+            useCORS: true,      // Essential for network access
+            allowTaint: false,  // Prevents security errors
+            logging: true       // Helps you see errors in the F12 console
+        });
+        
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('l', 'mm', 'a4');
+        const width = pdf.internal.pageSize.getWidth();
+        const height = (canvas.height * width) / canvas.width;
+        
+        pdf.addImage(imgData, 'PNG', 0, 0, width, height);
+        pdf.save('Certificate.pdf');
+        }
+    </script>
             </div>
 
         </main>
@@ -1240,7 +1596,7 @@
             const allViews = [
                 'view-overview','view-trainee-list','view-trainer-list',
                 'view-facilities','view-courses','view-settings','view-analytics',
-                'view-announcements'
+                'view-announcements','view-certificate','view-registrations'
             ];
             allViews.forEach(id => {
                 const el = document.getElementById(id);
@@ -1259,6 +1615,8 @@
                 courses:         ['view-courses',       'Available Courses',  `<a href="#" onclick="showView('overview');return false;">System Overview</a> / Courses`],
                 settings:        ['view-settings',      'System Settings',    `<a href="#" onclick="showView('overview');return false;">System Overview</a> / Settings`],
                 announcements:   ['view-announcements', 'Announcements',      `<a href="#" onclick="showView('overview');return false;">System Overview</a> / Announcements`],
+                certificate:     ['view-certificate', 'Certificates', `<a href="#" onclick="showView('overview');return false;">System Overview</a> / Certificates`],
+                registrations:   ['view-registrations', 'Registrations', `<a href="#" onclick="showView('overview');return false;">System Overview</a> / Registrations`],
             };
 
             const entry = map[viewName] || map['overview'];
@@ -1893,8 +2251,337 @@
             .catch(() => alert('May error. Subukan ulit.'));
         }
 
+        // ── CERTIFICATE ────────────────────────────────────────────────────────────
+        function toggleSelectCol() {
+            const show = document.getElementById('toggleMultiple').checked;
+            document.querySelectorAll('.cert-select-col').forEach(el => {
+                el.style.display = show ? '' : 'none';
+            });
+            if (!show) document.getElementById('selectAll').checked = false;
+        }
+
+        function toggleSelectAll(cb) {
+            document.querySelectorAll('.row-checkbox').forEach(c => c.checked = cb.checked);
+        }
+
+        function deleteCertRow(btn) {
+            if (!confirm('I-delete ang certificate na ito?')) return;
+            btn.closest('tr').remove();
+        }
+
+        function openCertViewModal(name, course, certNo) {
+            document.getElementById('certViewName').textContent   = name;
+            document.getElementById('certViewCourse').textContent = course.toUpperCase();
+            document.getElementById('certViewNo').textContent     = 'CERT. NO.: ' + certNo;
+            document.getElementById('certViewModal').style.display = 'flex';
+        }
+        function closeCertViewModal() {
+            document.getElementById('certViewModal').style.display = 'none';
+        }
+
+        function openIssueCertModal() {
+            document.getElementById('issueCertModal').style.display = 'flex';
+            updateCertPreview();
+        }
+        function closeIssueCertModal() {
+            document.getElementById('issueCertModal').style.display = 'none';
+        }
+
+        function updateCertPreview() {
+            const sel    = document.getElementById('issueTraineeSelect');
+            const nameEl = document.getElementById('previewName');
+            const crsEl  = document.getElementById('previewCourse');
+            if (!sel || !nameEl) return;
+            const rawName = sel.value ? sel.value.split(' (')[0] : '[NAME]';
+            const course  = sel.value && sel.selectedIndex > 0
+                ? sel.options[sel.selectedIndex].getAttribute('data-course') || '[COURSE]'
+                : '[COURSE]';
+            nameEl.textContent = rawName.toUpperCase();
+            crsEl.textContent  = course.toUpperCase();
+        }
+
+        // ── CERTIFICATE PDF GENERATION ─────────────────────────────────────────────
+
+        function generateCertPDF({ name, course, controlNumber, dateLabel, docType, remarks }) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+            const W = 297, H = 210;
+
+            // White background
+            doc.setFillColor(255, 255, 255);
+            doc.rect(0, 0, W, H, 'F');
+
+            // Outer border (dark green)
+            doc.setDrawColor(2, 86, 40);
+            doc.setLineWidth(4);
+            doc.rect(8, 8, W - 16, H - 16);
+
+            // Inner border (gold)
+            doc.setDrawColor(180, 150, 50);
+            doc.setLineWidth(1);
+            doc.rect(12, 12, W - 24, H - 24);
+
+            // Header — TESDA line
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8);
+            doc.setTextColor(100, 100, 100);
+            doc.text('TECHNICAL EDUCATION AND SKILLS DEVELOPMENT AUTHORITY', W / 2, 36, { align: 'center' });
+
+            // Header — LEDIPO line
+            doc.setFontSize(9);
+            doc.setTextColor(60, 60, 60);
+            doc.text('CITY GOVERNMENT OF DASMARIÑAS – LEDIPO', W / 2, 43, { align: 'center' });
+
+            // Gold divider
+            doc.setDrawColor(180, 150, 50);
+            doc.setLineWidth(0.8);
+            doc.line(55, 47, W - 55, 47);
+
+            // Certificate type title
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(22);
+            doc.setTextColor(2, 86, 40);
+            doc.text(docType.toUpperCase(), W / 2, 63, { align: 'center' });
+
+            // "This certifies that"
+            doc.setFont('helvetica', 'italic');
+            doc.setFontSize(10);
+            doc.setTextColor(90, 90, 90);
+            doc.text('This is to certify that', W / 2, 75, { align: 'center' });
+
+            // Trainee name
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(26);
+            doc.setTextColor(15, 15, 15);
+            doc.text(name.toUpperCase(), W / 2, 91, { align: 'center' });
+
+            // Name underline
+            const nameW = doc.getTextWidth(name.toUpperCase());
+            doc.setDrawColor(2, 86, 40);
+            doc.setLineWidth(0.5);
+            doc.line(W / 2 - nameW / 2, 94, W / 2 + nameW / 2, 94);
+
+            // "has successfully completed"
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(10);
+            doc.setTextColor(80, 80, 80);
+            doc.text('has successfully completed the training in', W / 2, 105, { align: 'center' });
+
+            // Course name
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(15);
+            doc.setTextColor(2, 86, 40);
+            doc.text(course.toUpperCase(), W / 2, 117, { align: 'center' });
+
+            // Date
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(9);
+            doc.setTextColor(90, 90, 90);
+            doc.text(`held on ${dateLabel}`, W / 2, 126, { align: 'center' });
+
+            // Remarks (if any)
+            if (remarks && remarks.trim()) {
+                doc.setFontSize(9);
+                doc.setTextColor(110, 110, 110);
+                doc.text(`Remarks: ${remarks}`, W / 2, 134, { align: 'center' });
+            }
+
+            // Control number (bottom right)
+            if (controlNumber && controlNumber.trim()) {
+                doc.setFontSize(8);
+                doc.setTextColor(160, 160, 160);
+                doc.text(`Control No.: ${controlNumber}`, W - 18, H - 15, { align: 'right' });
+            }
+
+            // Signature lines
+            const sig1X = 80, sig2X = W - 80, sigY = H - 38;
+            doc.setDrawColor(50, 50, 50);
+            doc.setLineWidth(0.5);
+            doc.line(sig1X - 35, sigY, sig1X + 35, sigY);
+            doc.line(sig2X - 35, sigY, sig2X + 35, sigY);
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(9);
+            doc.setTextColor(20, 20, 20);
+            doc.text('HON. JENNIFER A. BARZAGA', sig1X, sigY + 6, { align: 'center' });
+            doc.text('MR. CARLOS H. LEGASPI', sig2X, sigY + 6, { align: 'center' });
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8);
+            doc.setTextColor(100, 100, 100);
+            doc.text('City Mayor', sig1X, sigY + 11, { align: 'center' });
+            doc.text('LEDIPO Head', sig2X, sigY + 11, { align: 'center' });
+
+            return doc;
+        }
+
+        function saveAndIssueCert() {
+            const sel        = document.getElementById('issueTraineeSelect');
+            const controlNum = document.getElementById('issueControlNum').value.trim();
+            const dateInput  = document.getElementById('issueDate').value;
+            const docType    = document.getElementById('issueDocType').value;
+            const remarks    = document.getElementById('issueRemarks').value.trim();
+
+            if (!sel.value) {
+                alert('Pumili muna ng trainee.');
+                return;
+            }
+
+            const name   = sel.value.split(' (')[0];
+            const course = sel.options[sel.selectedIndex].getAttribute('data-course') || '';
+
+            const dateLabel = dateInput
+                ? new Date(dateInput + 'T12:00:00').toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' })
+                : new Date().toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' });
+
+            const doc      = generateCertPDF({ name, course, controlNumber: controlNum, dateLabel, docType, remarks });
+            const safeName = name.replace(/[^a-zA-Z0-9]/g, '_');
+            doc.save(`LEDIPO_Certificate_${safeName}.pdf`);
+
+            addCertTableRow(name, course, dateLabel, controlNum);
+            closeIssueCertModal();
+            alert('Certificate issued and downloaded successfully!');
+        }
+
+        function downloadExistingCert() {
+            // Reads from the View Certificate modal
+            const name   = document.getElementById('certViewName').textContent;
+            const course = document.getElementById('certViewCourse').textContent;
+            const certNo = document.getElementById('certViewNo').textContent.replace('CERT. NO.: ', '');
+
+            const dateLabel = new Date().toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' });
+
+            const doc = generateCertPDF({
+                name,
+                course,
+                controlNumber: certNo,
+                dateLabel,
+                docType: 'Certificate of Completion',
+                remarks: ''
+            });
+
+            const safeName = name.replace(/[^a-zA-Z0-9]/g, '_');
+            doc.save(`LEDIPO_Certificate_${safeName}.pdf`);
+        }
+
+        function addCertTableRow(name, course, dateLabel, controlNum) {
+            const tbody = document.getElementById('certTableBody');
+            if (!tbody) return;
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="cert-select-col" style="display:none;"><input type="checkbox" class="row-checkbox"></td>
+                <td>${name}</td>
+                <td>${course}</td>
+                <td>${dateLabel}</td>
+                <td><span class="cert-badge claimed">Claimed</span></td>
+                <td class="cert-action-icons">
+                    <i class="fa fa-eye" onclick="openCertViewModal('${name}','${course}','${controlNum || 'N/A'}')" title="View"></i>
+                    <i class="fa fa-trash-alt" onclick="deleteCertRow(this)" title="Delete"></i>
+                </td>
+            `;
+            tbody.insertBefore(tr, tbody.firstChild);
+        }
+
     </script>
 
+        {{-- CERT VIEW MODAL --}}
+<div id="certViewModal" class="cert-modal-overlay" onclick="if(event.target===this)closeCertViewModal()">
+    <div class="cert-modal-box">
+        <div class="cert-modal-split">
+            <div class="cert-modal-left">
+                <h3 class="cert-modal-section-title">Certificate Preview</h3>
+                <div class="cert-frame-preview">
+                    <div class="cert-inner">
+                        <p class="cert-authority">TECHNICAL EDUCATION AND SKILLS DEVELOPMENT AUTHORITY<br>CITY GOVERNMENT OF DASMARIÑAS – LEDIPO</p>
+                        <h2 class="cert-title">CERTIFICATE OF COMPLETION</h2>
+                        <p class="cert-certify">THIS CERTIFIES THAT</p>
+                        <h3 id="certViewName" class="cert-recipient">Nelmida, Rheyan</h3>
+                        <p class="cert-msg">HAS SUCCESSFULLY COMPLETED THE TRAINING IN</p>
+                        <h4 id="certViewCourse" class="cert-course">DRESSMAKING</h4>
+                        <div class="cert-sigs">
+                            <div><p class="sig-name">HON. JENNIFER A. BARZAGA</p><p class="sig-role">City Mayor</p></div>
+                            <div><p class="sig-name">MR. CARLOS H. LEGASPI</p><p class="sig-role">LEDIPO Head</p></div>
+                        </div>
+                        <div class="cert-footer-no">
+                            <span id="certViewNo">CERT. NO.: D-LED-TES-2026-081</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="cert-modal-right">
+                <h2 class="cert-modal-title">Certificate Details</h2>
+                <div class="cert-info-block">
+                    <span class="cert-info-label">Trainee Performance</span>
+                    <p class="cert-info-value" style="color:#025628; font-weight:700;">94% – Passed</p>
+                </div>
+                <div class="cert-info-block">
+                    <span class="cert-info-label">Official Signatories</span>
+                    <ul class="cert-sig-list">
+                        <li><i class="fa fa-check-circle"></i> Hon. Jennifer Austria-Barzaga</li>
+                        <li><i class="fa fa-check-circle"></i> Mr. Carlos H. Legaspi</li>
+                    </ul>
+                </div>
+                <div class="cert-modal-actions">
+                    <button class="cert-modal-btn btn-pdf" onclick="downloadExistingCert()">Download PDF</button>
+                    <button class="cert-modal-btn btn-print" onclick="window.print()">Re-Print</button>
+                    <button class="cert-modal-btn" onclick="closeCertViewModal()">Close View</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    {{-- ISSUE CERT MODAL --}}
+    <div id="issueCertModal" class="cert-modal-overlay" onclick="if(event.target===this)closeIssueCertModal()">
+        <div class="cert-modal-box">
+            <div class="cert-modal-split">
+                <div class="cert-modal-right" style="border-right:1px solid #eee;">
+                    <h2 class="cert-modal-title">Issue New Certificate</h2>
+                    <div class="cert-form-group">
+                        <label>1. Trainee Selection</label>
+                        <select class="cert-form-select" id="issueTraineeSelect" onchange="updateCertPreview()">
+                            <option value="" disabled selected>Select Trainee...</option>
+                            <option data-course="Dressmaking">Nelmida, Rheyan (94%)</option>
+                            <option data-course="Nail Care">Bong, Marcos (88%)</option>
+                        </select>
+                    </div>
+                    <div class="cert-form-group">
+                        <label>2. Record Details</label>
+                        <input type="text" class="cert-form-select" placeholder="Control Number">
+                        <input type="date" class="cert-form-select" style="margin-top:8px;" value="{{ date('Y-m-d') }}">
+                    </div>
+                    <div class="cert-form-group">
+                        <label>3. Document Options</label>
+                        <select class="cert-form-select">
+                            <option>Certificate of Completion</option>
+                        </select>
+                        <textarea class="cert-form-select" style="margin-top:8px; resize:none; height:70px;" placeholder="Remarks"></textarea>
+                    </div>
+                    <div class="cert-modal-actions" style="margin-top:16px;">
+                        <button class="cert-modal-btn btn-print" onclick="saveAndIssueCert()">Save & Issue</button>
+                        <button class="cert-modal-btn" onclick="closeIssueCertModal()">Cancel</button>
+                    </div>
+                </div>
+                <div class="cert-modal-left" style="background:#fff;">
+                    <h3 class="cert-modal-section-title">Live Preview</h3>
+                    <div class="cert-frame-preview scale-down">
+                        <div class="cert-inner">
+                            <p class="cert-authority" style="font-size:7px;">CITY GOVERNMENT OF DASMARIÑAS – LEDIPO</p>
+                            <h2 class="cert-title" style="font-size:13px;">CERTIFICATE OF COMPLETION</h2>
+                            <h3 id="previewName" class="cert-recipient" style="font-size:14px;">[NAME]</h3>
+                            <p class="cert-msg" style="font-size:8px;">HAS SUCCESSFULLY COMPLETED THE TRAINING IN</p>
+                            <h4 id="previewCourse" class="cert-course" style="font-size:11px;">[COURSE]</h4>
+                            <div class="cert-sigs" style="margin-top:16px;">
+                                <div><p class="sig-name" style="font-size:8px;">J.A. BARZAGA</p></div>
+                                <div><p class="sig-name" style="font-size:8px;">C.H. LEGASPI</p></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     
 
 </body>

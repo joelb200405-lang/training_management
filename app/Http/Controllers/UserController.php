@@ -215,8 +215,9 @@ class UserController extends Controller
             $trainees = \App\Models\User_tbl::where('role', 'student')->paginate(10, ['*'], 'trainee_page');
             $trainersList = \App\Models\User_tbl::where('role', 'trainer')->paginate(10, ['*'], 'trainer_page');
             $announcements = \App\Models\Announcement::latest()->paginate(10, ['*'], 'announcement_page');
+            $registrations = \App\Models\Registration::latest()->paginate(10, ['*'], 'reg_page');
 
-            return view("admin.admin1", compact('courses', 'allCourses', 'trainers', 'trainees', 'trainersList', 'announcements'));
+            return view("admin.admin1", compact('courses', 'allCourses', 'trainers', 'trainees', 'trainersList', 'announcements', 'registrations'));
         }
 
 public function assignTrainer(Request $request, $courseId)
