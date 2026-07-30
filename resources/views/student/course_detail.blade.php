@@ -38,7 +38,7 @@
                 <span><i class="fa fa-clock"></i> {{ $course->duration }}</span>
                 <span><i class="fa fa-calendar"></i> {{ $course->schedule }}</span>
                 <span><i class="fa fa-location-dot"></i> {{ $course->location }}</span>
-                <span><i class="fa fa-users"></i> {{ $course->slots }} slots available</span>
+                <span><i class="fa fa-users"></i> {{ $course->available_slots }} slots available</span>
             </div>
         </div>
 

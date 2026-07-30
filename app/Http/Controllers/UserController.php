@@ -508,14 +508,11 @@ public function courseDetail($id){
     return view("student.course_detail", compact('course'));
 }
 
-public function enroll(Request $request, $id){
+    public function enroll(Request $request, $id){
     $course = \App\Models\Course_tbl::findOrFail($id);
 
-    // Count current enrollments
-    $enrolledCount = \App\Models\Enrollment_tbl::where('course_id', $id)->count();
-
     // Check if no more slots
-    if($enrolledCount >= $course->slots){
+    if($course->available_slots <= 0){
         return back()->with('error', 'Sorry, no more slots available for this course!');
     }
 

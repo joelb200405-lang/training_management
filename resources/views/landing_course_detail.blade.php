@@ -50,7 +50,7 @@
                 <span><i class="fas fa-clock"></i> {{ $course->schedule }}</span>
                 <span><i class="fas fa-calendar"></i> {{ $course->duration }}</span>
                 <span><i class="fas fa-location-dot"></i> {{ $course->location }}</span>
-                <span><i class="fas fa-users"></i> {{ $course->slots }} slots</span>
+                <span><i class="fas fa-users"></i> {{ $course->available_slots }} slots</span>
             </div>
         </div>
 
@@ -110,8 +110,9 @@
                             <span>{{ $course->duration }}</span>
                         </div>
                         <div class="sidebar-meta-row">
-                            <span>Slots Available</span>
-                            <span class="highlight">{{ $course->slots }}</span>
+                        <span>Slots Available</span>
+                        <span class="highlight">{{ $course->available_slots }}</span>
+                        </div>
                         </div>
                         <div class="sidebar-meta-row">
                             <span>Fee</span>
@@ -121,12 +122,21 @@
 
                     <hr class="sidebar-divider">
 
-                    <a href="{{ route('SignupPage') }}" class="btn-enroll">
-                        <i class="fas fa-user-plus"></i> Sign Up to Enroll
-                    </a>
-                    <a href="{{ route('Login') }}" class="btn-signin-outline">
-                        Already have an account? Sign In
-                    </a>
+                    @if($course->available_slots > 0)
+                        <a href="{{ route('SignupPage') }}" class="btn-enroll">
+                            <i class="fas fa-user-plus"></i> Sign Up to Enroll
+                        </a>
+                        <a href="{{ route('Login') }}" class="btn-signin-outline">
+                            Already have an account? Sign In
+                        </a>
+                    @else
+                        <button class="btn-enroll" disabled style="opacity:0.5; cursor:not-allowed;">
+                            <i class="fas fa-ban"></i> Fully Booked
+                        </button>
+                        <a href="{{ route('Login') }}" class="btn-signin-outline">
+                            Already have an account? Sign In
+                        </a>
+                    @endif
                 </div>
             </div>
 

@@ -37,7 +37,7 @@
                         <p style="margin: 4px 0;"><i class="fa fa-clock"></i> {{ $course->duration }}</p>
                         <p style="margin: 4px 0;"><i class="fa fa-calendar"></i> {{ $course->schedule }}</p>
                         <p style="margin: 4px 0;"><i class="fa fa-location-dot"></i> {{ $course->location }}</p>
-                        <p style="margin: 4px 0;"><i class="fa fa-users"></i> {{ $course->slots }} slots</p>
+                        <p style="margin: 4px 0;"><i class="fa fa-users"></i> {{ $course->available_slots }} slots</p>
                     </div>
 
                     <a href="{{ route('course.detail', $course->id) }}" 

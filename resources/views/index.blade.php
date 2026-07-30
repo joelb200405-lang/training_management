@@ -238,12 +238,18 @@
                             <p><i class="fas fa-clock"></i> {{ $course->schedule }}</p>
                             <p><i class="fas fa-calendar"></i> {{ $course->duration }}</p>
                             <p><i class="fas fa-location-dot"></i> {{ Str::limit($course->location, 35) }}</p>
-                            <p><i class="fas fa-users"></i> {{ $course->slots }} slots available</p>
+                            <p><i class="fas fa-users"></i> {{ $course->available_slots }} slots available</p>
                         </div>
 
-                        <a href="{{ route('landing.course.detail', $course->id) }}" class="btn-view-course">
-                            View Course
-                        </a>
+                        @if($course->available_slots > 0)
+                            <a href="{{ route('landing.course.detail', $course->id) }}" class="btn-view-course">
+                                View Course
+                            </a>
+                        @else
+                            <a href="{{ route('landing.course.detail', $course->id) }}" class="btn-view-course" style="opacity:0.6;">
+                                View Course <span style="font-size:11px;">(Full)</span>
+                            </a>
+                        @endif
                     </div>
                 </div>
                 @empty

@@ -29,4 +29,14 @@ class Course_tbl extends Model
     public function trainer(){
         return $this->belongsTo(User_tbl::class, 'trainer_id');
     }
+
+        public function getAvailableSlotsAttribute()
+    {
+        return max(0, $this->slots - $this->enrollments()->count());
+    }
+
+    public function enrollments()
+    {
+        return $this->hasMany(\App\Models\Enrollment_tbl::class, 'course_id');
+    }
 }
