@@ -499,43 +499,74 @@ public function ResetPassword(Request $request)
     }
         //ctudent leaner
     public function allCourses(){
-    $courses = \App\Models\Course_tbl::where('status', 'active')->get();
-    return view("student.all_courses", compact('courses'));
-}
+        $courses = \App\Models\Course_tbl::where('status', 'active')->get();
 
-public function courseDetail($id){
-    $course = \App\Models\Course_tbl::findOrFail($id);
-    return view("student.course_detail", compact('course'));
-}
+        $activeEnrollmentCount = \App\Models\Enrollment_tbl::where('user_id', Auth::id())
+                                    ->where('status', 'active')
+                                    ->count();
+
+        $enrolledCourseIds = \App\Models\Enrollment_tbl::where('user_id', Auth::id())
+                                    ->pluck('course_id')
+                                    ->toArray();
+
+        $atLimit = $activeEnrollmentCount >= 2;
+
+        return view("student.all_courses", compact('courses', 'atLimit', 'enrolledCourseIds'));
+    }
+
+    public function courseDetail($id){
+        $course = \App\Models\Course_tbl::findOrFail($id);
+
+        $activeEnrollmentCount = \App\Models\Enrollment_tbl::where('user_id', Auth::id())
+                                    ->where('status', 'active')
+                                    ->count();
+
+        $enrolled = \App\Models\Enrollment_tbl::where('user_id', Auth::id())
+                        ->where('course_id', $id)
+                        ->first();
+
+        $atLimit = $activeEnrollmentCount >= 2 && !$enrolled;
+
+        return view("student.course_detail", compact('course', 'atLimit'));
+    }
 
     public function enroll(Request $request, $id){
-    $course = \App\Models\Course_tbl::findOrFail($id);
+        $course = \App\Models\Course_tbl::findOrFail($id);
 
-    // Check if no more slots
-    if($course->available_slots <= 0){
-        return back()->with('error', 'Sorry, no more slots available for this course!');
+        // Check if student already has 2 active enrollments
+        $activeEnrollments = \App\Models\Enrollment_tbl::where('user_id', Auth::id())
+                                ->where('status', 'active')
+                                ->count();
+
+        if($activeEnrollments >= 2){
+            return back()->with('error', 'You can only be enrolled in 2 courses at a time. Please complete or drop a course first.');
+        }
+
+        // Check if no more slots
+        if($course->available_slots <= 0){
+            return back()->with('error', 'Sorry, no more slots available for this course!');
+        }
+
+        // Check if already enrolled
+        $existing = \App\Models\Enrollment_tbl::where('user_id', Auth::id())
+                    ->where('course_id', $id)
+                    ->first();
+
+        if($existing){
+            return back()->with('error', 'You are already enrolled in this course!');
+        }
+
+        // Enroll the student
+        \App\Models\Enrollment_tbl::create([
+            'user_id'     => Auth::id(),
+            'course_id'   => $id,
+            'status'      => 'active',
+            'progress'    => 0,
+            'enrolled_at' => now(),
+        ]);
+
+        return back()->with('success', 'Successfully enrolled in ' . $course->title . '!');
     }
-
-    // Check if already enrolled
-    $existing = \App\Models\Enrollment_tbl::where('user_id', Auth::id())
-                ->where('course_id', $id)
-                ->first();
-
-    if($existing){
-        return back()->with('error', 'You are already enrolled in this course!');
-    }
-
-    // Enroll the student
-    \App\Models\Enrollment_tbl::create([
-        'user_id'     => Auth::id(),
-        'course_id'   => $id,
-        'status'      => 'active',
-        'progress'    => 0,
-        'enrolled_at' => now(),
-    ]);
-
-    return back()->with('success', 'Successfully enrolled in ' . $course->title . '!');
-}
 
 //contact
 public function contact(){

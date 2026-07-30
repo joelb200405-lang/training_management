@@ -105,7 +105,7 @@
                         </div>
                         <div style="display:flex; justify-content:space-between; font-size:14px;">
                             <span style="color:#888;">Slots Available</span>
-                            <span style="font-weight:600; color:#025628;">{{ $course->slots }}</span>
+                            <span style="font-weight:600; color:#025628;">{{ $course->available_slots }}</span>
                         </div>
                         <div style="display:flex; justify-content:space-between; font-size:14px;">
                             <span style="color:#888;">Status</span>
@@ -123,18 +123,22 @@
                                         ->first();
                         @endphp
 
-                        @if($enrolled)
-                            <div style="background:#e8f5e9; color:#025628; padding:12px; border-radius:8px; text-align:center; font-weight:600;">
-                                <i class="fa fa-check-circle"></i> Already Enrolled!
-                            </div>
-                        @else
-                            <form action="{{ route('course.enroll', $course->id) }}" method="POST">
-                                @csrf
-                                <button type="submit" style="width:100%; background:#025628; color:white; border:none; padding:14px; border-radius:8px; font-size:15px; font-weight:700; cursor:pointer;">
-                                    <i class="fa fa-graduation-cap"></i> Enroll Now
-                                </button>
-                            </form>
-                        @endif
+                    @if($enrolled)
+                        <div style="background:#e8f5e9; color:#025628; padding:12px; border-radius:8px; text-align:center; font-weight:600;">
+                            <i class="fa fa-check-circle"></i> Already Enrolled!
+                        </div>
+                    @elseif($atLimit)
+                        <div style="background:#f5f5f5; color:#888; padding:12px; border-radius:8px; text-align:center; font-weight:600;">
+                            <i class="fa fa-lock"></i> Enrollment limit reached (2 courses max)
+                        </div>
+                    @else
+                        <form action="{{ route('course.enroll', $course->id) }}" method="POST">
+                            @csrf
+                            <button type="submit" style="width:100%; background:#025628; color:white; border:none; padding:14px; border-radius:8px; font-size:15px; font-weight:700; cursor:pointer;">
+                                <i class="fa fa-graduation-cap"></i> Enroll Now
+                            </button>
+                        </form>
+                    @endif
                     @else
                         <a href="{{ route('Login') }}" style="display:block; width:100%; background:#025628; color:white; border:none; padding:14px; border-radius:8px; font-size:15px; font-weight:700; cursor:pointer; text-align:center; text-decoration:none;">
                             <i class="fa fa-lock"></i> Login to Enroll
