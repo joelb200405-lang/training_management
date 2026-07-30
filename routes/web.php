@@ -66,6 +66,13 @@ Route::middleware("admin")->group(function () {
     Route::get("/admin/quiz/{quizId}/questions", [UserController::class, "getQuizQuestions"])->name("admin.quiz.questions");
     Route::post("/admin/quiz-question", [UserController::class, "storeQuizQuestion"])->name("admin.quiz.question.store");
     Route::match(['POST', 'DELETE'], "/admin/quiz-question/{id}", [UserController::class, "destroyQuizQuestion"])->name("admin.quiz.question.destroy");
+
+    // ── Announcements (moved here — was previously unprotected under "student") ──
+    Route::get("/admin/announcements", [UserController::class, "admin1"])->name("admin.announcements");
+    Route::post("/admin/announcement", [UserController::class, "storeAnnouncement"])->name("admin.announcement.store");
+    Route::put("/admin/announcement/{id}", [UserController::class, "updateAnnouncement"])->name("admin.announcement.update");
+    Route::delete("/admin/announcement/{id}", [UserController::class, "destroyAnnouncement"])->name("admin.announcement.destroy");
+    Route::post("/admin/announcement/{id}/toggle", [UserController::class, "toggleAnnouncement"])->name("admin.announcement.toggle");
 });
 
 // ── TRAINER ROUTES ────────────────────────────────────────────────────────────
@@ -109,12 +116,6 @@ Route::middleware("student")->group(function () {
     Route::post("/student/profile/update", [UserController::class, "studentProfileUpdate"])->name("student.profile.update");
     Route::post("/student/profile/password", [UserController::class, "studentProfilePassword"])->name("student.profile.password");
     Route::get("/student/modules", [UserController::class, "studentModules"])->name("student.modules");
-
-    Route::get("/admin/announcements", [UserController::class, "admin1"])->name("admin.announcements");
-    Route::post("/admin/announcement", [UserController::class, "storeAnnouncement"])->name("admin.announcement.store")->middleware("admin");
-    Route::put("/admin/announcement/{id}", [UserController::class, "updateAnnouncement"])->name("admin.announcement.update")->middleware("admin");
-    Route::delete("/admin/announcement/{id}", [UserController::class, "destroyAnnouncement"])->name("admin.announcement.destroy")->middleware("admin");
-    Route::post("/admin/announcement/{id}/toggle", [UserController::class, "toggleAnnouncement"])->name("admin.announcement.toggle")->middleware("admin");
 
     // Registration form (student must be logged in)
     Route::get('/register', [RegistrationController::class, 'showStep1'])
