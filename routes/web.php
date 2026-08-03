@@ -45,29 +45,53 @@ Route::post("/first-reset", [UserController::class, "firstResetSave"])->name("fi
 
 // ── ADMIN ROUTES ──────────────────────────────────────────────────────────────
 Route::middleware("admin")->group(function () {
+    // Registrations
     Route::get("/admin/registrations/export/csv", [RegistrationController::class, "exportCsv"])->name("admin.registrations.export");
     Route::get("/admin/registrations/{registration}/pdf", [RegistrationController::class, "downloadPdf"])->name("admin.registrations.pdf");
     Route::get("/admin/registrations/{registration}", [RegistrationController::class, "adminShow"])->name("admin.registrations.show");
+
+    // Dashboard & Views
     Route::get("/admin1", [UserController::class, "admin1"])->name("admin1");
     Route::get("/trainees", [UserController::class, "trainees"])->name("trainees");
 
+    // Trainers
     Route::post("/admin/trainer/store", [UserController::class, "storeTrainer"])->name("admin.trainer.store");
 
+    Route::post('/admin/user/update', [UserController::class, 'updateUser']);
+
+    // Courses & Trainers Assignment
     Route::post("/admin/course/{courseId}/assign-trainer", [UserController::class, "assignTrainer"])->name("admin.course.assignTrainer");
     Route::post("/admin/course/{courseId}/remove-trainer", [UserController::class, "removeTrainer"])->name("admin.course.removeTrainer");
-
+    Route::put("/admin/course/{courseId}", [UserController::class, "updateCourse"])->name("admin.course.update");
     Route::get("/admin/course/{courseId}/content", [UserController::class, "getCourseContent"])->name("admin.course.content");
-    Route::post("/admin/module", [UserController::class, "storeModule"])->name("admin.module.store");
-    Route::match(['POST', 'DELETE'], "/admin/module/{id}", [UserController::class, "destroyModule"])->name("admin.module.destroy");
 
+    Route::post('/admin/user/update', [AdminController::class, 'updateUser']);Route::post('/admin/user/update', [UserController::class, 'updateUser']);
+
+    Route::put('/admin/course/{id}', [UserController::class, 'updateCourse']);
+    Route::post('/admin/course/store', [UserController::class, 'storeCourse']);
+
+    Route::delete('/admin/course/{id}', [UserController::class, 'destroy']);
+
+    // User Profile
+    Route::post('/admin/user/{id}/update', [UserController::class, 'updateUserProfile']);
+
+    // Modules
+    Route::post('/admin/module', [UserController::class, 'storeModule'])->name('admin.module.store');
+    // Delete an existing module
+    Route::delete('/admin/module/{id}', [UserController::class, 'destroyModule'])->name('admin.module.destroy');
+
+    Route::get('/admin/module/file/{id}/{filename?}', [UserController::class, 'viewModuleFile'])->name('admin.module.file');
+
+    // Quizzes
     Route::post("/admin/quiz", [UserController::class, "storeQuiz"])->name("admin.quiz.store");
     Route::match(['POST', 'DELETE'], "/admin/quiz/{id}", [UserController::class, "destroyQuiz"])->name("admin.quiz.destroy");
 
+    // Quiz Questions
     Route::get("/admin/quiz/{quizId}/questions", [UserController::class, "getQuizQuestions"])->name("admin.quiz.questions");
     Route::post("/admin/quiz-question", [UserController::class, "storeQuizQuestion"])->name("admin.quiz.question.store");
     Route::match(['POST', 'DELETE'], "/admin/quiz-question/{id}", [UserController::class, "destroyQuizQuestion"])->name("admin.quiz.question.destroy");
 
-    // ── Announcements (moved here — was previously unprotected under "student") ──
+    // Announcements
     Route::get("/admin/announcements", [UserController::class, "admin1"])->name("admin.announcements");
     Route::post("/admin/announcement", [UserController::class, "storeAnnouncement"])->name("admin.announcement.store");
     Route::put("/admin/announcement/{id}", [UserController::class, "updateAnnouncement"])->name("admin.announcement.update");

@@ -5,13 +5,15 @@ namespace App\Http\Controllers;
 use Illuminate\Validation\Rule;
 use App\Models\User_tbl;
 use App\Models\Course_tbl;
+use App\Models\Module;             // <-- Added for Module CRUD
+use App\Models\Quiz;               // <-- Added for Quiz operations
 use Illuminate\Http\Request;
-use Auth;
-use Illuminate\support\Facades\DB;
-//Email
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage; // <-- Added for PDF file deletion
 use App\Mail\ResetPasswordMail;
 
 class UserController extends Controller
@@ -209,7 +211,7 @@ class UserController extends Controller
         }
         public function admin1()
         {
-            $courses  = \App\Models\Course_tbl::paginate(3);
+            $courses  = \App\Models\Course_tbl::paginate(9);
             $allCourses   = \App\Models\Course_tbl::all(); 
             $trainers = \App\Models\User_tbl::where('role', 'trainer')->get();
             $trainees = \App\Models\User_tbl::where('role', 'student')->paginate(10, ['*'], 'trainee_page');
@@ -220,30 +222,150 @@ class UserController extends Controller
             return view("admin.admin1", compact('courses', 'allCourses', 'trainers', 'trainees', 'trainersList', 'announcements', 'registrations'));
         }
 
+        public function updateUser(Request $request) {
+        $user = User::where('email', $request->email)->first();
+        if ($user) {
+            $user->status = $request->status;
+            $user->name = $request->name; // Update to match your column name (e.g., firstname if split)
+            $user->remarks = $request->remarks;
+            $user->save();
+
+            return response()->json(['success' => true]);
+        }
+        return response()->json(['success' => false, 'message' => 'User not found.'], 404);
+    }
+
+    public function destroy($id)
+    {
+        try {
+            // 1. Check if the ID corresponds to a Course
+            $course = Course_tbl::find($id);
+
+            if ($course) {
+                // Delete linked records first to prevent foreign key errors
+                DB::table('enrollment_tbls')->where('course_id', $id)->delete();
+                
+                $course->delete();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Course deleted successfully!'
+                ]);
+            }
+
+            // 2. Fallback: Check if the ID corresponds to a User
+            $user = User_tbl::find($id);
+
+            if ($user) {
+                $user->delete();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'User deleted successfully!'
+                ]);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Record not found.'
+            ], 404);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete record: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function storeCourse(Request $request)
+{
+    try {
+        $request->validate([
+            'course_code' => 'required|string',
+            'title'       => 'required|string',
+            'duration'    => 'required|integer',
+            'slots'       => 'required|integer',
+            'sector'      => 'nullable|string',
+        ]);
+
+        Course_tbl::create([
+            'course_code' => $request->course_code,
+            'title'       => $request->title,
+            'duration'    => $request->duration,
+            'slots'       => $request->slots,
+            'sector'      => $request->sector ?? 'General', // Prevents SQL 1364 error
+            'description' => $request->description ?? null,
+            'objectives'  => $request->objectives ?? null,
+            'schedule'    => $request->schedule ?? null,
+            'location'    => $request->location ?? null,
+            'thumbnail'   => $request->thumbnail ?? null,
+            'status'      => $request->status ?? 'active',
+            'trainer_id'  => $request->trainer_id ?? null,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Course created successfully!'
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to create course: ' . $e->getMessage()
+        ], 500);
+    }
+}
+
+
+        public function updateCourse(Request $request, $id)
+{
+    $request->validate([
+        'course_code' => 'required|string|max:50',
+        'title'       => 'required|string|max:255',
+        'duration'    => 'required|string',
+        'slots'       => 'required|integer',
+        'status'      => 'required|string|in:active,inactive', // <-- Added status validation
+    ]);
+
+    $course = Course_tbl::findOrFail($id);
+    $course->update([
+        'course_code' => $request->course_code,
+        'title'       => $request->title,
+        'duration'    => $request->duration,
+        'slots'       => $request->slots,
+        'status'      => $request->status, // <-- Added status database update
+    ]);
+
+    return response()->json([
+        'success' => true, 
+        'message' => 'Course updated successfully!'
+    ]);
+}
+
 public function assignTrainer(Request $request, $courseId)
 {
     $request->validate([
         'trainer_id' => 'required|exists:user_tbls,id',
     ]);
 
-    $course = \App\Models\Course_tbl::findOrFail($courseId);
-    $course->trainer_id = $request->trainer_id;
-    $course->save();
+    $course = Course_tbl::findOrFail($courseId);
+    $course->update([
+        'trainer_id' => $request->trainer_id,
+    ]);
 
     return response()->json([
         'success' => true,
         'message' => 'Trainer assigned successfully!',
-        'trainer' => \App\Models\User_tbl::find($request->trainer_id),
+        'trainer' => User_tbl::find($request->trainer_id),
     ]);
 }
 
-// Idagdag ang removeTrainer() method:
-
 public function removeTrainer($courseId)
 {
-    $course = \App\Models\Course_tbl::findOrFail($courseId);
-    $course->trainer_id = null;
-    $course->save();
+    $course = Course_tbl::findOrFail($courseId);
+    $course->update([
+        'trainer_id' => null,
+    ]);
 
     return response()->json([
         'success' => true,
@@ -680,22 +802,50 @@ public function dashboard()
 // ── COURSE CONTENT (Modules & Quizzes) ────────────────────────────────────
 
     public function getCourseContent($courseId)
-    {
-        $modules = \App\Models\Module::where('course_id', $courseId)
-                         ->orderBy('order')
-                         ->get(['id', 'title', 'description', 'order', 'is_active']);
+{
+    $modules = \App\Models\Module::where('course_id', $courseId)
+                                 ->orderBy('order')
+                                 ->get([
+                                     'id', 
+                                     'title', 
+                                     'description', 
+                                     'file_path', 
+                                     'file_type', 
+                                     'file_size', 
+                                     'order', 
+                                     'is_active'
+                                 ]);
 
-        $quizzes = \App\Models\Quiz::where('course_id', $courseId)
-                       ->with('module')
-                       ->get();
+    $quizzes = \App\Models\Quiz::where('course_id', $courseId)
+                               ->with('module')
+                               ->get();
 
-        return response()->json([
-            'modules' => $modules,
-            'quizzes' => $quizzes,
-        ]);
+    return response()->json([
+        'modules' => $modules,
+        'quizzes' => $quizzes,
+    ]);
+}
+    // ── MODULES ───────────────────────────────────────────────────────────────
+
+    public function viewModuleFile($id, $filename = null)
+{
+    $module = \App\Models\Module::findOrFail($id);
+
+    if (!$module->file_path || !Storage::disk('public')->exists($module->file_path)) {
+        abort(404, 'File not found');
     }
 
-    // ── MODULES ───────────────────────────────────────────────────────────────
+    $fullPath = Storage::disk('public')->path($module->file_path);
+    
+    // Sanitize module title for HTTP header compatibility
+    $safeTitle = Str::slug($module->title) ?: 'module';
+    $mimeType = Storage::disk('public')->mimeType($module->file_path) ?? 'application/pdf';
+
+    return response()->file($fullPath, [
+        'Content-Type' => $mimeType,
+        'Content-Disposition' => 'inline; filename="' . $safeTitle . '.pdf"'
+    ]);
+}
 
     public function storeModule(Request $request)
     {
@@ -734,12 +884,50 @@ public function dashboard()
     }
 
     public function destroyModule($id)
-    {
-        $module = \App\Models\Module::findOrFail($id);
-        $module->delete();
-        return response()->json(['success' => true]);
-    }
+{
+    try {
+        // Use find() instead of findOrFail() to avoid throwing ModelNotFoundException
+        $module = Module::find($id);
 
+        // If record is already deleted from DB, return success to let JS update the UI
+        if (!$module) {
+            // Clean up any stray quiz references just in case
+            DB::table('quizzes')->where('module_id', $id)->update(['module_id' => null]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Module was already removed.'
+            ], 200);
+        }
+
+        $filePath = $module->file_path;
+
+        DB::transaction(function () use ($module, $id) {
+            try {
+                DB::table('quizzes')->where('module_id', $id)->update(['module_id' => null]);
+            } catch (\Exception $e) {
+                DB::table('quizzes')->where('module_id', $id)->delete();
+            }
+
+            $module->delete();
+        });
+
+        if ($filePath && Storage::disk('public')->exists($filePath)) {
+            Storage::disk('public')->delete($filePath);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Module deleted successfully!'
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to delete module: ' . $e->getMessage()
+        ], 500);
+    }
+}
     // ── QUIZZES ───────────────────────────────────────────────────────────────
 
     public function storeQuiz(Request $request)

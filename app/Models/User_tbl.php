@@ -21,6 +21,8 @@ class User_tbl extends Authenticatable implements MustVerifyEmail
         "role",
         "must_reset_password",
         "email_verified_at",
+        "status",   // <-- ADD THIS
+        "remarks",  // <-- ADD THIS
     ];
 
     protected $dates = ['email_verified_at'];

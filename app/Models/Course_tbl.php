@@ -11,8 +11,8 @@ class Course_tbl extends Model
 
     protected $table = 'course_tbls';
 
-    protected $fillable =[
-
+    protected $fillable = [
+        'course_code',
         'title',
         'description',
         'objectives',
@@ -30,7 +30,7 @@ class Course_tbl extends Model
         return $this->belongsTo(User_tbl::class, 'trainer_id');
     }
 
-        public function getAvailableSlotsAttribute()
+    public function getAvailableSlotsAttribute()
     {
         return max(0, $this->slots - $this->enrollments()->count());
     }
