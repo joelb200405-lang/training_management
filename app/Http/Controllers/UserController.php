@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage; // <-- Added for PDF file deletion
 use App\Mail\ResetPasswordMail;
+use App\Models\Facility;
 
 class UserController extends Controller
 {
@@ -210,18 +211,116 @@ class UserController extends Controller
             ));
         }
         public function admin1()
-        {
-            $courses  = \App\Models\Course_tbl::paginate(9);
-            $allCourses   = \App\Models\Course_tbl::all(); 
-            $trainers = \App\Models\User_tbl::where('role', 'trainer')->get();
-            $trainees = \App\Models\User_tbl::where('role', 'student')->paginate(10, ['*'], 'trainee_page');
-            $trainersList = \App\Models\User_tbl::where('role', 'trainer')->paginate(10, ['*'], 'trainer_page');
-            $announcements = \App\Models\Announcement::latest()->paginate(10, ['*'], 'announcement_page');
-            $registrations = \App\Models\Registration::latest()->paginate(10, ['*'], 'reg_page');
+{
+    // Eager-load relationships & counts, then paginate 9 items per page
+    $courses = \App\Models\Course_tbl::with(['facility', 'trainer'])
+        ->withCount(['enrollments', 'modules', 'quizzes'])
+        ->paginate(9);
 
-            return view("admin.admin1", compact('courses', 'allCourses', 'trainers', 'trainees', 'trainersList', 'announcements', 'registrations'));
-        }
+    // All courses list (used for multi-select dropdowns in modals)
+    $allCourses = \App\Models\Course_tbl::all(); 
 
+    $trainers      = \App\Models\User_tbl::where('role', 'trainer')->get();
+    $trainees      = \App\Models\User_tbl::where('role', 'student')->paginate(10, ['*'], 'trainee_page');
+    $trainersList  = \App\Models\User_tbl::where('role', 'trainer')->paginate(10, ['*'], 'trainer_page');
+    $announcements = \App\Models\Announcement::latest()->paginate(10, ['*'], 'announcement_page');
+    $registrations = \App\Models\Registration::latest()->paginate(10, ['*'], 'reg_page');
+    $facilities    = \App\Models\Facility::with('courses')->get();
+
+    return view('admin.admin1', compact(
+        'courses',
+        'allCourses',
+        'trainers',
+        'trainees',
+        'trainersList',
+        'announcements',
+        'registrations',
+        'facilities'
+    ));
+}
+
+        public function saveFacility(Request $request)
+{
+    $request->validate([
+        'id'           => 'nullable|integer',
+        'name'         => 'required|string|max:255',
+        'address'      => 'required|string|max:255',
+        'course_ids'   => 'nullable|array',
+        'course_ids.*' => 'nullable|integer',
+    ]);
+
+    try {
+        $facility = \Illuminate\Support\Facades\DB::transaction(function () use ($request) {
+            $facility = null;
+            if (!empty($request->id) && $request->id != 0) {
+                $facility = \App\Models\Facility::find($request->id);
+            }
+
+            if ($facility) {
+                $facility->update([
+                    'name'    => $request->name,
+                    'address' => $request->address,
+                ]);
+            } else {
+                $facility = \App\Models\Facility::create([
+                    'name'    => $request->name,
+                    'address' => $request->address,
+                ]);
+            }
+
+            \App\Models\Course_tbl::where('facility_id', $facility->id)
+                ->update(['facility_id' => null]);
+
+            if (!empty($request->course_ids)) {
+                \App\Models\Course_tbl::whereIn('id', $request->course_ids)
+                    ->update(['facility_id' => $facility->id]);
+            }
+
+            return $facility;
+        });
+
+        return response()->json([
+            'success'  => true,
+            'message'  => 'Facility details saved successfully!',
+            'facility' => $facility
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Error saving facility: ' . $e->getMessage()
+        ], 500);
+    }
+}
+
+public function deleteFacility(Request $request)
+{
+    $request->validate([
+        'id' => 'required|integer|exists:facilities,id',
+    ]);
+
+    try {
+        \Illuminate\Support\Facades\DB::transaction(function () use ($request) {
+            // 1. Unassign linked courses so foreign key constraints don't break
+            \App\Models\Course_tbl::where('facility_id', $request->id)
+                ->update(['facility_id' => null]);
+
+            // 2. Delete the facility record
+            \App\Models\Facility::where('id', $request->id)->delete();
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Facility deleted successfully!'
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Error deleting facility: ' . $e->getMessage()
+        ], 500);
+    }
+}
         public function updateUser(Request $request) {
         $user = User::where('email', $request->email)->first();
         if ($user) {
@@ -1330,53 +1429,76 @@ public function trainerStudents()
         }
 
         // ── ANNOUNCEMENTS ─────────────────────────────────────────────────────────
-            public function storeAnnouncement(Request $request)
-            {
-                $request->validate([
-                    'title'   => 'required|string|max:255',
-                    'message' => 'required|string',
-                    'type'    => 'required|in:reminder,notice,urgent',
-                ]);
 
-                \App\Models\Announcement::create([
-                    'title'     => $request->title,
-                    'message'   => $request->message,
-                    'type'      => $request->type,
-                    'is_active' => true,
-                ]);
+public function storeAnnouncement(Request $request)
+{
+    $validated = $request->validate([
+        'title'      => 'required|string|max:100',
+        'message'    => 'required|string|max:500',
+        'type'       => 'required|in:reminder,notice,urgent',
+        'is_active'  => 'required|boolean',
+        'publish_at' => 'nullable|date',
+        'expires_at' => 'nullable|date|after_or_equal:publish_at',
+    ]);
 
-                return response()->json(['success' => true]);
-            }
+    \App\Models\Announcement::create($validated);
 
-            public function updateAnnouncement(Request $request, $id)
-            {
-                $request->validate([
-                    'title'   => 'required|string|max:255',
-                    'message' => 'required|string',
-                    'type'    => 'required|in:reminder,notice,urgent',
-                ]);
+    return response()->json([
+        'success' => true,
+        'message' => 'Announcement created successfully!'
+    ]);
+}
 
-                $announcement = \App\Models\Announcement::findOrFail($id);
-                $announcement->update($request->only('title', 'message', 'type'));
+public function updateAnnouncement(Request $request, $id)
+{
+    // Convert empty string dates to NULL and sanitize boolean
+    $request->merge([
+        'publish_at' => $request->publish_at ?: null,
+        'expires_at' => $request->expires_at ?: null,
+        'is_active'  => filter_var($request->is_active, FILTER_VALIDATE_BOOLEAN),
+    ]);
 
-                return response()->json(['success' => true]);
-            }
+    $validated = $request->validate([
+        'title'      => 'required|string|max:100',
+        'message'    => 'required|string|max:500',
+        'type'       => 'required|in:reminder,notice,urgent',
+        'is_active'  => 'required|boolean',
+        'publish_at' => 'nullable|date',
+        'expires_at' => 'nullable|date',
+    ]);
 
-            public function destroyAnnouncement($id)
-            {
-                $announcement = \App\Models\Announcement::findOrFail($id);
-                $announcement->delete();
-                return response()->json(['success' => true]);
-            }
+    $announcement = \App\Models\Announcement::findOrFail($id);
+    $announcement->update($validated);
 
-            public function toggleAnnouncement($id)
-            {
-                $announcement = \App\Models\Announcement::findOrFail($id);
-                $announcement->is_active = !$announcement->is_active;
-                $announcement->save();
-                return response()->json(['success' => true, 'is_active' => $announcement->is_active]);
-        
-            }
+    return response()->json([
+        'success' => true,
+        'message' => 'Announcement updated successfully!'
+    ]);
+}
+
+public function destroyAnnouncement($id)
+{
+    $announcement = \App\Models\Announcement::findOrFail($id);
+    $announcement->delete();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Announcement deleted successfully!'
+    ]);
+}
+
+public function toggleAnnouncement($id)
+{
+    $announcement = \App\Models\Announcement::findOrFail($id);
+    $announcement->is_active = !$announcement->is_active;
+    $announcement->save();
+
+    return response()->json([
+        'success'   => true,
+        'is_active' => $announcement->is_active,
+        'message'   => 'Announcement status updated successfully!'
+    ]);
+}
 
             public function studentModules(Request $request)
     {
@@ -1419,5 +1541,7 @@ public function trainerStudents()
         ));
     }
     }
+
+    
     
 

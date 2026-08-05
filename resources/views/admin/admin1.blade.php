@@ -201,11 +201,215 @@
       border: 1px solid rgba(163, 45, 45, 0.2);
     }
 
-    /* Active Status Badge (Green Styling for Reference) */
+    /* Active Status Badge (Green Styling) */
     .course-badge.active {
       background-color: #e8f5e9;
       color: #025628;
       border: 1px solid rgba(2, 86, 40, 0.2);
+    }
+
+    /* ========================================================== */
+    /* ANNOUNCEMENT MODAL STYLES                                  */
+    /* ========================================================== */
+    /* Modal Container & Content Card */
+    #announcementModal .modal-content.card {
+      max-width: 520px !important;
+      width: 95% !important;
+      text-align: left !important;
+    }
+
+    #announcementModal .modal-body {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 16px !important;
+      padding: 20px !important;
+      text-align: left !important;
+    }
+
+    /* Form Structure & Labels */
+    #announcementModal .form-group {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: stretch !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+    }
+
+    #announcementModal .label-row {
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      margin-bottom: 6px !important;
+      width: 100% !important;
+    }
+
+    #announcementModal .label-row label,
+    #announcementModal .form-group label {
+      font-size: 13px !important;
+      font-weight: 600 !important;
+      color: #333 !important;
+      margin: 0 !important;
+      text-align: left !important;
+    }
+
+    #announcementModal .required {
+      color: #a32d2d !important;
+    }
+
+    #announcementModal .char-counter {
+      font-size: 11px !important;
+      color: #888 !important;
+    }
+
+    /* Input Wrappers & Icon Alignment */
+    #announcementModal .input-container {
+      position: relative !important;
+      display: flex !important;
+      align-items: center !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+    }
+
+    #announcementModal .input-icon {
+      position: absolute !important;
+      left: 12px !important;
+      color: #888 !important;
+      font-size: 14px !important;
+      pointer-events: none !important;
+      z-index: 2 !important;
+    }
+
+    /* Text Inputs & Select Dropdowns */
+    #announcementModal .input-container input[type="text"],
+    #announcementModal .input-container select {
+      width: 100% !important;
+      height: 42px !important;
+      padding: 0 12px 0 36px !important;
+      border: 1px solid #ccc !important;
+      border-radius: 6px !important;
+      font-size: 14px !important;
+      color: #333 !important;
+      background-color: #fff !important;
+      box-sizing: border-box !important;
+      outline: none !important;
+    }
+
+    /* Textarea Layout */
+    #announcementModal .textarea-container {
+      align-items: flex-start !important;
+    }
+
+    #announcementModal .textarea-icon {
+      top: 12px !important;
+    }
+
+    #announcementModal .textarea-container textarea {
+      width: 100% !important;
+      min-height: 95px !important;
+      padding: 10px 12px 10px 36px !important;
+      border: 1px solid #ccc !important;
+      border-radius: 6px !important;
+      font-size: 14px !important;
+      font-family: inherit !important;
+      color: #333 !important;
+      background-color: #fff !important;
+      box-sizing: border-box !important;
+      resize: vertical !important;
+      outline: none !important;
+    }
+
+    /* Focus States */
+    #announcementModal .input-container input:focus,
+    #announcementModal .input-container select:focus,
+    #announcementModal .input-container textarea:focus,
+    #announcementModal .datetime-input:focus {
+      border-color: #025628 !important;
+      box-shadow: 0 0 0 2px rgba(2, 86, 40, 0.1) !important;
+    }
+
+    /* Datetime Local Inputs & Container */
+    #announcementModal .datetime-container {
+      position: relative !important;
+      width: 100% !important;
+    }
+
+    #announcementModal .datetime-input {
+      width: 100% !important;
+      height: 42px !important;
+      padding: 8px 12px !important;
+      border: 1px solid #ccc !important;
+      border-radius: 6px !important;
+      font-size: 13px !important;
+      font-family: inherit !important;
+      color: #333 !important;
+      background-color: #fff !important;
+      box-sizing: border-box !important;
+      outline: none !important;
+      cursor: pointer !important;
+    }
+
+    /* WebKit Native Calendar Indicator Icon */
+    #announcementModal input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+      cursor: pointer !important;
+      opacity: 0.6;
+      filter: invert(0.3);
+    }
+
+    #announcementModal input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
+      opacity: 1;
+    }
+
+    /* Form Row Grid & Checkbox Card */
+    #announcementModal .form-row {
+      display: flex !important;
+      gap: 16px !important;
+      align-items: flex-end !important;
+      width: 100% !important;
+    }
+
+    #announcementModal .flex-1 {
+      flex: 1 !important;
+    }
+
+    #announcementModal .status-group {
+      width: auto !important;
+    }
+
+    #announcementModal .checkbox-card {
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      height: 42px !important;
+      padding: 0 14px !important;
+      border: 1px solid #ccc !important;
+      border-radius: 6px !important;
+      background: #fdfdfd !important;
+      cursor: pointer !important;
+      box-sizing: border-box !important;
+    }
+
+    #announcementModal .checkbox-card input[type="checkbox"] {
+      accent-color: #025628 !important;
+      width: 16px !important;
+      height: 16px !important;
+      cursor: pointer !important;
+    }
+
+    #announcementModal .checkbox-text {
+      font-size: 13px !important;
+      color: #333 !important;
+      font-weight: 500 !important;
+      user-select: none !important;
+    }
+
+    /* Modal Footer */
+    #announcementModal .modal-footer {
+      display: flex !important;
+      justify-content: flex-end !important;
+      gap: 10px !important;
+      margin-top: 8px !important;
+      padding-top: 14px !important;
+      border-top: 1px solid #eee !important;
     }
   </style>
 </head>
@@ -274,7 +478,7 @@
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-section-label">Menu</div>
 
-      <a href="#" class="nav-item active" id="nav-overview"
+      <a href="?view=overview" class="nav-item active" id="nav-overview"
         onclick="showView('overview'); setActive(this); return false;">
         <i class="fa fa-gauge-high nav-icon"></i>
         <span>Overview</span>
@@ -282,31 +486,31 @@
 
       <div class="sidebar-section-label">Manage</div>
 
-      <a href="#" class="nav-item" id="nav-trainees"
+      <a href="?view=all-trainees" class="nav-item" id="nav-trainees"
         onclick="showView('all-trainees'); setActive(this); return false;">
         <i class="fa fa-user-graduate nav-icon"></i>
         <span>Trainees</span>
       </a>
 
-      <a href="#" class="nav-item" id="nav-trainers"
+      <a href="?view=all-trainers" class="nav-item" id="nav-trainers"
         onclick="showView('all-trainers'); setActive(this); return false;">
         <i class="fa fa-chalkboard-user nav-icon"></i>
         <span>Trainers</span>
       </a>
 
-      <a href="#" class="nav-item" id="nav-registrations"
+      <a href="?view=registrations" class="nav-item" id="nav-registrations"
         onclick="showView('registrations'); setActive(this); return false;">
         <i class="fa fa-clipboard-list nav-icon"></i>
         <span>Registrations</span>
       </a>
 
-      <a href="#" class="nav-item" id="nav-courses"
+      <a href="?view=courses" class="nav-item" id="nav-courses"
         onclick="showView('courses'); setActive(this); return false;">
         <i class="fa fa-book nav-icon"></i>
         <span>Courses</span>
       </a>
 
-      <a href="#" class="nav-item" id="nav-facilities"
+      <a href="?view=facilities" class="nav-item" id="nav-facilities"
         onclick="showView('facilities'); setActive(this); return false;">
         <i class="fa fa-building nav-icon"></i>
         <span>Facilities</span>
@@ -314,25 +518,25 @@
 
       <div class="sidebar-section-label">System</div>
 
-      <a href="#" class="nav-item" id="nav-announcements"
+      <a href="?view=announcements" class="nav-item" id="nav-announcements"
         onclick="showView('announcements'); setActive(this); return false;">
         <i class="fa fa-bell nav-icon"></i>
         <span>Announcements</span>
       </a>
 
-      <a href="#" class="nav-item" id="nav-analytics"
+      <a href="?view=analytics" class="nav-item" id="nav-analytics"
         onclick="showView('analytics'); setActive(this); return false;">
         <i class="fa fa-chart-line nav-icon"></i>
         <span>Reports</span>
       </a>
 
-      <a href="#" class="nav-item" id="nav-settings"
+      <a href="?view=settings" class="nav-item" id="nav-settings"
         onclick="showView('settings'); setActive(this); return false;">
         <i class="fa fa-gear nav-icon"></i>
-        <span>Settings </span>
+        <span>Settings</span>
       </a>
 
-      <a href="#" class="nav-item" id="nav-certificate"
+      <a href="?view=certificate" class="nav-item" id="nav-certificate"
         onclick="showView('certificate'); setActive(this); return false;">
         <i class="fa fa-award nav-icon"></i>
         <span>Certificate</span>
@@ -368,42 +572,117 @@
               more</a>
           </div>
         </div>
+
         <div class="card updates-card">
           <h3><i class="fa-solid fa-bell"></i> Updates</h3>
-          <ul class="update-list" id="updateList">
-            <li>
-              <i class="fa-solid fa-location-dot"></i>
-              <div>
-                <strong>Change of Training Location</strong><br>
-                <small>Zone 4, San Placido Campos Avenue, Dasmariñas,
-                  Cavite</small>
-              </div>
-            </li>
-            <div id="extra-updates" style="display: none;">
-              <li>
-                <i class="fa-solid fa-calendar-check"></i>
-                <div>
-                  <strong>New Schedule: Carpentry</strong><br>
-                  <small>Starts Monday, 8:00 AM - 12:00 PM</small>
-                </div>
-              </li>
-              <li>
-                <i class="fa-solid fa-circle-exclamation"></i>
-                <div>
-                  <strong>Holiday Notice</strong><br>
-                  <small>Office closed on April 9 (Araw ng Kagitingan)</small>
-                </div>
-              </li>
-            </div>
-          </ul>
-          <div style="text-align: center; margin-top: 15px;">
-            <button class="view-more-btn" id="viewMoreBtn"
-              onclick="toggleUpdates()">
-              View More <i class="fa-solid fa-chevron-down"></i>
-            </button>
-          </div>
 
-          <div class="sidebar-calendar">
+          <!-- Primary 3 Announcements -->
+          <ul class="update-list" id="updateList"
+            style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px;">
+            @forelse($announcements->take(3) as $ann)
+              @php
+                $icon = match ($ann->type) {
+                    'urgent' => 'fa-circle-exclamation',
+                    'notice' => 'fa-bullhorn',
+                    default => 'fa-bell',
+                };
+                $badgeColor = match ($ann->type) {
+                    'urgent' => '#A32D2D',
+                    'notice' => '#854F0B',
+                    default => '#025628',
+                };
+                $bgColor = match ($ann->type) {
+                    'urgent' => '#FCEBEB',
+                    'notice' => '#FFF8E1',
+                    default => '#E8F5E9',
+                };
+              @endphp
+              <li
+                style="display: flex; align-items: flex-start; gap: 12px; padding: 10px 12px; background: #fff; border: 1px solid #f0f0f0; border-radius: 8px;">
+                <div
+                  style="width: 32px; height: 32px; border-radius: 50%; background: {{ $bgColor }}; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">
+                  <i class="fa-solid {{ $icon }}"
+                    style="color: {{ $badgeColor }}; font-size: 13px;"></i>
+                </div>
+
+                <div style="flex: 1; min-width: 0;">
+                  <strong
+                    style="font-size: 13px; color: #1a1a1a; display: block; margin-bottom: 2px;">{{ $ann->title }}</strong>
+                  <small
+                    style="color: #666; font-size: 12px; display: block; line-height: 1.4; margin-bottom: 4px;">{{ $ann->message }}</small>
+
+                  <!-- Fixed static date rendering -->
+                  <small
+                    style="color: #aaa; font-size: 10px; display: inline-flex; align-items: center; gap: 4px;">
+                    <i class="fa-regular fa-clock"
+                      style="font-size: 9px;"></i>
+                    {{ $ann->created_at->format('M j, Y h:i A') }}
+                  </small>
+                </div>
+              </li>
+            @empty
+              <li
+                style="text-align: center; color: #aaa; padding: 20px 0; font-size: 13px;">
+                <i class="fa-solid fa-bell-slash"
+                  style="font-size: 20px; display: block; margin-bottom: 6px; color: #ccc;"></i>
+                No recent updates or announcements.
+              </li>
+            @endforelse
+          </ul>
+
+          <!-- Collapsible Extra Announcements (Items past index 3) -->
+          @if ($announcements->count() > 3)
+            <div id="extra-updates" style="display: none; margin-top: 12px;">
+              <ul
+                style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px;">
+                @foreach ($announcements->slice(3) as $ann)
+                  @php
+                    $icon = match ($ann->type) {
+                        'urgent' => 'fa-circle-exclamation',
+                        'notice' => 'fa-bullhorn',
+                        default => 'fa-bell',
+                    };
+                    $badgeColor = match ($ann->type) {
+                        'urgent' => '#A32D2D',
+                        'notice' => '#854F0B',
+                        default => '#025628',
+                    };
+                    $bgColor = match ($ann->type) {
+                        'urgent' => '#FCEBEB',
+                        'notice' => '#FFF8E1',
+                        default => '#E8F5E9',
+                    };
+                  @endphp
+                  <li
+                    style="display: flex; align-items: flex-start; gap: 12px; padding: 10px 12px; background: #fff; border: 1px solid #f0f0f0; border-radius: 8px;">
+                    <div
+                      style="width: 32px; height: 32px; border-radius: 50%; background: {{ $bgColor }}; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">
+                      <i class="fa-solid {{ $icon }}"
+                        style="color: {{ $badgeColor }}; font-size: 13px;"></i>
+                    </div>
+
+                    <div style="flex: 1; min-width: 0;">
+                      <strong
+                        style="font-size: 13px; color: #1a1a1a; display: block; margin-bottom: 2px;">{{ $ann->title }}</strong>
+                      <small
+                        style="color: #666; font-size: 12px; display: block; line-height: 1.4; margin-bottom: 4px;">{{ $ann->message }}</small>
+                      <small
+                        style="color: #aaa; font-size: 10px;">{{ $ann->created_at->diffForHumans() }}</small>
+                    </div>
+                  </li>
+                @endforeach
+              </ul>
+            </div>
+
+            <div style="text-align: center; margin-top: 15px;">
+              <button class="view-more-btn" id="viewMoreBtn"
+                onclick="toggleUpdates()">
+                View More <i class="fa-solid fa-chevron-down"></i>
+              </button>
+            </div>
+          @endif
+
+          <div class="sidebar-calendar" style="margin-top: 20px;">
             <div id="calendar"></div>
           </div>
         </div>
@@ -484,11 +763,15 @@
                     <h4
                       style="margin: 0 0 4px 0; color: #025628; font-size: 15px; font-weight: 700;">
                       <i class="fa-solid fa-book"
-                        style="margin-right: 6px;"></i> {{ $course->title }}
+                        style="margin-right: 6px;"></i>
+                      {{ $course->title }}
                     </h4>
-                    <p style="margin: 0; font-size: 12px; color: #666;">
-                      <i class="fa-solid fa-calendar-day"></i> Duration:
-                      {{ $course->duration }}
+                    <p
+                      style="margin: 4px 0; font-size: 13px; color: #4b5563; display: flex; align-items: center; gap: 6px;">
+                      <i class="fa-solid fa-calendar-day"
+                        style="color: #025628;"></i>
+                      <span><strong>Duration:</strong> {{ $course->duration }}
+                        {{ \Illuminate\Support\Str::plural('Day', $course->duration) }}</span>
                     </p>
                   </div>
                   <span
@@ -601,7 +884,7 @@
                 style="text-align: center; color: #aaa; padding: 30px; font-size: 13px;">
                 <i class="fa-solid fa-user-slash"
                   style="font-size: 24px; display: block; margin-bottom: 8px; color: #ccc;"></i>
-                Walang trainers pa.
+                No trainers registered yet.
               </div>
             @endforelse
           </div>
@@ -643,8 +926,8 @@
             @empty
               <div
                 style="text-align:center; color:#aaa; padding:20px; font-size:13px;">
-                <i class="fa-solid fa-clipboard-list"></i> Walang registrations
-                pa.
+                <i class="fa-solid fa-clipboard-list"></i> No registrations
+                found.
               </div>
             @endforelse
           </div>
@@ -682,57 +965,122 @@
 
       <!-- 6. FACILITIES VIEW -->
       <div id="view-facilities" style="display: none;">
-        <div class="facility-grid">
-          <div class="card facility-card">
-            <div class="facility-header">
-              <i class="fa-solid fa-building-circle-check"></i>
-              <div>
-                <strong>Brgy. Burol Main Barangay Hall</strong><br>
-                <small>Zone 4, Dasmariñas, Cavite</small>
-              </div>
-            </div>
-            <div class="facility-body">
-              <p><i class="fa-solid fa-users"></i> Capacity: 25/30</p>
-              <p><i class="fa-solid fa-book-open"></i> Current: Dressmaking</p>
-            </div>
-            <button class="btn-all"
-              onclick="openFacilityModal('Brgy. Burol Main Barangay Hall', 'Zone 4, Dasmariñas, Cavite', 30, 'Dressmaking')">
-              Manage Facility
-            </button>
+
+        <!-- Top Control Bar (Search & Action Button) -->
+        <div
+          style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 20px; gap: 12px; flex-wrap: wrap;">
+          <div class="input-wrapper"
+            style="width: 320px; background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 6px 12px; display: flex; align-items: center;">
+            <i class="fa-solid fa-magnifying-glass"
+              style="color: #888; margin-right: 8px;"></i>
+            <input type="text" id="searchFacilityInput"
+              placeholder="Search facility name or location..."
+              onkeyup="filterFacilities()"
+              style="border: none; outline: none; width: 100%; font-size: 13px;">
           </div>
-          <div class="card facility-card">
-            <div class="facility-header">
-              <i class="fa-solid fa-building-columns"></i>
-              <div>
-                <strong>LEDIPO Main</strong><br>
-                <small>City Hall Compound</small>
-              </div>
-            </div>
-            <div class="facility-body">
-              <p><i class="fa-solid fa-users"></i> Capacity: 10/20</p>
-              <p><i class="fa-solid fa-book-open"></i> Current: Carpentry</p>
-            </div>
-            <button class="btn-all"
-              onclick="openFacilityModal('LEDIPO Main', 'City Hall Compound', 20, 'Carpentry')">
-              Manage Facility
-            </button>
-          </div>
-        </div>
-        <div style="text-align: center; margin-top: 20px;">
+
           <button class="btn-save-main" onclick="openAddFacilityModal()"
-            style="width: auto; padding: 10px 15px;">
+            style="width: auto; padding: 9px 18px; font-size: 13px; white-space: nowrap;">
             <i class="fa-solid fa-plus"></i> Add New Facility
           </button>
         </div>
-        <div class="pagination-container">
-          <button class="page-btn prev"><i
+
+        <!-- Facility Grid -->
+        <div class="facility-grid" id="facilityGrid"
+          style="display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 16px;">
+
+          @forelse ($facilities as $facility)
+            <div class="card facility-card"
+              data-name="{{ strtolower($facility->name) }}"
+              data-location="{{ strtolower($facility->address) }}"
+              style="display: flex; flex-direction: column; justify-content: space-between; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px; padding: 20px; background: #fff;">
+              <div>
+                <!-- Header & Status Badge -->
+                <div
+                  style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                  <div style="display: flex; gap: 12px; align-items: center;">
+                    <div
+                      style="width: 42px; height: 42px; border-radius: 10px; background: #e8f5e9; display: flex; align-items: center; justify-content: center; color: #025628; font-size: 18px; flex-shrink: 0;">
+                      <i class="fa-solid fa-building-circle-check"></i>
+                    </div>
+                    <div>
+                      <strong
+                        style="font-size: 15px; color: #1a1a1a; display: block;">{{ $facility->name }}</strong>
+                      <small style="color: #666; font-size: 12px;">
+                        <i class="fa-solid fa-location-dot"></i>
+                        {{ $facility->address }}
+                      </small>
+                    </div>
+                  </div>
+                  <span class="course-badge active"
+                    style="font-size: 10px; padding: 2px 8px; border-radius: 12px;">Active</span>
+                </div>
+
+                <hr
+                  style="border: none; border-top: 1px solid #f0f0f0; margin: 12px 0;">
+
+                <!-- Dynamic Multi-Course Badges -->
+                <div style="margin-bottom: 16px;">
+                  <div
+                    style="font-size: 12px; color: #555; margin-bottom: 6px;">
+                    <i class="fa-solid fa-book-open"
+                      style="color: #854F0B;"></i>
+                    <strong>Assigned Courses
+                      ({{ $facility->courses->count() }})
+                      :</strong>
+                  </div>
+
+                  @if ($facility->courses->isNotEmpty())
+                    <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                      @foreach ($facility->courses as $course)
+                        <span
+                          style="font-size: 11px; font-weight: 600; background: #e8f5e9; color: #025628; padding: 3px 10px; border-radius: 12px; border: 1px solid #c8e6c9;">
+                          {{ $course->title }}
+                        </span>
+                      @endforeach
+                    </div>
+                  @else
+                    <span
+                      style="font-size: 11px; color: #9ca3af; font-style: italic;">No
+                      courses assigned</span>
+                  @endif
+                </div>
+              </div>
+
+              <!-- Button with proper parameter alignment -->
+              <button class="btn-all"
+                onclick="openFacilityModal(
+          {{ $facility->id }}, 
+          '{{ addslashes($facility->name) }}', 
+          '{{ addslashes($facility->address) }}', 
+          {{ json_encode($facility->courses->pluck('id')) }}
+        )"
+                style="width: 100%;">
+                <i class="fa-solid fa-pen-to-square"></i> Manage Facility
+              </button>
+            </div>
+          @empty
+            <div
+              style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #888;">
+              <i class="fa-solid fa-building-circle-xmark"
+                style="font-size: 32px; margin-bottom: 10px; display: block;"></i>
+              No facilities found. Click "Add New Facility" to create one.
+            </div>
+          @endforelse
+
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination-container" style="margin-top: 20px;">
+          <button class="page-btn prev" disabled><i
               class="fa-solid fa-chevron-left"></i></button>
           <div class="page-numbers">
             <button class="page-btn active">1</button>
           </div>
-          <button class="page-btn next"><i
+          <button class="page-btn next" disabled><i
               class="fa-solid fa-chevron-right"></i></button>
         </div>
+
       </div>
 
       <!-- 7. COURSES VIEW -->
@@ -741,17 +1089,17 @@
         <div
           style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 20px; gap: 12px; flex-wrap: wrap;">
           <div class="input-wrapper"
-            style="width: 320px; background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 6px 12px; display: flex; align-items: center;">
+            style="width: 320px; background: #fff; border: 1px solid #d1d5db; border-radius: 8px; padding: 7px 12px; display: flex; align-items: center; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
             <i class="fa-solid fa-magnifying-glass"
-              style="color: #888; margin-right: 8px;"></i>
+              style="color: #9ca3af; margin-right: 8px; font-size: 13px;"></i>
             <input type="text" id="searchCourseInput"
               placeholder="Search course title or code..."
               onkeyup="filterCourses()"
-              style="border: none; outline: none; width: 100%; font-size: 13px;">
+              style="border: none; outline: none; width: 100%; font-size: 13px; color: #1f2937;">
           </div>
 
           <button class="btn-save-main" onclick="openAddCourseModal()"
-            style="width: auto; padding: 9px 18px; font-size: 13px; white-space: nowrap;">
+            style="width: auto; padding: 9px 18px; font-size: 13px; white-space: nowrap; border-radius: 8px; cursor: pointer; font-weight: 600;">
             <i class="fa-solid fa-plus"></i> Add New Course
           </button>
         </div>
@@ -760,129 +1108,174 @@
         <div class="courses-grid" id="coursesGrid">
           <!-- Live Search No Results Message -->
           <div id="noFilterResults"
-            style="grid-column: 1 / -1; text-align: center; color: #aaa; padding: 40px 0; font-size: 13px; display: none;">
+            style="grid-column: 1 / -1; text-align: center; color: #9ca3af; padding: 50px 0; font-size: 13px; display: none;">
             <i class="fa-solid fa-magnifying-glass"
-              style="font-size: 28px; display: block; margin-bottom: 8px; color: #ccc;"></i>
+              style="font-size: 32px; display: block; margin-bottom: 10px; color: #d1d5db;"></i>
             No courses found.
           </div>
 
           @forelse($courses as $course)
             @php
-              $assignedTrainer = $course->trainer_id
-                  ? $trainers->firstWhere('id', $course->trainer_id)
+              // 1. Trainer Information
+              $trainerName = $course->trainer
+                  ? trim(
+                      $course->trainer->firstname .
+                          ' ' .
+                          $course->trainer->lastname,
+                  )
                   : null;
-              $trainerName = $assignedTrainer
-                  ? $assignedTrainer->firstname .
-                      ' ' .
-                      $assignedTrainer->lastname
-                  : '';
 
-              $enrolledCount = Illuminate\Support\Facades\DB::table(
-                  'enrollment_tbls',
-              )
-                  ->where('course_id', $course->id)
-                  ->count();
+              // 2. Facility Information
+              $facilityName = $course->facility
+                  ? $course->facility->name
+                  : null;
+
+              // 3. Enrollment Count & Calculations
+              $enrolledCount =
+                  $course->enrolled_count ?? ($course->enrollments_count ?? 0);
               $remainingSlots = max(0, $course->slots - $enrolledCount);
 
-              // Module & Quiz Counts
-              $moduleCount = Illuminate\Support\Facades\DB::table('modules')
-                  ->where('course_id', $course->id)
-                  ->count();
-              $quizCount = Illuminate\Support\Facades\DB::table('quizzes')
-                  ->where('course_id', $course->id)
-                  ->count();
+              // 4. Module & Quiz Counts
+              $moduleCount =
+                  $course->modules_count ??
+                  Illuminate\Support\Facades\DB::table('modules')
+                      ->where('course_id', $course->id)
+                      ->count();
+              $quizCount =
+                  $course->quizzes_count ??
+                  Illuminate\Support\Facades\DB::table('quizzes')
+                      ->where('course_id', $course->id)
+                      ->count();
 
-              // Dynamic progress bar percentage calculation
+              // 5. Dynamic Progress Bar Percentage & Color
               $percent =
                   $course->slots > 0
                       ? min(100, round(($enrolledCount / $course->slots) * 100))
                       : 0;
               $barColor =
                   $percent >= 100
-                      ? '#A32D2D'
+                      ? '#dc2626'
                       : ($percent >= 80
-                          ? '#854F0B'
+                          ? '#d97706'
                           : '#025628');
             @endphp
 
             <div class="card course-card"
-              style="display: flex; flex-direction: column; justify-content: space-between;"
+              style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.03); text-align: left;"
               data-title="{{ strtolower($course->title) }}"
               data-code="{{ strtolower($course->course_code) }}">
 
               <div>
-                <!-- Header Badge: Code & Status -->
+                <!-- Top Bar: Course Code & Status Badge -->
                 <div
-                  style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                  style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
                   <span
-                    style="font-size: 11px; font-weight: 700; color: #666; background: #f0f0f0; padding: 3px 8px; border-radius: 4px;">
-                    <i class="fa-solid fa-barcode"></i>
+                    style="font-size: 11px; font-weight: 700; color: #4b5563; background: #f3f4f6; padding: 4px 9px; border-radius: 6px;">
+                    <i class="fa-solid fa-barcode"
+                      style="color: #6b7280; margin-right: 4px;"></i>
                     {{ $course->course_code ?? 'CRS-000' }}
                   </span>
                   <div
-                    class="course-badge {{ strtolower($course->status) === 'active' ? 'active' : 'inactive' }}">
+                    class="course-badge {{ strtolower($course->status) === 'active' ? 'active' : 'inactive' }}"
+                    style="font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 12px;">
                     {{ ucfirst($course->status) }}
                   </div>
                 </div>
 
-                <i class="fa-solid fa-book course-main-icon"
-                  style="display: block; margin: 0 auto 10px auto; text-align: center;"></i>
-                <h4
-                  style="margin: 0 0 10px 0; font-size: 16px; font-weight: 700;">
-                  {{ $course->title }}
-                </h4>
+                <!-- Title & Icon Side-by-Side Header -->
+                <div
+                  style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; text-align: left;">
+                  <div
+                    style="background: #e8f5e9; color: #025628; border-radius: 10px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="fa-solid fa-book" style="font-size: 18px;"></i>
+                  </div>
+                  <div style="flex-grow: 1; text-align: left;">
+                    <h4
+                      style="margin: 0 0 4px 0; font-size: 15px; font-weight: 700; color: #111827; line-height: 1.35; text-align: left;">
+                      {{ $course->title }}
+                    </h4>
+                    <span
+                      style="font-size: 12px; color: #6b7280; font-weight: 500; display: inline-flex; align-items: center; gap: 5px; text-align: left;">
+                      <i class="fa-regular fa-clock"
+                        style="color: #9ca3af;"></i>
+                      {{ $course->duration }}
+                      Days Duration
+                    </span>
+                  </div>
+                </div>
 
-                <p style="margin: 4px 0;">
-                  <i class="fa-solid fa-calendar-day"></i> Duration:
-                  {{ $course->duration }} Days
-                </p>
-                <p style="margin: 4px 0;">
-                  <i class="fa-solid fa-users"></i> Slots:
-                  {{ $enrolledCount }} / {{ $course->slots }} Enrolled
-                </p>
+                <!-- Grouped Metadata Card (Trainer & Facility) -->
+                <div
+                  style="background: #f9fafb; border: 1px solid #f3f4f6; border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 6px; font-size: 12px; text-align: left;">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-chalkboard-user"
+                      style="color: #025628; width: 14px; text-align: center;"></i>
+                    <span
+                      style="color: #6b7280; font-weight: 500;">Trainer:</span>
+                    <strong
+                      style="color: {{ $trainerName ? '#111827' : '#9ca3af' }}; font-weight: 600;">
+                      {{ $trainerName ?? 'No trainer assigned' }}
+                    </strong>
+                  </div>
 
-                @if ($assignedTrainer)
-                  <p
-                    style="color:#025628; font-size:12px; font-weight:600; margin-top: 6px;">
-                    <i class="fa-solid fa-chalkboard-user"></i>
-                    {{ $trainerName }}
-                  </p>
-                @else
-                  <p style="color:#aaa; font-size:12px; margin-top: 6px;">
-                    <i class="fa-solid fa-chalkboard-user"></i> No trainer
-                    assigned
-                  </p>
-                @endif
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-building"
+                      style="color: #025628; width: 14px; text-align: center;"></i>
+                    <span
+                      style="color: #6b7280; font-weight: 500;">Facility:</span>
+                    <strong
+                      style="color: {{ $facilityName ? '#111827' : '#9ca3af' }}; font-weight: 600;">
+                      {{ $facilityName ?? 'No facility assigned' }}
+                    </strong>
+                  </div>
+                </div>
 
-                <!-- Modules & Quizzes Counter Badge Line -->
-                <p style="margin: 6px 0 0 0; font-size: 12px; color: #555;">
-                  <i class="fa-solid fa-cubes" style="color: #025628;"></i>
+                <!-- Modules & Quizzes Counter Badges -->
+                <div
+                  style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
                   <span
-                    id="course-module-count-{{ $course->id }}">{{ $moduleCount }}</span>
+                    style="background: #f3f4f6; color: #374151; font-size: 11px; font-weight: 600; padding: 4px 9px; border-radius: 6px; display: inline-flex; align-items: center; gap: 5px;">
+                    <i class="fa-solid fa-cubes" style="color: #025628;"></i>
+                    <span
+                      id="course-module-count-{{ $course->id }}">{{ $moduleCount }}</span>
+                    <span
+                      id="course-module-label-{{ $course->id }}">{{ Illuminate\Support\Str::plural('Module', $moduleCount) }}</span>
+                  </span>
+
                   <span
-                    id="course-module-label-{{ $course->id }}">{{ Illuminate\Support\Str::plural('Module', $moduleCount) }}</span>
-                  &nbsp;·&nbsp;
-                  <i class="fa-solid fa-clipboard-question"
-                    style="color: #854F0B;"></i>
-                  <span
-                    id="course-quiz-count-{{ $course->id }}">{{ $quizCount }}</span>
-                  <span
-                    id="course-quiz-label-{{ $course->id }}">{{ Illuminate\Support\Str::plural('Quiz', $quizCount) }}</span>
-                </p>
+                    style="background: #fef3c7; color: #92400e; font-size: 11px; font-weight: 600; padding: 4px 9px; border-radius: 6px; display: inline-flex; align-items: center; gap: 5px;">
+                    <i class="fa-solid fa-clipboard-question"
+                      style="color: #b45309;"></i>
+                    <span
+                      id="course-quiz-count-{{ $course->id }}">{{ $quizCount }}</span>
+                    <span
+                      id="course-quiz-label-{{ $course->id }}">{{ Illuminate\Support\Str::plural('Quiz', $quizCount) }}</span>
+                  </span>
+                </div>
               </div>
 
               <div>
-                <!-- Dynamic Capacity Progress Bar -->
-                <div class="progress-container"
-                  style="background: #e5e5e5; height: 6px; border-radius: 10px; overflow: hidden; margin: 12px 0;">
-                  <div class="progress-bar"
-                    style="width: {{ $percent }}%; background: {{ $barColor }}; height: 100%; transition: width 0.3s ease;">
+                <!-- Capacity Progress Bar -->
+                <div style="margin-bottom: 14px; text-align: left;">
+                  <div
+                    style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 600; color: #4b5563; margin-bottom: 6px;">
+                    <span>Enrolled Capacity</span>
+                    <span
+                      style="color: {{ $barColor }}; font-weight: 700;">{{ $enrolledCount }}
+                      / {{ $course->slots }} Enrolled</span>
+                  </div>
+                  <div class="progress-container"
+                    style="background: #e5e7eb; height: 6px; border-radius: 10px; overflow: hidden;">
+                    <div class="progress-bar"
+                      style="width: {{ $percent }}%; background: {{ $barColor }}; height: 100%; border-radius: 10px; transition: width 0.3s ease;">
+                    </div>
                   </div>
                 </div>
 
                 <!-- Action Buttons -->
-                <div style="display:flex; gap:8px; margin-top:8px;">
-                  <button class="btn-all" style="flex:1"
+                <div style="display: flex; gap: 8px;">
+                  <button class="btn-all"
+                    style="flex: 1; border: 1px solid #d1d5db; background: #ffffff; color: #374151; font-weight: 600; padding: 8px; border-radius: 8px; font-size: 12px; cursor: pointer;"
                     onclick="openCourseModal(
                 {{ $course->id }},
                 '{{ addslashes($course->course_code) }}',
@@ -890,165 +1283,290 @@
                 '{{ addslashes($course->duration) }}',
                 {{ $course->slots }},
                 {{ $course->trainer_id ?? 'null' }},
-                '{{ addslashes($trainerName) }}',
+                '{{ addslashes($trainerName ?? '') }}',
                 '{{ $course->status }}'
               )">
                     Course Details
                   </button>
+
                   <button class="btn-all"
-                    style="flex:1; background:#025628; color:#fff; border:none;"
+                    style="flex: 1; border: none; background: #025628; color: #ffffff; font-weight: 600; padding: 8px; border-radius: 8px; font-size: 12px; cursor: pointer;"
                     onclick="openContentModal({{ $course->id }}, '{{ addslashes($course->title) }}')">
                     <i class="fa-solid fa-layer-group"></i> Modules
                   </button>
                 </div>
               </div>
+
             </div>
           @empty
             <div
-              style="grid-column: 1 / -1; text-align: center; color: #aaa; padding: 40px 0; font-size: 13px;">
+              style="grid-column: 1 / -1; text-align: center; color: #9ca3af; padding: 50px 0; font-size: 13px;">
               <i class="fa-solid fa-book-open"
-                style="font-size: 28px; display: block; margin-bottom: 8px; color: #ccc;"></i>
+                style="font-size: 32px; display: block; margin-bottom: 10px; color: #d1d5db;"></i>
               No courses found.
             </div>
           @endforelse
         </div>
 
         <!-- Pagination -->
-        <div class="pagination-container" style="margin-top: 20px;">
-          @if ($courses->onFirstPage())
-            <button class="page-btn" disabled><i
-                class="fa-solid fa-chevron-left"></i></button>
-          @else
-            <a href="{{ $courses->previousPageUrl() }}&view=courses"
-              onclick="setActive(document.getElementById('nav-courses'))"
-              class="page-btn">
-              <i class="fa-solid fa-chevron-left"></i>
-            </a>
-          @endif
+        @if (
+            $courses instanceof \Illuminate\Pagination\LengthAwarePaginator &&
+                $courses->hasPages())
+          <div class="pagination-container"
+            style="margin-top: 24px; display: flex; justify-content: center; align-items: center; gap: 6px;">
+            @if ($courses->onFirstPage())
+              <button class="page-btn" disabled
+                style="opacity: 0.5; cursor: not-allowed;"><i
+                  class="fa-solid fa-chevron-left"></i></button>
+            @else
+              <a href="{{ $courses->previousPageUrl() }}&view=courses"
+                onclick="setActive(document.getElementById('nav-courses'))"
+                class="page-btn">
+                <i class="fa-solid fa-chevron-left"></i>
+              </a>
+            @endif
 
-          <div class="page-numbers">
-            @for ($i = 1; $i <= $courses->lastPage(); $i++)
-              @if ($i == $courses->currentPage())
-                <button class="page-btn active">{{ $i }}</button>
-              @else
-                <a href="{{ $courses->url($i) }}&view=courses"
-                  onclick="setActive(document.getElementById('nav-courses'))"
-                  class="page-btn">{{ $i }}</a>
-              @endif
-            @endfor
+            <div class="page-numbers" style="display: flex; gap: 4px;">
+              @for ($i = 1; $i <= $courses->lastPage(); $i++)
+                @if ($i == $courses->currentPage())
+                  <button class="page-btn active">{{ $i }}</button>
+                @else
+                  <a href="{{ $courses->url($i) }}&view=courses"
+                    onclick="setActive(document.getElementById('nav-courses'))"
+                    class="page-btn">{{ $i }}</a>
+                @endif
+              @endfor
+            </div>
+
+            @if ($courses->hasMorePages())
+              <a href="{{ $courses->nextPageUrl() }}&view=courses"
+                onclick="setActive(document.getElementById('nav-courses'))"
+                class="page-btn">
+                <i class="fa-solid fa-chevron-right"></i>
+              </a>
+            @else
+              <button class="page-btn" disabled
+                style="opacity: 0.5; cursor: not-allowed;"><i
+                  class="fa-solid fa-chevron-right"></i></button>
+            @endif
           </div>
-
-          @if ($courses->hasMorePages())
-            <a href="{{ $courses->nextPageUrl() }}&view=courses"
-              onclick="setActive(document.getElementById('nav-courses'))"
-              class="page-btn">
-              <i class="fa-solid fa-chevron-right"></i>
-            </a>
-          @else
-            <button class="page-btn" disabled><i
-                class="fa-solid fa-chevron-right"></i></button>
-          @endif
-        </div>
+        @endif
       </div>
+
       <!-- 8. ANNOUNCEMENTS VIEW -->
       <div id="view-announcements" style="display: none;">
-        <div class="section-header"
-          style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-          <span style="font-size:15px; font-weight:600; color:#025628;">All
-            Announcements</span>
+        <!-- Header Bar -->
+        <div class="view-header"
+          style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <div>
+            <span style="font-size: 13px; color: #666;">Manage system updates,
+              reminders, and public notices.</span>
+          </div>
+
           <button class="btn-save-main" onclick="openAnnouncementModal()"
-            style="width:auto; padding:8px 16px;">
+            style="width: auto; padding: 8px 16px; font-weight: 600;">
             <i class="fa-solid fa-plus"></i> Add Announcement
           </button>
         </div>
 
-        <div class="card list-card">
+        <!-- Filter & Search Toolbar -->
+        <div class="filter-toolbar"
+          style="display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #fff; padding: 12px 16px; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 16px;">
+          <!-- Search Input -->
+          <div style="position: relative; flex: 1; max-width: 320px;">
+            <i class="fa-solid fa-magnifying-glass"
+              style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 13px;"></i>
+            <input type="text" id="annSearchInput"
+              placeholder="Search announcements..."
+              onkeyup="filterAnnouncements()"
+              style="width: 100%; padding: 8px 12px 8px 36px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; color: #1e293b; outline: none; background: #f8fafc;">
+          </div>
+
+          <!-- Dropdown Filters -->
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <label for="annTypeFilter"
+                style="font-size: 12px; font-weight: 600; color: #64748b;">Type:</label>
+              <select id="annTypeFilter" onchange="filterAnnouncements()"
+                style="padding: 7px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; color: #1e293b; background: #fff; cursor: pointer; outline: none;">
+                <option value="">All Types</option>
+                <option value="urgent">Urgent</option>
+                <option value="notice">Notice</option>
+                <option value="reminder">Reminder</option>
+              </select>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <label for="annStatusFilter"
+                style="font-size: 12px; font-weight: 600; color: #64748b;">Status:</label>
+              <select id="annStatusFilter" onchange="filterAnnouncements()"
+                style="padding: 7px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; color: #1e293b; background: #fff; cursor: pointer; outline: none;">
+                <option value="">All Statuses</option>
+                <option value="active">Active</option>
+                <option value="draft">Draft</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Announcement List Card -->
+        <div class="card list-card"
+          style="display: flex; flex-direction: column; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
           @forelse($announcements as $ann)
             @php
-              $badgeColor = match ($ann->type) {
-                  'urgent' => '#A32D2D',
-                  'notice' => '#854F0B',
-                  default => '#025628',
-              };
-              $bgColor = match ($ann->type) {
-                  'urgent' => '#FCEBEB',
-                  'notice' => '#FFF8E1',
-                  default => '#E8F5E9',
+              $typeConfig = match ($ann->type) {
+                  'urgent' => [
+                      'badge' => '#A32D2D',
+                      'bg' => '#FCEBEB',
+                      'icon' => 'fa-triangle-exclamation',
+                  ],
+                  'notice' => [
+                      'badge' => '#854F0B',
+                      'bg' => '#FFF8E1',
+                      'icon' => 'fa-circle-info',
+                  ],
+                  default => [
+                      'badge' => '#025628',
+                      'bg' => '#E8F5E9',
+                      'icon' => 'fa-bell',
+                  ],
               };
             @endphp
-            <div class="user-item">
+
+            <div class="user-item" data-type="{{ strtolower($ann->type) }}"
+              data-status="{{ $ann->is_active ? 'active' : 'draft' }}"
+              style="display: flex; align-items: flex-start; gap: 14px; padding: 16px; border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;">
+
+              <!-- Icon -->
               <div
-                style="width:36px; height:36px; border-radius:50%; background:{{ $bgColor }};
-                                        display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                <i class="fa-solid fa-bell"
-                  style="color:{{ $badgeColor }}; font-size:14px;"></i>
+                style="width: 38px; height: 38px; border-radius: 50%; background: {{ $typeConfig['bg'] }}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <i class="fa-solid {{ $typeConfig['icon'] }}"
+                  style="color: {{ $typeConfig['badge'] }}; font-size: 14px;"></i>
               </div>
-              <div class="user-info" style="flex:1;">
-                <strong>{{ $ann->title }}</strong>
-                <span
-                  style="margin-left:8px; padding:2px 8px; border-radius:20px; font-size:10px; font-weight:700;
-                                            background:{{ $bgColor }}; color:{{ $badgeColor }};">
-                  {{ ucfirst($ann->type) }}
-                </span><br>
-                <small style="color:#888;">{{ $ann->message }}</small><br>
-                <small
-                  style="color:#bbb;">{{ $ann->created_at->diffForHumans() }}
-                  ·
-                  {{ $ann->is_active ? '✅ Active' : '⏸ Inactive' }}
-                </small>
+
+              <!-- Content Body -->
+              <div class="user-info" style="flex: 1; min-width: 0;">
+                <div
+                  style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px;">
+                  <strong class="ann-title-text"
+                    style="font-size: 14px; font-weight: 600; color: #0f172a;">{{ $ann->title }}</strong>
+
+                  <span
+                    style="padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 700; background: {{ $typeConfig['bg'] }}; color: {{ $typeConfig['badge'] }};">
+                    {{ ucfirst($ann->type) }}
+                  </span>
+
+                  @if ($ann->is_active)
+                    <span
+                      style="font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 12px; background: #e6f4ea; color: #137333;">
+                      Active
+                    </span>
+                  @else
+                    <span
+                      style="font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 12px; background: #f1f3f4; color: #5f6368;">
+                      Draft
+                    </span>
+                  @endif
+                </div>
+
+                <p class="ann-msg-text"
+                  style="margin: 0 0 10px 0; font-size: 13px; color: #475569; line-height: 1.5;">
+                  {{ $ann->message }}
+                </p>
+
+                <!-- Timestamps Metadata Tags -->
+                <div
+                  style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 11px; color: #64748b;">
+                  <span title="Created At">
+                    <i class="fa-regular fa-clock"
+                      style="color: #94a3b8;"></i>
+                    <strong>Created:</strong>
+                    {{ $ann->created_at->format('M j, Y h:i A') }}
+                  </span>
+
+                  <span title="Publish Date">
+                    <i class="fa-solid fa-calendar-check"
+                      style="color: {{ $ann->publish_at ? '#025628' : '#94a3b8' }};"></i>
+                    <strong>Publishes:</strong>
+                    {{ $ann->publish_at ? $ann->publish_at->format('M j, Y h:i A') : 'Immediately' }}
+                  </span>
+
+                  <span title="Expiration Date">
+                    <i class="fa-solid fa-calendar-xmark"
+                      style="color: {{ $ann->expires_at ? '#A32D2D' : '#94a3b8' }};"></i>
+                    <strong>Expires:</strong>
+                    {{ $ann->expires_at ? $ann->expires_at->format('M j, Y h:i A') : 'Never' }}
+                  </span>
+                </div>
               </div>
-              <div style="display:flex; gap:6px;">
-                <button class="btn-view"
-                  onclick="editAnnouncement({{ $ann->id }}, '{{ addslashes($ann->title) }}', '{{ addslashes($ann->message) }}', '{{ $ann->type }}')">
+
+              <!-- Action Buttons -->
+              <div
+                style="display: flex; gap: 8px; flex-shrink: 0; align-self: center;">
+                <button class="btn-view" data-id="{{ $ann->id }}"
+                  data-title="{{ $ann->title }}"
+                  data-message="{{ $ann->message }}"
+                  data-type="{{ $ann->type }}"
+                  data-active="{{ $ann->is_active ? '1' : '0' }}"
+                  data-publish-at="{{ $ann->publish_at ? $ann->publish_at->format('Y-m-d H:i:s') : '' }}"
+                  data-expires-at="{{ $ann->expires_at ? $ann->expires_at->format('Y-m-d H:i:s') : '' }}"
+                  onclick="handleEditAnnouncement(this)"
+                  style="padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid #025628; background: #025628; color: #fff;">
                   Edit
                 </button>
-                <button onclick="toggleAnn({{ $ann->id }}, this)"
-                  style="padding:5px 12px; border-radius:4px; font-size:12px; font-weight:700; cursor:pointer; border:none;
-                                        background:{{ $ann->is_active ? '#FFF8E1' : '#E8F5E9' }};
-                                        color:{{ $ann->is_active ? '#854F0B' : '#025628' }};">
-                  {{ $ann->is_active ? 'Deactivate' : 'Activate' }}
-                </button>
-                <button onclick="deleteAnn({{ $ann->id }})"
-                  style="padding:5px 12px; border-radius:4px; font-size:12px; font-weight:700; cursor:pointer; border:none;
-                                        background:#FCEBEB; color:#A32D2D;">
+
+                <button
+                  onclick="deleteAnnouncement({{ $ann->id }}, this)"
+                  style="padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid #fecdd3; background: #fff1f2; color: #9f1239;">
                   Delete
                 </button>
               </div>
             </div>
           @empty
             <div
-              style="text-align:center; color:#aaa; padding:30px; font-size:13px;">
-              <i class="fa-solid fa-bell-slash"></i> Walang announcements pa.
+              style="text-align: center; color: #64748b; padding: 48px 20px; font-size: 13px;">
+              <i class="fa-solid fa-bell-slash"
+                style="font-size: 28px; color: #cbd5e1; margin-bottom: 10px; display: block;"></i>
+              <strong>No announcements found.</strong>
+              <p style="margin: 4px 0 0 0; color: #94a3b8; font-size: 12px;">
+                Try adjusting your filters or click "+ Add Announcement" to
+                create one.</p>
             </div>
           @endforelse
         </div>
 
-        <div class="pagination-container">
-          @if ($announcements->onFirstPage())
-            <button class="page-btn" disabled><i
-                class="fa-solid fa-chevron-left"></i></button>
-          @else
-            <a href="{{ $announcements->previousPageUrl() }}&view=announcements"
-              class="page-btn"><i class="fa-solid fa-chevron-left"></i></a>
-          @endif
-          <div class="page-numbers">
-            @for ($i = 1; $i <= $announcements->lastPage(); $i++)
-              @if ($i == $announcements->currentPage())
-                <button class="page-btn active">{{ $i }}</button>
-              @else
-                <a href="{{ $announcements->url($i) }}&view=announcements"
-                  class="page-btn">{{ $i }}</a>
-              @endif
-            @endfor
+        @if ($announcements->total() > 0)
+          <div class="pagination-container"
+            style="margin-top: 20px; display: flex; justify-content: center; gap: 4px;">
+            @if ($announcements->onFirstPage())
+              <button class="page-btn" disabled><i
+                  class="fa-solid fa-chevron-left"></i></button>
+            @else
+              <a href="{{ $announcements->previousPageUrl() }}&view=announcements"
+                class="page-btn"><i class="fa-solid fa-chevron-left"></i></a>
+            @endif
+
+            <div class="page-numbers" style="display: flex; gap: 4px;">
+              @for ($i = 1; $i <= $announcements->lastPage(); $i++)
+                @if ($i == $announcements->currentPage())
+                  <button
+                    class="page-btn active">{{ $i }}</button>
+                @else
+                  <a href="{{ $announcements->url($i) }}&view=announcements"
+                    class="page-btn">{{ $i }}</a>
+                @endif
+              @endfor
+            </div>
+
+            @if ($announcements->hasMorePages())
+              <a href="{{ $announcements->nextPageUrl() }}&view=announcements"
+                class="page-btn"><i class="fa-solid fa-chevron-right"></i></a>
+            @else
+              <button class="page-btn" disabled><i
+                  class="fa-solid fa-chevron-right"></i></button>
+            @endif
           </div>
-          @if ($announcements->hasMorePages())
-            <a href="{{ $announcements->nextPageUrl() }}&view=announcements"
-              class="page-btn"><i class="fa-solid fa-chevron-right"></i></a>
-          @else
-            <button class="page-btn" disabled><i
-                class="fa-solid fa-chevron-right"></i></button>
-          @endif
-        </div>
+        @endif
       </div>
 
       <!-- 9. SETTINGS VIEW -->
@@ -1132,7 +1650,8 @@
             <thead>
               <tr>
                 <th class="select-col hidden"><i
-                    class="fas fa-check-square"></i></th>
+                    class="fas fa-check-square"></i>
+                </th>
                 <th>Fullname</th>
                 <th>Course</th>
                 <th>Date Issued</th>
@@ -1469,6 +1988,107 @@
       </form>
     </div>
   </div>
+
+  <!-- Announcement Modal -->
+  <div id="announcementModal" class="modal" style="display: none;">
+    <div class="modal-content card">
+      <div class="modal-header">
+        <h3 id="annModalTitle"><i class="fa-solid fa-bell"></i> Add
+          Announcement</h3>
+        <span class="close-modal"
+          onclick="closeAnnouncementModal()">&times;</span>
+      </div>
+
+      <form id="announcementForm" class="modal-body">
+        <input type="hidden" id="annId">
+
+        <!-- Title Field -->
+        <div class="form-group">
+          <div class="label-row">
+            <label for="annTitle">Title <span
+                class="required">*</span></label>
+            <span class="char-counter" id="titleCounter">0/100</span>
+          </div>
+          <div class="input-container">
+            <i class="fa-solid fa-pen input-icon"></i>
+            <input type="text" id="annTitle" maxlength="100"
+              placeholder="e.g., System Maintenance Schedule" required>
+          </div>
+        </div>
+
+        <!-- Message Field -->
+        <div class="form-group">
+          <div class="label-row">
+            <label for="annMessage">Message <span
+                class="required">*</span></label>
+            <span class="char-counter" id="messageCounter">0/500</span>
+          </div>
+          <div class="input-container textarea-container">
+            <i class="fa-solid fa-align-left input-icon textarea-icon"></i>
+            <textarea id="annMessage" maxlength="500"
+              placeholder="Enter detailed announcement message..." required></textarea>
+          </div>
+        </div>
+
+        <!-- Row 1: Type & Status (Kill Switch) -->
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="annType">Type <span class="required">*</span></label>
+            <div class="input-container">
+              <i class="fa-solid fa-tag input-icon"></i>
+              <select id="annType" class="modal-input-select">
+                <option value="reminder">Reminder</option>
+                <option value="notice">Notice</option>
+                <option value="urgent">Urgent</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group status-group">
+            <label>Status Switch</label>
+            <label class="checkbox-card">
+              <input type="checkbox" id="annIsActive" checked>
+              <span class="checkbox-text" id="statusLabel">Active</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Row 2: Schedule & Expiration Timestamps -->
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <div class="label-row">
+              <label for="annPublishAt">Publish At <small
+                  style="color:#888;">(Optional)</small></label>
+            </div>
+            <div class="input-container datetime-container">
+              <input type="datetime-local" id="annPublishAt"
+                class="datetime-input">
+            </div>
+          </div>
+
+          <div class="form-group flex-1">
+            <div class="label-row">
+              <label for="annExpiresAt">Expires At <small
+                  style="color:#888;">(Optional)</small></label>
+            </div>
+            <div class="input-container datetime-container">
+              <input type="datetime-local" id="annExpiresAt"
+                class="datetime-input">
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel"
+            onclick="closeAnnouncementModal()">Cancel</button>
+          <button type="submit" id="btnSubmitAnn"
+            class="btn-save-main">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Add Trainer Modal -->
   <div id="addTrainerModal" class="modal">
     <style>
@@ -1676,7 +2296,8 @@
               <label>Reference / ID Number</label>
               <div class="input-wrapper">
                 <i class="fa-solid fa-id-card"></i>
-                <input type="text" id="editUserIdNum" placeholder="N/A">
+                <input type="text" id="editUserIdNum"
+                  placeholder="N/A">
               </div>
             </div>
           </div>
@@ -1737,7 +2358,8 @@
           <div class="action-buttons">
             <button type="button" class="btn-cancel"
               onclick="closeUserModal(); event.stopPropagation(); return false;">Cancel</button>
-            <button type="submit" class="btn-save-main">Update User</button>
+            <button type="submit" class="btn-save-main">Update
+              User</button>
           </div>
         </div>
       </form>
@@ -1745,109 +2367,112 @@
   </div>
 
   <!-- Facility Modal -->
-  <div id="facilityModal" class="modal">
-    <div class="modal-content card">
-      <div class="modal-header">
-        <h3><i class="fa-solid fa-building-circle-gear"></i> Manage Facility
-        </h3>
-        <span class="close-modal"
-          onclick="closeFacilityModal()">&times;</span>
-      </div>
-      <form id="facilityForm" class="modal-body">
-        <div class="input-field">
-          <label>Facility / Center Name</label>
-          <div class="input-wrapper">
-            <i class="fa-solid fa-hotel"></i>
-            <input type="text" id="editFacName"
-              placeholder="e.g. Brgy. Burol Main Hall">
-          </div>
-        </div>
-        <div class="input-field">
-          <label>Full Address</label>
-          <div class="input-wrapper">
-            <i class="fa-solid fa-location-dot"></i>
-            <input type="text" id="editFacAddress"
-              placeholder="Zone 4, Dasmariñas, Cavite">
-          </div>
-        </div>
-        <div class="modal-row">
-          <div class="input-field">
-            <label>Max Capacity</label>
-            <div class="input-wrapper">
-              <i class="fa-solid fa-users"></i>
-              <input type="number" id="editFacCap" placeholder="30">
-            </div>
-          </div>
-          <div class="input-field">
-            <label>Assigned Course</label>
-            <div class="input-wrapper">
-              <i class="fa-solid fa-book-open-reader"></i>
-              <select id="editFacCourse" class="modal-input-select">
-                @foreach ($allCourses as $course)
-                  <option value="{{ $course->id }}">{{ $course->title }}
-                  </option>
-                @endforeach
-              </select>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn-delete-text"
-            onclick="deleteFacility()">
-            <i class="fa-solid fa-house-lock"></i> Close Facility
-          </button>
-          <div class="action-buttons">
-            <button type="submit" class="btn-save-main">Save Changes</button>
-          </div>
-        </div>
-      </form>
-    </div>
-  </div>
+  <div id="facilityModal" class="modal"
+    style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 16px;">
 
-  <!-- Announcement Modal -->
-  <div id="announcementModal" class="modal">
-    <div class="modal-content card">
-      <div class="modal-header">
-        <h3 id="annModalTitle"><i class="fa-solid fa-bell"></i> Add
-          Announcement</h3>
-        <span class="close-modal"
-          onclick="closeAnnouncementModal()">&times;</span>
+    <div class="modal-content card"
+      style="background: #ffffff; width: 100%; max-width: 460px; max-height: 88vh; border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+
+      <!-- Header -->
+      <div class="modal-header"
+        style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f0f0f0; padding: 14px 20px; background: #fff; flex-shrink: 0;">
+        <h3 id="facilityModalTitle"
+          style="margin: 0; font-size: 17px; color: #025628; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+          <i class="fa-solid fa-building-circle-gear"></i> Manage Facility
+        </h3>
+        <span class="close-modal" onclick="closeFacilityModal()"
+          style="font-size: 20px; cursor: pointer; color: #888; line-height: 1;">&times;</span>
       </div>
-      <form id="announcementForm" class="modal-body">
-        <input type="hidden" id="annId">
-        <div class="input-field">
-          <label>Title</label>
-          <div class="input-wrapper">
-            <i class="fa-solid fa-heading"></i>
-            <input type="text" id="annTitle"
-              placeholder="Announcement title" required>
+
+      <!-- Body Form -->
+      <form id="facilityForm" class="modal-body"
+        style="overflow-y: auto; padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; flex-grow: 1;">
+
+        <input type="hidden" id="editFacId" name="id"
+          value="">
+
+        <div class="input-field" style="margin: 0;">
+          <label
+            style="display: block; font-size: 11px; font-weight: 600; color: #4b5563; text-align: left; margin-bottom: 4px;">
+            Facility / Center Name
+          </label>
+          <div class="input-wrapper"
+            style="display: flex; align-items: center; border: 1px solid #d1d5db; border-radius: 8px; padding: 6px 10px; background: #fff;">
+            <i class="fa-solid fa-hotel"
+              style="color: #6b9e7c; margin-right: 8px; font-size: 13px;"></i>
+            <input type="text" id="editFacName" required
+              placeholder="e.g. LEDIPO Main"
+              style="border: none; outline: none; width: 100%; font-size: 13px; background: transparent;">
           </div>
         </div>
-        <div class="input-field">
-          <label>Message</label>
-          <textarea id="annMessage" placeholder="Announcement message..."
-            style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; font-size:14px; font-family:inherit; resize:vertical; min-height:80px;"
-            required></textarea>
-        </div>
-        <div class="input-field">
-          <label>Type</label>
-          <div class="input-wrapper">
-            <i class="fa-solid fa-tag"></i>
-            <select id="annType" class="modal-input-select">
-              <option value="reminder">Reminder</option>
-              <option value="notice">Notice</option>
-              <option value="urgent">Urgent</option>
-            </select>
+
+        <div class="input-field" style="margin: 0;">
+          <label
+            style="display: block; font-size: 11px; font-weight: 600; color: #4b5563; text-align: left; margin-bottom: 4px;">
+            Full Address
+          </label>
+          <div class="input-wrapper"
+            style="display: flex; align-items: center; border: 1px solid #d1d5db; border-radius: 8px; padding: 6px 10px; background: #fff;">
+            <i class="fa-solid fa-location-dot"
+              style="color: #6b9e7c; margin-right: 8px; font-size: 13px;"></i>
+            <input type="text" id="editFacAddress" required
+              placeholder="Zone 4, Dasmariñas, Cavite"
+              style="border: none; outline: none; width: 100%; font-size: 13px; background: transparent;">
           </div>
         </div>
-        <div class="modal-footer">
-          <div></div>
-          <div class="action-buttons">
-            <button type="button" class="btn-cancel"
-              onclick="closeAnnouncementModal()">Cancel</button>
-            <button type="submit" class="btn-save-main">Save</button>
+
+        <div class="input-field" style="margin: 0;">
+          <div
+            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <label
+              style="font-size: 11px; font-weight: 600; color: #1f2937; display: flex; align-items: center; gap: 6px; margin: 0;">
+              <i class="fa-solid fa-book-open-reader"
+                style="color: #025628;"></i> Assigned Courses
+              <span id="selectedCourseBadge"
+                style="background: #e8f5e9; color: #025628; font-size: 10px; padding: 2px 6px; border-radius: 10px; font-weight: 700;">
+                0 Selected
+              </span>
+            </label>
+            <button type="button" onclick="toggleSelectAllCourses()"
+              style="background: none; border: none; color: #025628; font-size: 11px; font-weight: 600; cursor: pointer; text-decoration: underline; padding: 0;">
+              Select All
+            </button>
+          </div>
+
+          <div id="facilityCoursesContainer"
+            style="max-height: 120px; overflow-y: auto; border: 1px solid #d1d5db; border-radius: 8px; padding: 8px 10px; background: #ffffff; display: flex; flex-direction: column; gap: 6px;">
+            @foreach ($allCourses as $course)
+              <label
+                style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #1f2937; cursor: pointer; user-select: none;">
+                <input type="checkbox" name="courses[]"
+                  value="{{ $course->id }}" class="facility-course-cb"
+                  onchange="updateCourseBadgeCount()"
+                  style="width: 15px; height: 15px; accent-color: #025628; cursor: pointer;">
+                <span>{{ $course->title }}</span>
+              </label>
+            @endforeach
           </div>
         </div>
+
+        <div class="modal-footer"
+          style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f0f0f0; padding-top: 12px; margin-top: 4px; flex-shrink: 0;">
+          <button type="button" class="btn-delete-text"
+            onclick="deleteFacility()"
+            style="background: none; border: none; color: #dc2626; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; padding: 0;">
+            <i class="fa-solid fa-trash-can"></i> Delete Facility
+          </button>
+          <div class="action-buttons" style="display: flex; gap: 8px;">
+            <button type="button" onclick="closeFacilityModal()"
+              style="background: #f3f4f6; color: #4b5563; border: 1px solid #d1d5db; padding: 7px 14px; border-radius: 6px; font-weight: 600; font-size: 12px; cursor: pointer;">
+              Cancel
+            </button>
+            <button type="submit" class="btn-save-main"
+              style="background: #025628; color: #fff; border: none; padding: 7px 16px; border-radius: 6px; font-weight: 600; font-size: 12px; cursor: pointer;">
+              Save Changes
+            </button>
+          </div>
+        </div>
+
       </form>
     </div>
   </div>
@@ -1858,7 +2483,8 @@
       <div class="modal-header">
         <h3><i class="fa-solid fa-layer-group"></i> Manage: <span
             id="contentModalCourseTitle"></span></h3>
-        <span class="close-modal" onclick="closeContentModal()">&times;</span>
+        <span class="close-modal"
+          onclick="closeContentModal()">&times;</span>
       </div>
 
       <div class="modal-body" style="padding-bottom:0;">
@@ -1877,7 +2503,6 @@
 
         <!-- MODULES TAB -->
         <div id="content-tab-modules">
-          <!-- Error / Status Alert Banner for Modules -->
           <div id="moduleAlert"
             style="display:none; padding:8px 12px; border-radius:6px; font-size:12px; margin-bottom:10px; font-weight:600;">
           </div>
@@ -1893,7 +2518,8 @@
                 style="flex:2; border:1px solid #ddd; border-radius:8px; padding:8px 12px; font-size:13px; font-family:inherit;">
             </div>
             <div style="display:flex; gap:8px; align-items:center;">
-              <label style="font-size:12px; color:#666; white-space:nowrap;">📎
+              <label
+                style="font-size:12px; color:#666; white-space:nowrap;">📎
                 PDF File:</label>
               <input type="file" id="newModuleFile"
                 accept=".pdf,.doc,.docx"
@@ -1919,7 +2545,6 @@
 
         <!-- QUIZZES TAB -->
         <div id="content-tab-quizzes" style="display:none;">
-          <!-- Error / Status Alert Banner for Quizzes -->
           <div id="quizAlert"
             style="display:none; padding:8px 12px; border-radius:6px; font-size:12px; margin-bottom:10px; font-weight:600;">
           </div>
@@ -2106,6 +2731,33 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
+      // Form Listeners for Announcement Modal counters & label sync
+      const titleInput = document.getElementById('annTitle');
+      const messageInput = document.getElementById('annMessage');
+      const titleCounter = document.getElementById('titleCounter');
+      const messageCounter = document.getElementById('messageCounter');
+      const isActiveCb = document.getElementById('annIsActive');
+      const statusLabel = document.getElementById('statusLabel');
+
+      if (titleInput && titleCounter) {
+        titleInput.addEventListener('input', () => {
+          titleCounter.textContent = `${titleInput.value.length}/100`;
+        });
+      }
+
+      if (messageInput && messageCounter) {
+        messageInput.addEventListener('input', () => {
+          messageCounter.textContent = `${messageInput.value.length}/500`;
+        });
+      }
+
+      if (isActiveCb && statusLabel) {
+        isActiveCb.addEventListener('change', (e) => {
+          statusLabel.textContent = e.target.checked ? 'Publish Now' :
+            'Save as Draft';
+        });
+      }
+
       var calendarEl = document.getElementById('calendar');
       if (calendarEl) {
         var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -2206,10 +2858,17 @@
         });
       }
 
-      // --- ROBUST URL PARAMETER & VIEW RESTORATION ---
+      // --- URL PARAMETER & LOCALSTORAGE VIEW RESTORATION ---
       const urlParams = new URLSearchParams(window.location.search);
+      const savedTab = localStorage.getItem('activeAdminTab');
 
-      if (urlParams.get('view') === 'courses' || urlParams.get('page')) {
+      if (urlParams.get('view') === 'facilities' || savedTab ===
+        'view-facilities') {
+        showView('facilities');
+        setActive(document.getElementById('nav-facilities'));
+        localStorage.removeItem('activeAdminTab');
+      } else if (urlParams.get('view') === 'courses' || urlParams.get(
+          'page')) {
         showView('courses');
         setActive(document.getElementById('nav-courses'));
       } else if (urlParams.get('trainee_page') || window.location.pathname
@@ -2228,8 +2887,10 @@
           'registration_page')) {
         showView('registrations');
         setActive(document.getElementById('nav-registrations'));
+      } else if (savedTab && savedTab !== 'view-overview') {
+        showView(savedTab.replace('view-', ''));
+        localStorage.removeItem('activeAdminTab');
       } else {
-        // Default fallback to overview or check if any special query exists
         showView('overview');
         setActive(document.getElementById('nav-overview'));
       }
@@ -2241,6 +2902,7 @@
         'view-facilities', 'view-courses', 'view-settings', 'view-analytics',
         'view-announcements', 'view-certificate', 'view-registrations'
       ];
+
       allViews.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
@@ -2286,6 +2948,21 @@
       if (title) title.innerText = entry[1];
       if (breadcrumb) breadcrumb.innerHTML = entry[2];
 
+      const currentParams = new URLSearchParams(window.location.search);
+      if (currentParams.get('view') !== viewName) {
+        const newUrl = window.location.pathname + '?view=' + viewName;
+        window.history.pushState({
+          view: viewName
+        }, '', newUrl);
+      }
+
+      document.querySelectorAll('.sidebar li').forEach(li => li.classList.remove(
+        'active'));
+      const activeNav = document.getElementById(`nav-${viewName}`);
+      if (activeNav) {
+        activeNav.classList.add('active');
+      }
+
       if (viewName === 'all-trainees' && typeof backToCourseCards ===
         'function') {
         backToCourseCards();
@@ -2303,12 +2980,18 @@
       }
     }
 
+    window.addEventListener('popstate', function() {
+      const params = new URLSearchParams(window.location.search);
+      const view = params.get('view') || 'overview';
+      showView(view);
+    });
+
     function toggleUpdates() {
       const extra = document.getElementById("extra-updates");
       const btn = document.getElementById("viewMoreBtn");
       if (extra && btn) {
-        if (extra.style.display === "none") {
-          extra.style.display = "block";
+        if (extra.style.display === "none" || extra.style.display === "") {
+          extra.style.display = "flex";
           btn.innerHTML = `View Less <i class="fa-solid fa-chevron-up"></i>`;
         } else {
           extra.style.display = "none";
@@ -2345,7 +3028,6 @@
       document.getElementById('editDuration').value = duration;
       document.getElementById('editSlots').value = slots;
 
-      // Set status safely
       const statusSelect = document.getElementById('editStatus');
       if (statusSelect) {
         statusSelect.value = (status || 'active').toLowerCase();
@@ -2564,32 +3246,141 @@
       }
     }
 
-    function openFacilityModal(name, address, capacity, course) {
-      document.getElementById('facilityModal').style.display = 'block';
-      document.querySelector('#facilityModal h3').innerHTML =
-        '<i class="fa-solid fa-building-circle-gear"></i> Manage Facility';
-      document.querySelector('#facilityModal .btn-delete-text').style.display =
-        'inline-block';
-      document.getElementById('editFacName').value = name;
-      document.getElementById('editFacAddress').value = address;
-      document.getElementById('editFacCap').value = capacity;
+    function openFacilityModal(id, name, address, courseIds = []) {
+      const modal = document.getElementById('facilityModal');
+      const title = document.getElementById('facilityModalTitle') || document
+        .querySelector('#facilityModal h3');
+      const deleteBtn = document.querySelector('#facilityModal .btn-delete-text');
+
+      if (modal) modal.style.display = 'flex';
+
+      if (title) {
+        title.innerHTML =
+          '<i class="fa-solid fa-building-circle-gear"></i> Manage Facility';
+      }
+      if (deleteBtn) {
+        deleteBtn.style.display = 'flex';
+      }
+
+      const idInput = document.getElementById('editFacId');
+      if (idInput) idInput.value = id || '';
+
+      const nameInput = document.getElementById('editFacName');
+      const addrInput = document.getElementById('editFacAddress');
+      if (nameInput) nameInput.value = name || '';
+      if (addrInput) addrInput.value = address || '';
+
+      const targetIds = Array.isArray(courseIds) ?
+        courseIds.map(String) :
+        (courseIds ? [String(courseIds)] : []);
+
+      document.querySelectorAll('.facility-course-cb').forEach(cb => {
+        cb.checked = targetIds.includes(String(cb.value));
+      });
+
+      if (typeof updateCourseBadgeCount === 'function') {
+        updateCourseBadgeCount();
+      }
     }
 
     function openAddFacilityModal() {
-      document.getElementById('facilityModal').style.display = 'block';
-      document.querySelector('#facilityModal h3').innerHTML =
-        '<i class="fa-solid fa-building-circle-plus"></i> Add New Facility';
-      document.getElementById('facilityForm').reset();
-      document.querySelector('#facilityModal .btn-delete-text').style.display =
-        'none';
+      const modal = document.getElementById('facilityModal');
+      const title = document.getElementById('facilityModalTitle') || document
+        .querySelector('#facilityModal h3');
+      const form = document.getElementById('facilityForm');
+      const deleteBtn = document.querySelector('#facilityModal .btn-delete-text');
+
+      if (modal) modal.style.display = 'flex';
+
+      if (title) {
+        title.innerHTML =
+          '<i class="fa-solid fa-building-circle-plus"></i> Add New Facility';
+      }
+
+      if (form) form.reset();
+
+      const idInput = document.getElementById('editFacId');
+      if (idInput) idInput.value = '';
+
+      document.querySelectorAll('.facility-course-cb').forEach(cb => {
+        cb.checked = false;
+      });
+
+      if (deleteBtn) {
+        deleteBtn.style.display = 'none';
+      }
+
+      if (typeof updateCourseBadgeCount === 'function') {
+        updateCourseBadgeCount();
+      }
+    }
+
+    function deleteFacility() {
+      const id = document.getElementById('editFacId')?.value?.trim();
+
+      if (!id) {
+        alert('Cannot delete: Invalid or missing Facility ID.');
+        return;
+      }
+
+      if (!confirm(
+          'Are you sure you want to delete this facility? Any assigned courses will be unlinked.'
+        )) {
+        return;
+      }
+
+      const csrfToken = typeof getCsrfToken === 'function' ?
+        getCsrfToken() :
+        document.querySelector('meta[name="csrf-token"]')?.getAttribute(
+          'content');
+
+      fetch('/admin/facility/delete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            id: id
+          })
+        })
+        .then(async response => {
+          const data = await response.json().catch(() => null);
+
+          if (response.ok && data && data.success) {
+            alert(data.message || 'Facility deleted successfully!');
+            closeFacilityModal();
+
+            localStorage.setItem('activeAdminTab', 'view-facilities');
+            location.reload();
+          } else {
+            alert((data && data.message) ? data.message :
+              'Failed to delete facility.');
+          }
+        })
+        .catch(error => {
+          console.error('Delete facility error:', error);
+          alert('An error occurred while deleting the facility.');
+        });
     }
 
     function closeFacilityModal() {
-      document.getElementById('facilityModal').style.display = 'none';
+      const modal = document.getElementById('facilityModal');
+      const form = document.getElementById('facilityForm');
+
+      if (modal) {
+        modal.style.display = 'none';
+      }
+
+      if (form) form.reset();
     }
 
     function openAddTrainerModal() {
-      document.getElementById('addTrainerModal').style.display = 'block';
+      const modal = document.getElementById('addTrainerModal');
+      if (modal) {
+        modal.style.display = 'block';
+      }
     }
 
     function closeAddTrainerModal() {
@@ -2605,12 +3396,13 @@
     }
 
     window.onclick = function(event) {
-      if (event.target.classList.contains('modal')) {
-        closeModal();
-        closeUserModal();
-        closeFacilityModal();
-        closeAddTrainerModal();
-        closeAnnouncementModal();
+      if (event.target && event.target.classList.contains('modal')) {
+        if (typeof closeModal === 'function') closeModal();
+        if (typeof closeUserModal === 'function') closeUserModal();
+        if (typeof closeFacilityModal === 'function') closeFacilityModal();
+        if (typeof closeAddTrainerModal === 'function') closeAddTrainerModal();
+        if (typeof closeAnnouncementModal === 'function')
+          closeAnnouncementModal();
       }
     };
 
@@ -2622,7 +3414,7 @@
       const password = document.getElementById('newTrainerPass').value.trim();
 
       if (!name.length || !email || !password) {
-        alert('Punan ang lahat ng fields.');
+        alert('Please fill in all required fields.');
         return;
       }
 
@@ -2649,10 +3441,10 @@
             closeAddTrainerModal();
             location.reload();
           } else {
-            alert(data.message || 'May error. Subukan ulit.');
+            alert(data.message || 'An error occurred. Please try again.');
           }
         })
-        .catch(() => alert('May error. Subukan ulit.'));
+        .catch(() => alert('An error occurred. Please try again.'));
     };
 
     document.getElementById('courseForm').onsubmit = function(e) {
@@ -2663,8 +3455,7 @@
       const title = document.getElementById('editCourseName').value.trim();
       const duration = document.getElementById('editDuration').value.trim();
       const slots = document.getElementById('editSlots').value;
-      const status = document.getElementById('editStatus')
-        .value; // <-- 1. ADD THIS
+      const status = document.getElementById('editStatus').value;
 
       const isEdit = courseId !== '' && courseId !== null && courseId !==
         undefined;
@@ -2683,7 +3474,7 @@
             title: title,
             duration: duration,
             slots: slots,
-            status: status // <-- 2. ADD THIS TO THE PAYLOAD
+            status: status
           })
         })
         .then(async r => {
@@ -2702,101 +3493,521 @@
             closeModal();
             window.location.href = window.location.pathname + '?view=courses';
           } else {
-            alert(data.message || 'May error sa pag-update.');
+            alert(data.message || 'An error occurred while updating.');
           }
         })
         .catch(err => {
           console.error(err);
-          alert('May error. Subukan ulit.');
+          alert('An error occurred. Please try again.');
         });
     };
 
     document.getElementById('facilityForm').onsubmit = function(e) {
       e.preventDefault();
-      alert('Facility Details Updated!');
-      closeFacilityModal();
+
+      const idVal = document.getElementById('editFacId')?.value?.trim();
+      const id = idVal ? idVal : null;
+
+      const name = document.getElementById('editFacName').value.trim();
+      const address = document.getElementById('editFacAddress').value.trim();
+
+      const selectedCourseIds = Array.from(
+        document.querySelectorAll('.facility-course-cb:checked')
+      ).map(cb => cb.value);
+
+      if (!name || !address) {
+        alert('Please enter a facility name and address.');
+        return;
+      }
+
+      const csrfToken = typeof getCsrfToken === 'function' ?
+        getCsrfToken() :
+        document.querySelector('meta[name="csrf-token"]')?.getAttribute(
+          'content');
+
+      fetch('/admin/facility/save', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            id: id,
+            name: name,
+            address: address,
+            course_ids: selectedCourseIds
+          })
+        })
+        .then(async response => {
+          const data = await response.json().catch(() => null);
+
+          if (response.ok && data && data.success) {
+            alert(data.message || 'Facility details saved successfully!');
+            closeFacilityModal();
+
+            localStorage.setItem('activeAdminTab', 'view-facilities');
+            location.reload();
+          } else {
+            let errorMsg = 'Failed to save facility details.';
+            if (data && data.errors) {
+              errorMsg = Object.values(data.errors).flat().join('\n');
+            } else if (data && data.message) {
+              errorMsg = data.message;
+            }
+            alert(errorMsg);
+          }
+        })
+        .catch(error => {
+          console.error('Facility save error:', error);
+          alert('An error occurred while saving the facility.');
+        });
     };
 
+    /* ========================================================== */
+    /* ANNOUNCEMENT MODAL & ACTIONS HANDLERS                      */
+    /* ========================================================== */
+    // Utility helper to format database ISO/SQL timestamps for datetime-local inputs (YYYY-MM-DDTHH:mm)
+    function formatForDateTimeInput(dateStr) {
+      if (!dateStr) return '';
+      const date = new Date(dateStr);
+      if (isNaN(date.getTime())) return '';
+
+      const pad = (num) => String(num).padStart(2, '0');
+
+      const year = date.getFullYear();
+      const month = pad(date.getMonth() + 1);
+      const day = pad(date.getDate());
+      const hours = pad(date.getHours());
+      const minutes = pad(date.getMinutes());
+
+      return `${year}-${month}-${day}T${hours}:${minutes}`;
+    }
+
+    // Open Modal (New Announcement)
     function openAnnouncementModal() {
       document.getElementById('annId').value = '';
       document.getElementById('annTitle').value = '';
       document.getElementById('annMessage').value = '';
       document.getElementById('annType').value = 'reminder';
+
+      const isActiveCb = document.getElementById('annIsActive');
+      if (isActiveCb) isActiveCb.checked = true;
+
+      document.getElementById('annPublishAt').value = '';
+      document.getElementById('annExpiresAt').value = '';
+
+      document.getElementById('titleCounter').textContent = '0/100';
+      document.getElementById('messageCounter').textContent = '0/500';
+
+      const statusLabel = document.getElementById('statusLabel');
+      if (statusLabel) statusLabel.textContent = 'Active';
+
       document.getElementById('annModalTitle').innerHTML =
         '<i class="fa-solid fa-bell"></i> Add Announcement';
-      document.getElementById('announcementModal').style.display = 'block';
+      document.getElementById('announcementModal').style.display = 'flex';
     }
 
-    function editAnnouncement(id, title, message, type) {
+    // Open Modal (Edit Announcement)
+    function handleEditAnnouncement(button) {
+      const id = button.getAttribute('data-id');
+      const title = button.getAttribute('data-title') || '';
+      const message = button.getAttribute('data-message') || '';
+      const type = button.getAttribute('data-type') || 'reminder';
+      const active = button.getAttribute('data-active') === '1';
+      const publishAt = button.getAttribute('data-publish-at') || '';
+      const expiresAt = button.getAttribute('data-expires-at') || '';
+
       document.getElementById('annId').value = id;
       document.getElementById('annTitle').value = title;
       document.getElementById('annMessage').value = message;
       document.getElementById('annType').value = type;
+
+      const isActiveCb = document.getElementById('annIsActive');
+      if (isActiveCb) isActiveCb.checked = active;
+
+      document.getElementById('annPublishAt').value = formatForDateTimeInput(
+        publishAt);
+      document.getElementById('annExpiresAt').value = formatForDateTimeInput(
+        expiresAt);
+
+      document.getElementById('titleCounter').textContent = `${title.length}/100`;
+      document.getElementById('messageCounter').textContent =
+        `${message.length}/500`;
+
+      const statusLabel = document.getElementById('statusLabel');
+      if (statusLabel) statusLabel.textContent = active ? 'Active' : 'Inactive';
+
       document.getElementById('annModalTitle').innerHTML =
         '<i class="fa-solid fa-pen-to-square"></i> Edit Announcement';
-      document.getElementById('announcementModal').style.display = 'block';
+      document.getElementById('announcementModal').style.display = 'flex';
     }
 
+    // Close Modal
     function closeAnnouncementModal() {
-      document.getElementById('announcementModal').style.display = 'none';
+      const modal = document.getElementById('announcementModal');
+      const form = document.getElementById('announcementForm');
+      const btnSubmit = document.getElementById('btnSubmitAnn');
+
+      if (modal) modal.style.display = 'none';
+      if (form) form.reset();
+
+      const titleCounter = document.getElementById('titleCounter');
+      const messageCounter = document.getElementById('messageCounter');
+      if (titleCounter) titleCounter.textContent = '0/100';
+      if (messageCounter) messageCounter.textContent = '0/500';
+
+      if (btnSubmit) {
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = 'Save';
+      }
     }
 
+    // Submit Form Handler (Save/Update with Success & Error Feedback)
     document.getElementById('announcementForm').onsubmit = function(e) {
       e.preventDefault();
-      const id = document.getElementById('annId').value;
-      const title = document.getElementById('annTitle').value.trim();
-      const message = document.getElementById('annMessage').value.trim();
-      const type = document.getElementById('annType').value;
 
-      const isEdit = id !== '';
+      const id = document.getElementById('annId')?.value || '';
+      const title = document.getElementById('annTitle')?.value.trim() || '';
+      const message = document.getElementById('annMessage')?.value.trim() || '';
+      const type = document.getElementById('annType')?.value || 'reminder';
+      const isActive = document.getElementById('annIsActive')?.checked ? 1 : 0;
+
+      // Read SQL formatted datetime directly from input elements
+      const publishAt = document.getElementById('annPublishAt')?.value || null;
+      const expiresAt = document.getElementById('annExpiresAt')?.value || null;
+
+      const btnSubmit = document.getElementById('btnSubmitAnn');
+      const originalBtnText = btnSubmit ? btnSubmit.innerHTML : 'Save';
+
+      if (btnSubmit) {
+        btnSubmit.disabled = true;
+        btnSubmit.innerHTML =
+          '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+      }
+
+      const isEdit = id !== '' && id !== null;
       const url = isEdit ? `/admin/announcement/${id}` : '/admin/announcement';
-      const method = isEdit ? 'PUT' : 'POST';
+
+      const token = typeof csrfToken !== 'undefined' ?
+        csrfToken :
+        document.querySelector('meta[name="csrf-token"]')?.getAttribute(
+          'content') || '';
+
+      const payload = {
+        title: title,
+        message: message,
+        type: type,
+        is_active: isActive,
+        publish_at: publishAt ? publishAt : null,
+        expires_at: expiresAt ? expiresAt : null
+      };
+
+      if (isEdit) {
+        payload._method = 'PUT';
+      }
 
       fetch(url, {
-          method,
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken
-          },
-          body: JSON.stringify({
-            title,
-            message,
-            type
-          })
-        })
-        .then(r => r.json())
-        .then(data => {
-          if (data.success) {
-            closeAnnouncementModal();
-            window.location.href = window.location.pathname +
-              '?view=announcements';
-          } else {
-            alert('May error: ' + (data.message || 'Unknown error'));
-          }
-        })
-        .catch(err => {
-          console.error(err);
-          alert('May error sa pag-save. Tingnan ang console.');
-        });
-    };
-
-    function toggleAnn(id, btn) {
-      fetch(`/admin/announcement/${id}/toggle`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken
+            'X-CSRF-TOKEN': token,
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        })
+        .then(async response => {
+          const data = await response.json().catch(() => null);
+
+          if (response.ok && data && data.success) {
+            // Visual button feedback on success
+            if (btnSubmit) {
+              btnSubmit.style.backgroundColor = '#025628';
+              btnSubmit.innerHTML = isEdit ?
+                '<i class="fa-solid fa-check"></i> Updated Successfully!' :
+                '<i class="fa-solid fa-check"></i> Created Successfully!';
+            }
+
+            setTimeout(() => {
+              alert(data.message || (isEdit ?
+                'Announcement updated successfully!' :
+                'Announcement created successfully!'));
+              closeAnnouncementModal();
+              window.location.href = window.location.pathname +
+                '?view=announcements';
+            }, 200);
+
+          } else {
+            let errorMsg = 'Validation error. Check your inputs.';
+            if (data && data.errors) {
+              errorMsg = Object.values(data.errors).flat().join('\n');
+            } else if (data && data.message) {
+              errorMsg = data.message;
+            }
+
+            alert('Error saving announcement:\n' + errorMsg);
+
+            if (btnSubmit) {
+              btnSubmit.disabled = false;
+              btnSubmit.style.backgroundColor = '';
+              btnSubmit.innerHTML = originalBtnText;
+            }
           }
         })
-        .then(r => r.json())
-        .then(data => {
-          if (data.success) location.reload();
+        .catch(err => {
+          console.error('Save announcement error details:', err);
+          alert(
+            'An error occurred while saving. Check F12 Console for exact details.'
+          );
+
+          if (btnSubmit) {
+            btnSubmit.disabled = false;
+            btnSubmit.style.backgroundColor = '';
+            btnSubmit.innerHTML = originalBtnText;
+          }
+        });
+    };
+
+    // Delete Announcement Handler
+    function deleteAnnouncement(id, btn = null) {
+      if (!confirm(
+          'Are you sure you want to delete this announcement? This action cannot be undone.'
+        )) {
+        return;
+      }
+
+      if (btn) btn.disabled = true;
+
+      const token = typeof csrfToken !== 'undefined' ?
+        csrfToken :
+        document.querySelector('meta[name="csrf-token"]')?.getAttribute(
+          'content') || '';
+
+      fetch(`/admin/announcement/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': token,
+            'Accept': 'application/json'
+          }
         })
-        .catch(() => alert('May error. Subukan ulit.'));
+        .then(async response => {
+          const data = await response.json().catch(() => null);
+
+          if (response.ok && data && data.success) {
+            alert(data.message || 'Announcement deleted successfully!');
+            window.location.href = window.location.pathname +
+              '?view=announcements';
+          } else {
+            alert('Failed to delete announcement: ' + ((data && data
+              .message) ? data.message : 'Server error'));
+            if (btn) btn.disabled = false;
+          }
+        })
+        .catch(err => {
+          console.error('Delete announcement error:', err);
+          alert('An error occurred while deleting the announcement.');
+          if (btn) btn.disabled = false;
+        });
     }
 
+    // DOM Event Listeners Initialization
+    document.addEventListener('DOMContentLoaded', function() {
+      const isActiveCb = document.getElementById('annIsActive');
+      const statusLabel = document.getElementById('statusLabel');
+      const titleInput = document.getElementById('annTitle');
+      const messageInput = document.getElementById('annMessage');
+      const modal = document.getElementById('announcementModal');
+
+      // Live Status Label Sync
+      if (isActiveCb && statusLabel) {
+        isActiveCb.addEventListener('change', function() {
+          statusLabel.textContent = this.checked ? 'Active' : 'Inactive';
+        });
+      }
+
+      // Live Character Counters
+      if (titleInput) {
+        titleInput.addEventListener('input', function() {
+          document.getElementById('titleCounter').textContent =
+            `${this.value.length}/100`;
+        });
+      }
+
+      if (messageInput) {
+        messageInput.addEventListener('input', function() {
+          document.getElementById('messageCounter').textContent =
+            `${this.value.length}/500`;
+        });
+      }
+
+      // Close modal when clicking on dark backdrop
+      window.addEventListener('click', function(e) {
+        if (e.target === modal) {
+          closeAnnouncementModal();
+        }
+      });
+    });
+
+    // Helper: Format raw database ISO string to "YYYY-MM-DDTHH:mm" for input[type="datetime-local"]
+    function formatForDateTimeInput(dateStr) {
+      if (!dateStr) return '';
+      const formatted = dateStr.trim().replace(' ', 'T');
+      if (formatted.length >= 16) {
+        return formatted.substring(0, 16);
+      }
+      const date = new Date(dateStr);
+      if (isNaN(date.getTime())) return '';
+      const pad = (num) => String(num).padStart(2, '0');
+      return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    }
+
+    // Helper: Convert "YYYY-MM-DDTHH:mm" datetime-local value to SQL format "YYYY-MM-DD HH:mm:00" or null
+    function cleanDateTimeInput(val) {
+      if (!val || typeof val !== 'string' || val.trim() === '') return null;
+      let formatted = val.trim().replace('T', ' ');
+      if (formatted.length === 16) {
+        formatted += ':00';
+      }
+      return formatted;
+    }
+
+    // Submit Form Handler
+    document.addEventListener('DOMContentLoaded', function() {
+      const annForm = document.getElementById('announcementForm');
+
+      if (annForm) {
+        // Clear any existing inline submit handlers to avoid duplicate triggers
+        annForm.onsubmit = null;
+
+        annForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          e
+            .stopImmediatePropagation(); // Block duplicate event listeners from executing
+
+          const btnSubmit = document.getElementById('btnSubmitAnn');
+
+          // Double-submit protection: ignore if a request is already in progress
+          if (btnSubmit && btnSubmit.disabled) {
+            return;
+          }
+
+          const id = document.getElementById('annId')?.value || '';
+          const title = document.getElementById('annTitle')?.value
+            .trim() || '';
+          const message = document.getElementById('annMessage')?.value
+            .trim() || '';
+          const type = document.getElementById('annType')?.value ||
+            'reminder';
+          const isActive = document.getElementById('annIsActive')
+            ?.checked ? 1 : 0;
+
+          const rawPublish = document.getElementById('annPublishAt')
+            ?.value || '';
+          const rawExpires = document.getElementById('annExpiresAt')
+            ?.value || '';
+
+          const originalBtnText = btnSubmit ? btnSubmit.innerHTML :
+            'Save';
+
+          // Immediately disable button to prevent double-click submissions
+          if (btnSubmit) {
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML =
+              '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+          }
+
+          const isEdit = id !== '' && id !== null;
+          const url = isEdit ? `/admin/announcement/${id}` :
+            '/admin/announcement';
+
+          const token = typeof csrfToken !== 'undefined' ?
+            csrfToken :
+            document.querySelector('meta[name="csrf-token"]')
+            ?.getAttribute('content') || '';
+
+          const payload = {
+            title: title,
+            message: message,
+            type: type,
+            is_active: isActive,
+            publish_at: typeof cleanDateTimeInput === 'function' ?
+              cleanDateTimeInput(rawPublish) : (rawPublish || null),
+            expires_at: typeof cleanDateTimeInput === 'function' ?
+              cleanDateTimeInput(rawExpires) : (rawExpires || null)
+          };
+
+          if (isEdit) {
+            payload._method = 'PUT';
+          }
+
+          fetch(url, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': token,
+                'Accept': 'application/json'
+              },
+              body: JSON.stringify(payload)
+            })
+            .then(async response => {
+              const data = await response.json().catch(() => null);
+
+              if (response.ok && data && data.success) {
+                // Immediate visual button feedback
+                if (btnSubmit) {
+                  btnSubmit.style.backgroundColor = '#025628';
+                  btnSubmit.innerHTML = isEdit ?
+                    '<i class="fa-solid fa-check"></i> Updated Successfully!' :
+                    '<i class="fa-solid fa-check"></i> Created Successfully!';
+                }
+
+                setTimeout(() => {
+                  alert(data.message || (isEdit ?
+                    'Announcement updated successfully!' :
+                    'Announcement created successfully!'));
+                  closeAnnouncementModal();
+                  window.location.href = window.location
+                    .pathname + '?view=announcements';
+                }, 200);
+
+              } else {
+                let errorMsg =
+                  'Validation error. Please check your form fields.';
+                if (data && data.errors) {
+                  errorMsg = Object.values(data.errors).flat().join(
+                    '\n');
+                } else if (data && data.message) {
+                  errorMsg = data.message;
+                }
+
+                alert('Error saving announcement:\n' + errorMsg);
+
+                if (btnSubmit) {
+                  btnSubmit.disabled = false;
+                  btnSubmit.style.backgroundColor = '';
+                  btnSubmit.innerHTML = originalBtnText;
+                }
+              }
+            })
+            .catch(err => {
+              console.error('Save announcement error details:', err);
+              alert(
+                'An error occurred while saving. Check Console (F12) for details.'
+              );
+
+              if (btnSubmit) {
+                btnSubmit.disabled = false;
+                btnSubmit.style.backgroundColor = '';
+                btnSubmit.innerHTML = originalBtnText;
+              }
+            });
+        });
+      }
+    });
+
     function deleteAnn(id) {
-      if (!confirm('I-delete ang announcement na ito?')) return;
+      if (!confirm('Are you sure you want to delete this announcement?')) return;
       fetch(`/admin/announcement/${id}`, {
           method: 'DELETE',
           headers: {
@@ -2808,7 +4019,7 @@
         .then(data => {
           if (data.success) location.reload();
         })
-        .catch(() => alert('May error. Subukan ulit.'));
+        .catch(() => alert('An error occurred. Please try again.'));
     }
 
     let _contentCourseId = null;
@@ -2862,7 +4073,7 @@
           _contentQuizzes = data.quizzes || [];
           renderModules();
           renderQuizzes();
-          updateCourseCardCounts(); // Syncs counts live when modal opens
+          updateCourseCardCounts();
         })
         .catch(() => alert('Failed to load course content.'));
     }
@@ -2871,7 +4082,6 @@
       const container = document.getElementById('moduleListContainer');
       if (!container) return;
 
-      // 1. Safe array check & dynamic empty state injection
       if (!_contentModules || !_contentModules.length) {
         container.innerHTML = `
       <div style="text-align:center; color:#bbb; font-size:13px; padding:20px 0;" id="modulesEmptyState">
@@ -2882,11 +4092,9 @@
         return;
       }
 
-      // 2. Render modules list passing encoded title in URL for clean PDF viewer tab titles
       container.innerHTML = _contentModules.map((m, i) => `
     <div id="module-card-${m.id}" style="display:flex; align-items:center; justify-content:space-between; gap:12px; background:#fff; border:1px solid #e5e7eb; border-radius:10px; padding:12px 16px; margin-bottom:8px; box-shadow:0 1px 2px rgba(0,0,0,0.03);">
       
-      <!-- Left: Index & Module Info -->
       <div style="display:flex; align-items:center; gap:12px; flex:1; min-width:0;">
         <div style="width:30px; height:30px; border-radius:50%; background:#e8f5e9; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:#025628; flex-shrink:0;">
           ${i + 1}
@@ -2896,7 +4104,6 @@
           <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
             <strong style="font-size:14px; color:#1f2937;">${escHtml(m.title)}</strong>
             
-            <!-- Status Badge -->
             <span style="font-size:10px; font-weight:700; padding:2px 8px; border-radius:12px; background:${(m.is_active !== false && m.is_published !== false) ? '#e8f5e9' : '#fff8e1'}; color:${(m.is_active !== false && m.is_published !== false) ? '#025628' : '#854F0B'};">
               ${(m.is_active !== false && m.is_published !== false) ? 'Published' : 'Draft'}
             </span>
@@ -2908,16 +4115,15 @@
         </div>
       </div>
 
-      <!-- Right: Actions (View File & Remove) -->
       <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
         ${m.file_path ? `
-            <a href="/admin/module/file/${m.id}/${encodeURIComponent(m.title)}.pdf" target="_blank" 
-               style="font-size:11px; padding:6px 12px; border-radius:6px; background:#e8f5e9; color:#025628; text-decoration:none; font-weight:700; display:inline-flex; align-items:center; gap:5px; white-space:nowrap; transition: background 0.2s;">
-              <i class="fa-solid fa-file-pdf"></i> View File
-            </a>
-          ` : `
-            <span style="font-size:11px; color:#9ca3af; padding:4px 8px; font-style:italic;">No PDF</span>
-          `}
+                                                                            <a href="/admin/module/file/${m.id}/${encodeURIComponent(m.title)}.pdf" target="_blank" 
+                                                                               style="font-size:11px; padding:6px 12px; border-radius:6px; background:#e8f5e9; color:#025628; text-decoration:none; font-weight:700; display:inline-flex; align-items:center; gap:5px; white-space:nowrap; transition: background 0.2s;">
+                                                                              <i class="fa-solid fa-file-pdf"></i> View File
+                                                                            </a>
+                                                                          ` : `
+                                                                            <span style="font-size:11px; color:#9ca3af; padding:4px 8px; font-style:italic;">No PDF</span>
+                                                                          `}
 
         <button type="button" onclick="deleteModule(${m.id})"
           style="font-size:11px; padding:6px 12px; border-radius:6px; background:#FCEBEB; color:#A32D2D; border:none; cursor:pointer; font-family:inherit; font-weight:700; white-space:nowrap; display:inline-flex; align-items:center; gap:4px;">
@@ -3003,14 +4209,12 @@
       }
     }
 
-    // Helper to safely fetch CSRF Token from meta tag or global variable
     function getCsrfToken() {
       return document.querySelector('meta[name="csrf-token"]')?.content ||
         (typeof csrfToken !== 'undefined' ? csrfToken : '');
     }
 
     function addModule(event) {
-      // Prevent default form submission if triggered inside a form element
       if (event && typeof event.preventDefault === 'function') {
         event.preventDefault();
       }
@@ -3058,10 +4262,8 @@
               _contentModules = [];
             }
 
-            // Safely extract the server module payload
             const rawModule = data.module || data.data || data;
 
-            // Normalize properties to ensure file_path and status render cleanly in the UI
             const newModule = {
               id: rawModule.id || Date.now(),
               title: rawModule.title || title,
@@ -3072,12 +4274,10 @@
 
             _contentModules.push(newModule);
 
-            // Reset form input fields
             if (titleInput) titleInput.value = '';
             if (descInput) descInput.value = '';
             if (fileInput) fileInput.value = '';
 
-            // Trigger live updates for UI list, background card counts, and quiz dropdowns
             renderModules();
             updateCourseCardCounts();
             if (typeof populateQuizModuleDropdown === 'function') {
@@ -3263,13 +4463,17 @@
 
     function populateQuizModuleDropdown() {
       const sel = document.getElementById('newQuizModule');
+      if (!sel) return;
       sel.innerHTML = '<option value="">— Link to module (optional) —</option>';
-      _contentModules.forEach(m => {
-        const opt = document.createElement('option');
-        opt.value = m.id;
-        opt.textContent = m.title;
-        sel.appendChild(opt);
-      });
+
+      if (Array.isArray(_contentModules)) {
+        _contentModules.forEach(m => {
+          const opt = document.createElement('option');
+          opt.value = m.id;
+          opt.textContent = m.title;
+          sel.appendChild(opt);
+        });
+      }
     }
 
     function escHtml(str) {
@@ -3294,40 +4498,36 @@
         })
         .then(r => r.json())
         .then(data => renderQuizQuestions(quizId, data.questions || []))
-        .catch(() => alert('Hindi ma-load ang questions.'));
+        .catch(() => alert('Failed to load questions.'));
     }
 
     function renderQuizQuestions(quizId, questions) {
       const container = document.getElementById(`qlist-${quizId}`);
       if (!questions.length) {
         container.innerHTML =
-          '<div style="font-size:12px; color:#aaa; text-align:center; padding:8px;">Walang questions pa.</div>';
+          '<div style="font-size:12px; color:#aaa; text-align:center; padding:8px;">No questions created yet.</div>';
         return;
       }
       container.innerHTML = questions.map((q, i) => `
-                <div style="display:flex; align-items:flex-start; gap:8px; background:#fff;
-                            border:1px solid #eee; border-radius:8px; padding:8px 12px;">
-                    <div style="width:22px; height:22px; border-radius:50%; background:#e8f5e9;
-                                display:flex; align-items:center; justify-content:center;
-                                font-size:11px; font-weight:700; color:#025628; flex-shrink:0; margin-top:1px;">
-                        ${i+1}
-                    </div>
-                    <div style="flex:1; min-width:0;">
-                        <div style="font-size:13px; font-weight:600; color:#1a1a1a; margin-bottom:4px;">${escHtml(q.question)}</div>
-                        <div style="font-size:11px; color:#555; display:grid; grid-template-columns:1fr 1fr; gap:2px;">
-                            <span ${q.correct_answer==='a' ? 'style="color:#025628; font-weight:700;"' : ''}>A. ${escHtml(q.choice_a)}</span>
-                            <span ${q.correct_answer==='b' ? 'style="color:#025628; font-weight:700;"' : ''}>B. ${escHtml(q.choice_b)}</span>
-                            <span ${q.correct_answer==='c' ? 'style="color:#025628; font-weight:700;"' : ''}>C. ${escHtml(q.choice_c)}</span>
-                            <span ${q.correct_answer==='d' ? 'style="color:#025628; font-weight:700;"' : ''}>D. ${escHtml(q.choice_d)}</span>
-                        </div>
-                    </div>
-                    <button onclick="deleteQuestion(${q.id}, ${quizId})"
-                        style="font-size:11px; padding:3px 8px; border-radius:6px; background:#FCEBEB;
-                            color:#A32D2D; border:none; cursor:pointer; font-family:inherit; font-weight:700; flex-shrink:0;">
-                        ✕
-                    </button>
+        <div style="display:flex; align-items:flex-start; gap:8px; background:#fff; border:1px solid #eee; border-radius:8px; padding:8px 12px;">
+            <div style="width:22px; height:22px; border-radius:50%; background:#e8f5e9; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#025628; flex-shrink:0; margin-top:1px;">
+                ${i+1}
+            </div>
+            <div style="flex:1; min-width:0;">
+                <div style="font-size:13px; font-weight:600; color:#1a1a1a; margin-bottom:4px;">${escHtml(q.question)}</div>
+                <div style="font-size:11px; color:#555; display:grid; grid-template-columns:1fr 1fr; gap:2px;">
+                    <span ${q.correct_answer==='a' ? 'style="color:#025628; font-weight:700;"' : ''}>A. ${escHtml(q.choice_a)}</span>
+                    <span ${q.correct_answer==='b' ? 'style="color:#025628; font-weight:700;"' : ''}>B. ${escHtml(q.choice_b)}</span>
+                    <span ${q.correct_answer==='c' ? 'style="color:#025628; font-weight:700;"' : ''}>C. ${escHtml(q.choice_c)}</span>
+                    <span ${q.correct_answer==='d' ? 'style="color:#025628; font-weight:700;"' : ''}>D. ${escHtml(q.choice_d)}</span>
                 </div>
-            `).join('');
+            </div>
+            <button onclick="deleteQuestion(${q.id}, ${quizId})"
+                style="font-size:11px; padding:3px 8px; border-radius:6px; background:#FCEBEB; color:#A32D2D; border:none; cursor:pointer; font-family:inherit; font-weight:700; flex-shrink:0;">
+                ✕
+            </button>
+        </div>
+      `).join('');
     }
 
     function addQuestion(quizId) {
@@ -3339,7 +4539,7 @@
       const ans = document.getElementById(`qans-${quizId}`).value;
 
       if (!question || !a || !b || !c || !d) {
-        alert('Punan ang lahat ng fields.');
+        alert('Please fill in all question fields.');
         return;
       }
 
@@ -3370,11 +4570,11 @@
             loadQuizQuestions(quizId);
           }
         })
-        .catch(() => alert('May error. Subukan ulit.'));
+        .catch(() => alert('An error occurred. Please try again.'));
     }
 
     function deleteQuestion(id, quizId) {
-      if (!confirm('I-remove ang question na ito?')) return;
+      if (!confirm('Remove this question?')) return;
       fetch(`/admin/quiz-question/${id}`, {
           method: 'POST',
           headers: {
@@ -3389,7 +4589,7 @@
         .then(data => {
           if (data.success) loadQuizQuestions(quizId);
         })
-        .catch(() => alert('May error. Subukan ulit.'));
+        .catch(() => alert('An error occurred. Please try again.'));
     }
 
     function toggleSelectCol() {
@@ -3406,7 +4606,7 @@
     }
 
     function deleteCertRow(btn) {
-      if (!confirm('I-delete ang certificate na ito?')) return;
+      if (!confirm('Delete this certificate record?')) return;
       btn.closest('tr').remove();
     }
 
@@ -3594,7 +4794,7 @@
       const remarks = document.getElementById('issueRemarks').value.trim();
 
       if (!sel.value) {
-        alert('Pumili muna ng trainee.');
+        alert('Please select a trainee first.');
         return;
       }
 
@@ -3661,16 +4861,16 @@
 
       const tr = document.createElement('tr');
       tr.innerHTML = `
-                <td class="cert-select-col" style="display:none;"><input type="checkbox" class="row-checkbox"></td>
-                <td>${name}</td>
-                <td>${course}</td>
-                <td>${dateLabel}</td>
-                <td><span class="cert-badge claimed">Claimed</span></td>
-                <td class="cert-action-icons">
-                    <i class="fa fa-eye" onclick="openCertViewModal('${name}','${course}','${controlNum || 'N/A'}')" title="View"></i>
-                    <i class="fa fa-trash-alt" onclick="deleteCertRow(this)" title="Delete"></i>
-                </td>
-            `;
+        <td class="cert-select-col" style="display:none;"><input type="checkbox" class="row-checkbox"></td>
+        <td>${name}</td>
+        <td>${course}</td>
+        <td>${dateLabel}</td>
+        <td><span class="cert-badge claimed">Claimed</span></td>
+        <td class="cert-action-icons">
+            <i class="fa fa-eye" onclick="openCertViewModal('${name}','${course}','${controlNum || 'N/A'}')" title="View"></i>
+            <i class="fa fa-trash-alt" onclick="deleteCertRow(this)" title="Delete"></i>
+        </td>
+      `;
       tbody.insertBefore(tr, tbody.firstChild);
     }
 
@@ -3711,20 +4911,20 @@
 
       if (!trainees || trainees.length === 0) {
         container.innerHTML = `
-                    <div style="text-align: center; color: #aaa; padding: 40px 0; font-size: 13px; font-style: italic;">
-                        <i class="fa-solid fa-users-slash" style="font-size: 28px; display: block; margin-bottom: 8px; color: #ccc;"></i>
-                        Walang nakarehistro sa kursong ito pa.
-                    </div>`;
+            <div style="text-align: center; color: #aaa; padding: 40px 0; font-size: 13px; font-style: italic;">
+                <i class="fa-solid fa-users-slash" style="font-size: 28px; display: block; margin-bottom: 8px; color: #ccc;"></i>
+                No trainees enrolled in this course yet.
+            </div>`;
       } else {
         let html = `
-                    <div style="display: flex; align-items: center; justify-content: space-between; background: #e8f5e9; padding: 10px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; color: #025628; margin-bottom: 4px;">
-                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                            <input type="checkbox" id="selectAllTrainees" onclick="toggleSelectAllTrainees(this)" style="width: 16px; height: 16px; accent-color: #025628; cursor: pointer;">
-                            Select All Trainees
-                        </label>
-                        <span id="selectedCountLabel">0 selected</span>
-                    </div>
-                `;
+            <div style="display: flex; align-items: center; justify-content: space-between; background: #e8f5e9; padding: 10px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; color: #025628; margin-bottom: 4px;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="selectAllTrainees" onclick="toggleSelectAllTrainees(this)" style="width: 16px; height: 16px; accent-color: #025628; cursor: pointer;">
+                    Select All Trainees
+                </label>
+                <span id="selectedCountLabel">0 selected</span>
+            </div>
+        `;
 
         html += trainees.map(t => {
           const firstName = t.firstname || '';
@@ -3743,31 +4943,31 @@
           const safeEmailId = email.replace(/[^a-zA-Z0-9]/g, '_');
 
           return `
-                        <div id="roster-row-${safeEmailId}" style="display: flex; justify-content: space-between; align-items: center; background: #f9f9f9; padding: 12px 16px; border-radius: 8px; border: 1px solid #eee;">
-                            <div style="display: flex; align-items: center; gap: 12px;">
-                                <input type="checkbox" class="roster-checkbox" onclick="updateSelectedCount()" style="width: 16px; height: 16px; accent-color: #025628; cursor: pointer;">
-                                <div style="width: 36px; height: 36px; border-radius: 50%; background: #e8f5e9; display: flex; align-items: center; justify-content: center; color: #025628; font-weight: 700; font-size: 12px; flex-shrink: 0;">
-                                    ${initials}
-                                </div>
-                                <div>
-                                    <strong style="color: #1a1a1a; display: block; font-size: 13px;">${fullName}</strong>
-                                    <small style="color: #888; font-size: 12px;">${email}</small>
-                                </div>
-                            </div>
-                            
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <span class="roster-status-badge" data-email="${email}" style="font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; background: ${statusBg}; color: ${statusColor};">
-                                    ${status}
-                                </span>
-                                <button class="btn-view" onclick="openUserModal(
-                                '${addslashes(fullName)}',
-                                '${addslashes(email)}',
-                                'student',
-                                '${addslashes(status)}'
-                            )">View Profile</button>
-                            </div>
-                        </div>
-                    `;
+            <div id="roster-row-${safeEmailId}" style="display: flex; justify-content: space-between; align-items: center; background: #f9f9f9; padding: 12px 16px; border-radius: 8px; border: 1px solid #eee;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <input type="checkbox" class="roster-checkbox" onclick="updateSelectedCount()" style="width: 16px; height: 16px; accent-color: #025628; cursor: pointer;">
+                    <div style="width: 36px; height: 36px; border-radius: 50%; background: #e8f5e9; display: flex; align-items: center; justify-content: center; color: #025628; font-weight: 700; font-size: 12px; flex-shrink: 0;">
+                        ${initials}
+                    </div>
+                    <div>
+                        <strong style="color: #1a1a1a; display: block; font-size: 13px;">${fullName}</strong>
+                        <small style="color: #888; font-size: 12px;">${email}</small>
+                    </div>
+                </div>
+                
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="roster-status-badge" data-email="${email}" style="font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; background: ${statusBg}; color: ${statusColor};">
+                        ${status}
+                    </span>
+                    <button class="btn-view" onclick="openUserModal(
+                    '${addslashes(fullName)}',
+                    '${addslashes(email)}',
+                    'student',
+                    '${addslashes(status)}'
+                )">View Profile</button>
+                </div>
+            </div>
+          `;
         }).join('');
 
         container.innerHTML = html;
@@ -3842,7 +5042,6 @@
         })
         .then(data => {
           if (data.success) {
-            const safeEmailId = email.replace(/[^a-zA-Z0-9]/g, '_');
             const statusBadge = document.querySelector(
               `.roster-status-badge[data-email="${email}"]`);
 
@@ -3864,12 +5063,12 @@
             alert('User profile updated successfully!');
             closeUserModal();
           } else {
-            alert(data.message || 'May error sa pag-update.');
+            alert(data.message || 'An error occurred while updating.');
           }
         })
         .catch(err => {
           console.error(err);
-          alert('May error sa pag-update. Subukan ulit.');
+          alert('An error occurred while updating. Please try again.');
         });
     };
 
@@ -3923,7 +5122,6 @@
       }
     }
 
-    // Function to show alert messages in English
     function showModuleAlert(message, isError = false) {
       const alertEl = document.getElementById('moduleAlert');
       if (!alertEl) return;
@@ -3937,22 +5135,6 @@
       }, 4000);
     }
 
-    // Ensure module dropdown options in Quizzes tab re-populate cleanly
-    function populateQuizModuleDropdown() {
-      const sel = document.getElementById('newQuizModule');
-      if (!sel) return;
-      sel.innerHTML = '<option value="">— Link to module (optional) —</option>';
-
-      if (Array.isArray(_contentModules)) {
-        _contentModules.forEach(m => {
-          const opt = document.createElement('option');
-          opt.value = m.id;
-          opt.textContent = m.title;
-          sel.appendChild(opt);
-        });
-      }
-    }
-
     function updateCourseCardCounts() {
       if (typeof _contentCourseId === 'undefined' || !_contentCourseId) return;
 
@@ -3961,7 +5143,6 @@
       const validQuizzes = Array.isArray(_contentQuizzes) ? _contentQuizzes
         .filter(Boolean) : [];
 
-      // 1. Live Update Module Counter
       const modCountEl = document.getElementById(
         `course-module-count-${_contentCourseId}`);
       const modLabelEl = document.getElementById(
@@ -3974,7 +5155,6 @@
         }
       }
 
-      // 2. Live Update Quiz Counter
       const quizCountEl = document.getElementById(
         `course-quiz-count-${_contentCourseId}`);
       const quizLabelEl = document.getElementById(
@@ -3986,6 +5166,71 @@
             'Quizzes';
         }
       }
+    }
+
+    function filterFacilities() {
+      const query = document.getElementById('searchFacilityInput').value
+        .toLowerCase().trim();
+      const cards = document.querySelectorAll('#facilityGrid .facility-card');
+
+      cards.forEach(card => {
+        const name = card.getAttribute('data-name') || '';
+        const location = card.getAttribute('data-location') || '';
+        const match = name.includes(query) || location.includes(query);
+        card.style.display = match ? 'flex' : 'none';
+      });
+    }
+
+    function updateCourseBadgeCount() {
+      const selectedCount = document.querySelectorAll(
+        '.facility-course-cb:checked').length;
+      const badge = document.getElementById('selectedCourseBadge');
+      if (badge) {
+        badge.innerText = `${selectedCount} Selected`;
+      }
+    }
+
+    function toggleSelectAllCourses() {
+      const checkboxes = document.querySelectorAll('.facility-course-cb');
+      const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+
+      checkboxes.forEach(cb => {
+        cb.checked = !allChecked;
+      });
+
+      updateCourseBadgeCount();
+    }
+
+    function filterAnnouncements() {
+      const searchVal = document.getElementById('annSearchInput')?.value
+        .toLowerCase().trim() || '';
+      const typeVal = document.getElementById('annTypeFilter')?.value
+      .toLowerCase() || '';
+      const statusVal = document.getElementById('annStatusFilter')?.value
+        .toLowerCase() || '';
+
+      const items = document.querySelectorAll('#view-announcements .user-item');
+
+      items.forEach(item => {
+        const titleText = item.querySelector('.ann-title-text')?.textContent
+          .toLowerCase() || '';
+        const msgText = item.querySelector('.ann-msg-text')?.textContent
+          .toLowerCase() || '';
+
+        const itemType = item.getAttribute('data-type') || '';
+        const itemStatus = item.getAttribute('data-status') || '';
+
+        const matchesSearch = searchVal === '' || titleText.includes(
+          searchVal) || msgText.includes(searchVal);
+        const matchesType = typeVal === '' || itemType === typeVal;
+        const matchesStatus = statusVal === '' || itemStatus === statusVal;
+
+        if (matchesSearch && matchesType && matchesStatus) {
+          item.style.setProperty('display', 'flex', 'important');
+        } else {
+          item.style.setProperty('display', 'none', 'important');
+        }
+      });
     }
   </script>
 </body>
