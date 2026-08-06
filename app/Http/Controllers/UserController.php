@@ -66,45 +66,68 @@ class UserController extends Controller
         }
     }
 
-    public function LoginUser(Request $request){
-        $textfiled = $request->validate([
-            "email" => "required", 
-            "password" => "required", 
+    public function LoginUser(Request $request)
+    {
+        // 1. Validate inputs and format rules
+        $credentials = $request->validate([
+            'email'    => ['required', 'email'],
+            'password' => ['required', 'string'],
+        ], [
+            'email.required'    => 'Please enter your email address.',
+            'email.email'       => 'Please provide a valid email format.',
+            'password.required' => 'Please enter your password.',
         ]);
-        
-        if(auth()->attempt([
-            'email' => $textfiled['email'],
-            'password' => $textfiled['password'],
-        ])
-        
-        ){
+
+        // 2. Extract "Remember Me" checkbox status
+        $remember = $request->boolean('remember');
+
+        // 3. Attempt authentication
+        if (Auth::attempt($credentials, $remember)) {
+            // Regenerate session ID to prevent Session Fixation attacks
             $request->session()->regenerate();
-            return redirect()->route("handle");
-        }else{
-             return redirect()->route("Login");
+
+            return redirect()->route('handle');
         }
+
+        // 4. Failed login: Send back to login form with error feedback & preserve typed email
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ])->onlyInput('email');
     }
 
-    public function handle(){
+    public function handle()
+    {
+        /** @var \App\Models\User|null $user */
         $user = Auth::user();
 
-        // Check if must reset password (first time trainer login)
-        if($user->must_reset_password) {
-            return redirect()->route("first.reset");
+        // Safety guard if unauthenticated user hits this route directly
+        if (!$user) {
+            return redirect()->route('Login');
         }
 
-        if($user->role === "student"){
-            // if(!$user->hasVerifiedEmail()) {
-            //     return redirect()->route("verification.notice");
-            // }
-            return redirect()->route("homepage");
-        } else if($user->role === "trainer"){
-            return redirect()->route("teacher");
-        } else if($user->role == "admin"){
-            return redirect()->route("admin1");
-        } else{
-            return redirect()->route("Login");
+        // Check for required password reset (e.g. first-time trainer login)
+        if ($user->must_reset_password) {
+            return redirect()->route('first.reset');
         }
+
+        // Role-based routing
+        return match ($user->role) {
+            'student' => redirect()->route('homepage'),
+            'trainer' => redirect()->route('teacher'),
+            'admin'   => redirect()->route('admin1'),
+            default   => $this->logoutInvalidUser(),
+        };
+    }
+
+    /**
+     * Helper to log out users with invalid/missing roles safely.
+     */
+    private function logoutInvalidUser()
+    {
+        Auth::logout();
+        return redirect()->route('Login')->withErrors([
+            'email' => 'Your account is not assigned to a valid user role.',
+        ]);
     }
 
         public function homepage()
