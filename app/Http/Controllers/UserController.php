@@ -5,14 +5,17 @@ namespace App\Http\Controllers;
 use Illuminate\Validation\Rule;
 use App\Models\User_tbl;
 use App\Models\Course_tbl;
+use App\Models\Module;             // <-- Added for Module CRUD
+use App\Models\Quiz;               // <-- Added for Quiz operations
 use Illuminate\Http\Request;
-use Auth;
-use Illuminate\support\Facades\DB;
-//Email
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage; // <-- Added for PDF file deletion
 use App\Mail\ResetPasswordMail;
+use App\Models\Facility;
 
 class UserController extends Controller
 {
@@ -208,16 +211,235 @@ class UserController extends Controller
             ));
         }
         public function admin1()
-        {
-            $courses  = \App\Models\Course_tbl::paginate(3);
-            $allCourses   = \App\Models\Course_tbl::all(); 
-            $trainers = \App\Models\User_tbl::where('role', 'trainer')->get();
-            $trainees = \App\Models\User_tbl::where('role', 'student')->paginate(10, ['*'], 'trainee_page');
-            $trainersList = \App\Models\User_tbl::where('role', 'trainer')->paginate(10, ['*'], 'trainer_page');
-            $announcements = \App\Models\Announcement::latest()->paginate(10, ['*'], 'announcement_page');
+{
+    // Eager-load relationships & counts, then paginate 9 items per page
+    $courses = \App\Models\Course_tbl::with(['facility', 'trainer'])
+        ->withCount(['enrollments', 'modules', 'quizzes'])
+        ->paginate(9);
 
-            return view("admin.admin1", compact('courses', 'allCourses', 'trainers', 'trainees', 'trainersList', 'announcements'));
+    // All courses list (used for multi-select dropdowns in modals)
+    $allCourses = \App\Models\Course_tbl::all(); 
+
+    $trainers      = \App\Models\User_tbl::where('role', 'trainer')->get();
+    $trainees      = \App\Models\User_tbl::where('role', 'student')->paginate(10, ['*'], 'trainee_page');
+    $trainersList  = \App\Models\User_tbl::where('role', 'trainer')->paginate(10, ['*'], 'trainer_page');
+    $announcements = \App\Models\Announcement::latest()->paginate(10, ['*'], 'announcement_page');
+    $registrations = \App\Models\Registration::latest()->paginate(10, ['*'], 'reg_page');
+    $facilities    = \App\Models\Facility::with('courses')->get();
+
+    return view('admin.admin1', compact(
+        'courses',
+        'allCourses',
+        'trainers',
+        'trainees',
+        'trainersList',
+        'announcements',
+        'registrations',
+        'facilities'
+    ));
+}
+
+        public function saveFacility(Request $request)
+{
+    $request->validate([
+        'id'           => 'nullable|integer',
+        'name'         => 'required|string|max:255',
+        'address'      => 'required|string|max:255',
+        'course_ids'   => 'nullable|array',
+        'course_ids.*' => 'nullable|integer',
+    ]);
+
+    try {
+        $facility = \Illuminate\Support\Facades\DB::transaction(function () use ($request) {
+            $facility = null;
+            if (!empty($request->id) && $request->id != 0) {
+                $facility = \App\Models\Facility::find($request->id);
+            }
+
+            if ($facility) {
+                $facility->update([
+                    'name'    => $request->name,
+                    'address' => $request->address,
+                ]);
+            } else {
+                $facility = \App\Models\Facility::create([
+                    'name'    => $request->name,
+                    'address' => $request->address,
+                ]);
+            }
+
+            \App\Models\Course_tbl::where('facility_id', $facility->id)
+                ->update(['facility_id' => null]);
+
+            if (!empty($request->course_ids)) {
+                \App\Models\Course_tbl::whereIn('id', $request->course_ids)
+                    ->update(['facility_id' => $facility->id]);
+            }
+
+            return $facility;
+        });
+
+        return response()->json([
+            'success'  => true,
+            'message'  => 'Facility details saved successfully!',
+            'facility' => $facility
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Error saving facility: ' . $e->getMessage()
+        ], 500);
+    }
+}
+
+public function deleteFacility(Request $request)
+{
+    $request->validate([
+        'id' => 'required|integer|exists:facilities,id',
+    ]);
+
+    try {
+        \Illuminate\Support\Facades\DB::transaction(function () use ($request) {
+            // 1. Unassign linked courses so foreign key constraints don't break
+            \App\Models\Course_tbl::where('facility_id', $request->id)
+                ->update(['facility_id' => null]);
+
+            // 2. Delete the facility record
+            \App\Models\Facility::where('id', $request->id)->delete();
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Facility deleted successfully!'
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Error deleting facility: ' . $e->getMessage()
+        ], 500);
+    }
+}
+        public function updateUser(Request $request) {
+        $user = User::where('email', $request->email)->first();
+        if ($user) {
+            $user->status = $request->status;
+            $user->name = $request->name; // Update to match your column name (e.g., firstname if split)
+            $user->remarks = $request->remarks;
+            $user->save();
+
+            return response()->json(['success' => true]);
         }
+        return response()->json(['success' => false, 'message' => 'User not found.'], 404);
+    }
+
+    public function destroy($id)
+    {
+        try {
+            // 1. Check if the ID corresponds to a Course
+            $course = Course_tbl::find($id);
+
+            if ($course) {
+                // Delete linked records first to prevent foreign key errors
+                DB::table('enrollment_tbls')->where('course_id', $id)->delete();
+                
+                $course->delete();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Course deleted successfully!'
+                ]);
+            }
+
+            // 2. Fallback: Check if the ID corresponds to a User
+            $user = User_tbl::find($id);
+
+            if ($user) {
+                $user->delete();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'User deleted successfully!'
+                ]);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Record not found.'
+            ], 404);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete record: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function storeCourse(Request $request)
+{
+    try {
+        $request->validate([
+            'course_code' => 'required|string',
+            'title'       => 'required|string',
+            'duration'    => 'required|integer',
+            'slots'       => 'required|integer',
+            'sector'      => 'nullable|string',
+        ]);
+
+        Course_tbl::create([
+            'course_code' => $request->course_code,
+            'title'       => $request->title,
+            'duration'    => $request->duration,
+            'slots'       => $request->slots,
+            'sector'      => $request->sector ?? 'General', // Prevents SQL 1364 error
+            'description' => $request->description ?? null,
+            'objectives'  => $request->objectives ?? null,
+            'schedule'    => $request->schedule ?? null,
+            'location'    => $request->location ?? null,
+            'thumbnail'   => $request->thumbnail ?? null,
+            'status'      => $request->status ?? 'active',
+            'trainer_id'  => $request->trainer_id ?? null,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Course created successfully!'
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to create course: ' . $e->getMessage()
+        ], 500);
+    }
+}
+
+
+        public function updateCourse(Request $request, $id)
+{
+    $request->validate([
+        'course_code' => 'required|string|max:50',
+        'title'       => 'required|string|max:255',
+        'duration'    => 'required|string',
+        'slots'       => 'required|integer',
+        'status'      => 'required|string|in:active,inactive', // <-- Added status validation
+    ]);
+
+    $course = Course_tbl::findOrFail($id);
+    $course->update([
+        'course_code' => $request->course_code,
+        'title'       => $request->title,
+        'duration'    => $request->duration,
+        'slots'       => $request->slots,
+        'status'      => $request->status, // <-- Added status database update
+    ]);
+
+    return response()->json([
+        'success' => true, 
+        'message' => 'Course updated successfully!'
+    ]);
+}
 
 public function assignTrainer(Request $request, $courseId)
 {
@@ -225,24 +447,24 @@ public function assignTrainer(Request $request, $courseId)
         'trainer_id' => 'required|exists:user_tbls,id',
     ]);
 
-    $course = \App\Models\Course_tbl::findOrFail($courseId);
-    $course->trainer_id = $request->trainer_id;
-    $course->save();
+    $course = Course_tbl::findOrFail($courseId);
+    $course->update([
+        'trainer_id' => $request->trainer_id,
+    ]);
 
     return response()->json([
         'success' => true,
         'message' => 'Trainer assigned successfully!',
-        'trainer' => \App\Models\User_tbl::find($request->trainer_id),
+        'trainer' => User_tbl::find($request->trainer_id),
     ]);
 }
 
-// Idagdag ang removeTrainer() method:
-
 public function removeTrainer($courseId)
 {
-    $course = \App\Models\Course_tbl::findOrFail($courseId);
-    $course->trainer_id = null;
-    $course->save();
+    $course = Course_tbl::findOrFail($courseId);
+    $course->update([
+        'trainer_id' => null,
+    ]);
 
     return response()->json([
         'success' => true,
@@ -498,46 +720,74 @@ public function ResetPassword(Request $request)
     }
         //ctudent leaner
     public function allCourses(){
-    $courses = \App\Models\Course_tbl::where('status', 'active')->get();
-    return view("student.all_courses", compact('courses'));
-}
+        $courses = \App\Models\Course_tbl::where('status', 'active')->get();
 
-public function courseDetail($id){
-    $course = \App\Models\Course_tbl::findOrFail($id);
-    return view("student.course_detail", compact('course'));
-}
+        $activeEnrollmentCount = \App\Models\Enrollment_tbl::where('user_id', Auth::id())
+                                    ->where('status', 'active')
+                                    ->count();
 
-public function enroll(Request $request, $id){
-    $course = \App\Models\Course_tbl::findOrFail($id);
+        $enrolledCourseIds = \App\Models\Enrollment_tbl::where('user_id', Auth::id())
+                                    ->pluck('course_id')
+                                    ->toArray();
 
-    // Count current enrollments
-    $enrolledCount = \App\Models\Enrollment_tbl::where('course_id', $id)->count();
+        $atLimit = $activeEnrollmentCount >= 2;
 
-    // Check if no more slots
-    if($enrolledCount >= $course->slots){
-        return back()->with('error', 'Sorry, no more slots available for this course!');
+        return view("student.all_courses", compact('courses', 'atLimit', 'enrolledCourseIds'));
     }
 
-    // Check if already enrolled
-    $existing = \App\Models\Enrollment_tbl::where('user_id', Auth::id())
-                ->where('course_id', $id)
-                ->first();
+    public function courseDetail($id){
+        $course = \App\Models\Course_tbl::findOrFail($id);
 
-    if($existing){
-        return back()->with('error', 'You are already enrolled in this course!');
+        $activeEnrollmentCount = \App\Models\Enrollment_tbl::where('user_id', Auth::id())
+                                    ->where('status', 'active')
+                                    ->count();
+
+        $enrolled = \App\Models\Enrollment_tbl::where('user_id', Auth::id())
+                        ->where('course_id', $id)
+                        ->first();
+
+        $atLimit = $activeEnrollmentCount >= 2 && !$enrolled;
+
+        return view("student.course_detail", compact('course', 'atLimit'));
     }
 
-    // Enroll the student
-    \App\Models\Enrollment_tbl::create([
-        'user_id'     => Auth::id(),
-        'course_id'   => $id,
-        'status'      => 'active',
-        'progress'    => 0,
-        'enrolled_at' => now(),
-    ]);
+    public function enroll(Request $request, $id){
+        $course = \App\Models\Course_tbl::findOrFail($id);
 
-    return back()->with('success', 'Successfully enrolled in ' . $course->title . '!');
-}
+        // Check if student already has 2 active enrollments
+        $activeEnrollments = \App\Models\Enrollment_tbl::where('user_id', Auth::id())
+                                ->where('status', 'active')
+                                ->count();
+
+        if($activeEnrollments >= 2){
+            return back()->with('error', 'You can only be enrolled in 2 courses at a time. Please complete or drop a course first.');
+        }
+
+        // Check if no more slots
+        if($course->available_slots <= 0){
+            return back()->with('error', 'Sorry, no more slots available for this course!');
+        }
+
+        // Check if already enrolled
+        $existing = \App\Models\Enrollment_tbl::where('user_id', Auth::id())
+                    ->where('course_id', $id)
+                    ->first();
+
+        if($existing){
+            return back()->with('error', 'You are already enrolled in this course!');
+        }
+
+        // Enroll the student
+        \App\Models\Enrollment_tbl::create([
+            'user_id'     => Auth::id(),
+            'course_id'   => $id,
+            'status'      => 'active',
+            'progress'    => 0,
+            'enrolled_at' => now(),
+        ]);
+
+        return back()->with('success', 'Successfully enrolled in ' . $course->title . '!');
+    }
 
 //contact
 public function contact(){
@@ -651,22 +901,50 @@ public function dashboard()
 // ── COURSE CONTENT (Modules & Quizzes) ────────────────────────────────────
 
     public function getCourseContent($courseId)
-    {
-        $modules = \App\Models\Module::where('course_id', $courseId)
-                         ->orderBy('order')
-                         ->get(['id', 'title', 'description', 'order', 'is_active']);
+{
+    $modules = \App\Models\Module::where('course_id', $courseId)
+                                 ->orderBy('order')
+                                 ->get([
+                                     'id', 
+                                     'title', 
+                                     'description', 
+                                     'file_path', 
+                                     'file_type', 
+                                     'file_size', 
+                                     'order', 
+                                     'is_active'
+                                 ]);
 
-        $quizzes = \App\Models\Quiz::where('course_id', $courseId)
-                       ->with('module')
-                       ->get();
+    $quizzes = \App\Models\Quiz::where('course_id', $courseId)
+                               ->with('module')
+                               ->get();
 
-        return response()->json([
-            'modules' => $modules,
-            'quizzes' => $quizzes,
-        ]);
+    return response()->json([
+        'modules' => $modules,
+        'quizzes' => $quizzes,
+    ]);
+}
+    // ── MODULES ───────────────────────────────────────────────────────────────
+
+    public function viewModuleFile($id, $filename = null)
+{
+    $module = \App\Models\Module::findOrFail($id);
+
+    if (!$module->file_path || !Storage::disk('public')->exists($module->file_path)) {
+        abort(404, 'File not found');
     }
 
-    // ── MODULES ───────────────────────────────────────────────────────────────
+    $fullPath = Storage::disk('public')->path($module->file_path);
+    
+    // Sanitize module title for HTTP header compatibility
+    $safeTitle = Str::slug($module->title) ?: 'module';
+    $mimeType = Storage::disk('public')->mimeType($module->file_path) ?? 'application/pdf';
+
+    return response()->file($fullPath, [
+        'Content-Type' => $mimeType,
+        'Content-Disposition' => 'inline; filename="' . $safeTitle . '.pdf"'
+    ]);
+}
 
     public function storeModule(Request $request)
     {
@@ -705,12 +983,50 @@ public function dashboard()
     }
 
     public function destroyModule($id)
-    {
-        $module = \App\Models\Module::findOrFail($id);
-        $module->delete();
-        return response()->json(['success' => true]);
-    }
+{
+    try {
+        // Use find() instead of findOrFail() to avoid throwing ModelNotFoundException
+        $module = Module::find($id);
 
+        // If record is already deleted from DB, return success to let JS update the UI
+        if (!$module) {
+            // Clean up any stray quiz references just in case
+            DB::table('quizzes')->where('module_id', $id)->update(['module_id' => null]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Module was already removed.'
+            ], 200);
+        }
+
+        $filePath = $module->file_path;
+
+        DB::transaction(function () use ($module, $id) {
+            try {
+                DB::table('quizzes')->where('module_id', $id)->update(['module_id' => null]);
+            } catch (\Exception $e) {
+                DB::table('quizzes')->where('module_id', $id)->delete();
+            }
+
+            $module->delete();
+        });
+
+        if ($filePath && Storage::disk('public')->exists($filePath)) {
+            Storage::disk('public')->delete($filePath);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Module deleted successfully!'
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to delete module: ' . $e->getMessage()
+        ], 500);
+    }
+}
     // ── QUIZZES ───────────────────────────────────────────────────────────────
 
     public function storeQuiz(Request $request)
@@ -1113,53 +1429,76 @@ public function trainerStudents()
         }
 
         // ── ANNOUNCEMENTS ─────────────────────────────────────────────────────────
-            public function storeAnnouncement(Request $request)
-            {
-                $request->validate([
-                    'title'   => 'required|string|max:255',
-                    'message' => 'required|string',
-                    'type'    => 'required|in:reminder,notice,urgent',
-                ]);
 
-                \App\Models\Announcement::create([
-                    'title'     => $request->title,
-                    'message'   => $request->message,
-                    'type'      => $request->type,
-                    'is_active' => true,
-                ]);
+public function storeAnnouncement(Request $request)
+{
+    $validated = $request->validate([
+        'title'      => 'required|string|max:100',
+        'message'    => 'required|string|max:500',
+        'type'       => 'required|in:reminder,notice,urgent',
+        'is_active'  => 'required|boolean',
+        'publish_at' => 'nullable|date',
+        'expires_at' => 'nullable|date|after_or_equal:publish_at',
+    ]);
 
-                return response()->json(['success' => true]);
-            }
+    \App\Models\Announcement::create($validated);
 
-            public function updateAnnouncement(Request $request, $id)
-            {
-                $request->validate([
-                    'title'   => 'required|string|max:255',
-                    'message' => 'required|string',
-                    'type'    => 'required|in:reminder,notice,urgent',
-                ]);
+    return response()->json([
+        'success' => true,
+        'message' => 'Announcement created successfully!'
+    ]);
+}
 
-                $announcement = \App\Models\Announcement::findOrFail($id);
-                $announcement->update($request->only('title', 'message', 'type'));
+public function updateAnnouncement(Request $request, $id)
+{
+    // Convert empty string dates to NULL and sanitize boolean
+    $request->merge([
+        'publish_at' => $request->publish_at ?: null,
+        'expires_at' => $request->expires_at ?: null,
+        'is_active'  => filter_var($request->is_active, FILTER_VALIDATE_BOOLEAN),
+    ]);
 
-                return response()->json(['success' => true]);
-            }
+    $validated = $request->validate([
+        'title'      => 'required|string|max:100',
+        'message'    => 'required|string|max:500',
+        'type'       => 'required|in:reminder,notice,urgent',
+        'is_active'  => 'required|boolean',
+        'publish_at' => 'nullable|date',
+        'expires_at' => 'nullable|date',
+    ]);
 
-            public function destroyAnnouncement($id)
-            {
-                $announcement = \App\Models\Announcement::findOrFail($id);
-                $announcement->delete();
-                return response()->json(['success' => true]);
-            }
+    $announcement = \App\Models\Announcement::findOrFail($id);
+    $announcement->update($validated);
 
-            public function toggleAnnouncement($id)
-            {
-                $announcement = \App\Models\Announcement::findOrFail($id);
-                $announcement->is_active = !$announcement->is_active;
-                $announcement->save();
-                return response()->json(['success' => true, 'is_active' => $announcement->is_active]);
-        
-            }
+    return response()->json([
+        'success' => true,
+        'message' => 'Announcement updated successfully!'
+    ]);
+}
+
+public function destroyAnnouncement($id)
+{
+    $announcement = \App\Models\Announcement::findOrFail($id);
+    $announcement->delete();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Announcement deleted successfully!'
+    ]);
+}
+
+public function toggleAnnouncement($id)
+{
+    $announcement = \App\Models\Announcement::findOrFail($id);
+    $announcement->is_active = !$announcement->is_active;
+    $announcement->save();
+
+    return response()->json([
+        'success'   => true,
+        'is_active' => $announcement->is_active,
+        'message'   => 'Announcement status updated successfully!'
+    ]);
+}
 
             public function studentModules(Request $request)
     {
@@ -1202,5 +1541,7 @@ public function trainerStudents()
         ));
     }
     }
+
+    
     
 
