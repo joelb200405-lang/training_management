@@ -723,15 +723,37 @@
       <div id="view-trainee-list" style="display: none;">
         <!-- View A: Course Cards Grid -->
         <div id="course-cards-main-view">
+          <!-- Top Filter & Search Control Bar -->
           <div
-            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 12px; flex-wrap: wrap;">
             <h3
-              style="margin: 0; font-size: 16px; color: #025628; font-weight: 700;">
-              Courses & Enrolled Trainees</h3>
+              style="margin: 0; font-size: 15px; font-weight: 700; color: #025628; display: flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-chalkboard-user"
+                style="color: #025628;"></i> Courses & Enrolled Trainees
+            </h3>
+
+            <!-- Live Search Field -->
+            <div style="position: relative; width: 280px; max-width: 100%;">
+              <i class="fa-solid fa-magnifying-glass"
+                style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #999; font-size: 13px;"></i>
+              <input type="text" id="traineeCourseSearch"
+                placeholder="Search course by title..."
+                onkeyup="filterTraineeCards()"
+                style="width: 100%; padding: 9px 12px 9px 34px; font-size: 12px; border: 1px solid #dcdcdc; border-radius: 8px; outline: none; box-sizing: border-box; background: #ffffff; transition: border-color 0.2s ease;">
+            </div>
           </div>
 
-          <div
-            style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 16px;">
+          <!-- Course Cards Grid -->
+          <div id="traineeCardsContainer"
+            style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px;">
+            <!-- Empty Filter State -->
+            <div id="noTraineeCardResults"
+              style="grid-column: 1 / -1; text-align: center; color: #888; padding: 40px 20px; font-size: 13px; display: none; background: #ffffff; border-radius: 10px; border: 1px solid #e0e0e0;">
+              <i class="fa-solid fa-magnifying-glass"
+                style="font-size: 28px; display: block; margin-bottom: 10px; color: #ccc;"></i>
+              No matching courses found.
+            </div>
+
             @forelse($courses as $course)
               @php
                 $enrolledTrainees = Illuminate\Support\Facades\DB::table(
@@ -754,44 +776,104 @@
 
                 $enrolledCount = $enrolledTrainees->count();
                 $remainingSlots = max(0, $course->slots - $enrolledCount);
+
+                $percent =
+                    $course->slots > 0
+                        ? min(
+                            100,
+                            round(($enrolledCount / $course->slots) * 100),
+                        )
+                        : 0;
+                $barColor =
+                    $percent >= 100
+                        ? '#A32D2D'
+                        : ($percent >= 80
+                            ? '#854F0B'
+                            : '#025628');
+
+                $assignedTrainer = $course->trainer;
+                $trainerName = $assignedTrainer
+                    ? $assignedTrainer->firstname .
+                        ' ' .
+                        $assignedTrainer->lastname
+                    : 'Unassigned';
+                $hasTrainer = !is_null($assignedTrainer);
               @endphp
-              <div class="card"
-                style="background: #fff; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 12px;">
-                <div
-                  style="display: flex; justify-content: space-between; align-items: flex-start;">
-                  <div>
+
+              <div class="card trainee-course-card"
+                data-title="{{ strtolower($course->title) }}"
+                style="background: #ffffff; border-radius: 10px; border: 1px solid #e0e0e0; padding: 18px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: space-between; gap: 14px; transition: background-color 0.15s ease;">
+
+                <div>
+                  <!-- Title & Enrollment Badge -->
+                  <div
+                    style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 12px;">
                     <h4
-                      style="margin: 0 0 4px 0; color: #025628; font-size: 15px; font-weight: 700;">
+                      style="margin: 0; color: #111111; font-size: 14.5px; font-weight: 700; line-height: 1.3; display: flex; align-items: center; gap: 6px;">
                       <i class="fa-solid fa-book"
-                        style="margin-right: 6px;"></i>
+                        style="color: #025628; font-size: 14px;"></i>
                       {{ $course->title }}
                     </h4>
-                    <p
-                      style="margin: 4px 0; font-size: 13px; color: #4b5563; display: flex; align-items: center; gap: 6px;">
+                    <span
+                      style="font-size: 10.5px; background: #e8f5e9; color: #025628; padding: 3px 10px; border-radius: 12px; font-weight: 700; white-space: nowrap; border: 1px solid #c8e6c9;">
+                      {{ $enrolledCount }} / {{ $course->slots }} Enrolled
+                    </span>
+                  </div>
+
+                  <!-- Course Metadata -->
+                  <div
+                    style="display: flex; flex-direction: column; gap: 7px; font-size: 11.5px; color: #555;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
                       <i class="fa-solid fa-calendar-day"
-                        style="color: #025628;"></i>
+                        style="color: #888; width: 14px;"></i>
                       <span><strong>Duration:</strong> {{ $course->duration }}
                         {{ \Illuminate\Support\Str::plural('Day', $course->duration) }}</span>
-                    </p>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <i class="fa-solid fa-user-tie"
+                        style="color: #888; width: 14px;"></i>
+                      <span><strong>Trainer:</strong>
+                        <span
+                          style="background: {{ $hasTrainer ? '#e8f5e9' : '#f0f0f0' }}; color: {{ $hasTrainer ? '#025628' : '#666' }}; padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 10.5px; display: inline-block; margin-left: 2px;">
+                          {{ $trainerName }}
+                        </span>
+                      </span>
+                    </div>
                   </div>
-                  <span
-                    style="font-size: 11px; background: #e8f5e9; color: #025628; padding: 4px 10px; border-radius: 20px; font-weight: 700; white-space: nowrap;">
-                    {{ $enrolledCount }} / {{ $course->slots }} Enrolled
-                  </span>
+
+                  <!-- Capacity Progress Bar -->
+                  <div style="margin-top: 14px;">
+                    <div
+                      style="display: flex; justify-content: space-between; font-size: 10.5px; color: #666; font-weight: 600; margin-bottom: 5px;">
+                      <span>Capacity Utilization</span>
+                      <span
+                        style="color: {{ $barColor }}; font-weight: 700;">{{ $percent }}%</span>
+                    </div>
+                    <div
+                      style="background: #eeeeee; height: 6px; border-radius: 10px; overflow: hidden;">
+                      <div
+                        style="width: {{ $percent }}%; background: {{ $barColor }}; height: 100%; transition: width 0.3s ease;">
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <hr
-                  style="border: none; border-top: 1px solid #f0f0f0; margin: 4px 0;">
+                  style="border: none; border-top: 1px solid #f2f2f2; margin: 0;">
 
+                <!-- Action Button -->
                 <button class="btn-all"
+                  style="width: 100%; padding: 8px 14px; font-size: 12px; font-weight: 600; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;"
                   onclick="openFullCourseRoster('{{ addslashes($course->title) }}', {{ $enrolledTrainees->toJson() }})">
                   <i class="fa-solid fa-users"></i> View Trainees
                 </button>
               </div>
             @empty
               <div
-                style="grid-column: 1 / -1; text-align: center; color: #aaa; padding: 30px; font-size: 13px;">
-                No courses found.
+                style="grid-column: 1 / -1; text-align: center; color: #888; padding: 40px 20px; font-size: 13px; background: #ffffff; border-radius: 10px; border: 1px solid #e0e0e0;">
+                <i class="fa-solid fa-book-open"
+                  style="font-size: 28px; display: block; margin-bottom: 10px; color: #ccc;"></i>
+                No active courses found.
               </div>
             @endforelse
           </div>
@@ -799,26 +881,32 @@
 
         <!-- View B: Full Page Roster View -->
         <div id="full-course-roster-view"
-          style="display: none; background: #fff; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px; padding: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+          style="display: none; background: #ffffff; border-radius: 10px; border: 1px solid #e0e0e0; padding: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.02); overflow: hidden;">
+
           <div
-            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #f0f0f0; padding-bottom: 15px;">
-            <div>
+            style="display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-bottom: 1px solid #ececec; background: #fafafa; flex-wrap: wrap; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
               <button onclick="backToCourseCards()"
-                style="background: #f0f0f0; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 700; color: #444; margin-bottom: 8px;">
+                style="background: #ffffff; border: 1px solid #dcdcdc; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; color: #444; display: flex; align-items: center; gap: 6px; transition: background 0.15s ease;">
                 <i class="fa-solid fa-arrow-left"></i> Back to Courses
               </button>
               <h3 id="rosterCourseTitle"
-                style="margin: 0; font-size: 18px; color: #025628; font-weight: 700;">
-                Course Roster</h3>
+                style="margin: 0; font-size: 15px; font-weight: 700; color: #025628;">
+                Course Roster
+              </h3>
             </div>
-            <span id="rosterCountBadge"
-              style="font-size: 12px; background: #e8f5e9; color: #025628; padding: 6px 14px; border-radius: 20px; font-weight: 700;">
-              0 Enrolled
-            </span>
+
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span id="rosterCountBadge"
+                style="font-size: 11px; background: #e8f5e9; color: #025628; padding: 4px 12px; border-radius: 20px; font-weight: 700; border: 1px solid #c8e6c9;">
+                0 Enrolled
+              </span>
+            </div>
           </div>
 
+          <!-- Container for Trainee Roster Items -->
           <div id="fullRosterContainer"
-            style="display: flex; flex-direction: column; gap: 8px; max-height: 500px; overflow-y: auto;">
+            style="padding: 14px 18px; display: flex; flex-direction: column; gap: 8px; max-height: 550px; overflow-y: auto;">
             <!-- Populated via JavaScript -->
           </div>
         </div>
@@ -826,8 +914,18 @@
 
       <!-- 4. TRAINER LIST VIEW -->
       <div id="view-trainer-list" style="display: none;">
+        <!-- Header Controls: Search & Actions -->
         <div
-          style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 14px;">
+          style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; gap: 10px; flex-wrap: wrap;">
+          <div style="position: relative; width: 260px;">
+            <i class="fa-solid fa-magnifying-glass"
+              style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #888; font-size: 12px;"></i>
+            <input type="text" id="trainerSearchInput"
+              onkeyup="filterTrainerList()"
+              placeholder="Search trainer name or email..."
+              style="width: 100%; padding: 8px 10px 8px 30px; font-size: 12px; border: 1px solid #ccc; border-radius: 6px; outline: none; box-sizing: border-box;">
+          </div>
+
           <button class="btn-save-main" onclick="openAddTrainerModal()"
             style="width: auto; padding: 8px 16px; font-size: 12px; display: flex; align-items: center; gap: 6px;">
             <i class="fa-solid fa-user-plus"></i> Add Trainer
@@ -835,12 +933,17 @@
         </div>
 
         <div class="card list-card">
-          <div class="card-header">
+          <div class="card-header"
+            style="display: flex; justify-content: space-between; align-items: center;">
             <h3
               style="margin: 0; font-size: 15px; font-weight: 700; color: #025628;">
               <i class="fa-solid fa-chalkboard-user"
                 style="margin-right: 6px;"></i> Trainer Directory
             </h3>
+            <span
+              style="font-size: 11px; background: #e8f5e9; color: #025628; padding: 3px 10px; border-radius: 12px; font-weight: 700;">
+              Total: {{ count($trainersList) }}
+            </span>
           </div>
 
           <div class="user-list-body" id="trainer-list-content">
@@ -852,31 +955,66 @@
                 $courseTitle = $assignedCourse
                     ? $assignedCourse->title
                     : 'No course assigned';
+                $status = $trainer->status ?? 'Active';
+                $isInactive = strtolower($status) === 'inactive';
               @endphp
-              <div class="user-item">
+
+              <!-- Added data-user-id attribute for real-time DOM updates -->
+              <div class="user-item" data-user-id="{{ $trainer->id }}"
+                style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #f0f0f0; gap: 12px;">
                 <div
-                  style="display: flex; align-items: center; gap: 12px; flex: 1;">
+                  style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0;">
                   <div
-                    style="width: 36px; height: 36px; border-radius: 50%; background: #e8f5e9; display: flex; align-items: center; justify-content: center; color: #025628; flex-shrink: 0;">
+                    style="width: 38px; height: 38px; border-radius: 50%; background: #e8f5e9; display: flex; align-items: center; justify-content: center; color: #025628; flex-shrink: 0;">
                     <i class="fa-solid fa-user-tie"
-                      style="font-size: 14px;"></i>
+                      style="font-size: 15px;"></i>
                   </div>
-                  <div class="user-info" style="min-width: 0;">
-                    <strong
-                      style="font-size: 13px; color: #1a1a1a; display: block;">{{ strtoupper($trainer->firstname . ' ' . $trainer->lastname) }}</strong>
-                    <small
-                      style="color: #666; font-size: 12px;">{{ $trainer->email }}</small>
+
+                  <div class="user-info" style="min-width: 0; flex: 1;">
+                    <div
+                      style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                      <strong class="user-name-text"
+                        style="font-size: 13px; color: #1a1a1a;">
+                        {{ strtoupper($trainer->firstname . ' ' . $trainer->lastname) }}
+                      </strong>
+                      <!-- Status Badge -->
+                      <span class="roster-status-badge"
+                        data-email="{{ $trainer->email }}"
+                        style="font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 12px; background: {{ $isInactive ? '#FCEBEB' : '#e8f5e9' }}; color: {{ $isInactive ? '#A32D2D' : '#025628' }};">
+                        {{ $status }}
+                      </span>
+                    </div>
+
+                    <!-- Secondary Details: Email, Course & Contact -->
+                    <div
+                      style="display: flex; align-items: center; gap: 12px; margin-top: 3px; font-size: 11px; color: #666; flex-wrap: wrap;">
+                      <span class="user-email-text"><i
+                          class="fa-regular fa-envelope"
+                          style="margin-right: 4px;"></i>{{ $trainer->email }}</span>
+                      <span class="user-course-text"
+                        style="color: #025628; font-weight: 600;"><i
+                          class="fa-solid fa-book-open"
+                          style="margin-right: 4px;"></i>{{ $courseTitle }}</span>
+                      <span class="user-contact-text" style="color: #888;"><i
+                          class="fa-solid fa-phone"
+                          style="margin-right: 4px;"></i>{{ $trainer->contact ?? 'Not provided' }}</span>
+                    </div>
                   </div>
                 </div>
 
                 <button class="btn-view"
                   onclick="openUserModal(
-                                    '{{ addslashes($trainer->firstname . ' ' . $trainer->lastname) }}',
-                                    '{{ addslashes($trainer->email) }}',
-                                    'trainer',
-                                    'Active',
-                                    '{{ addslashes($courseTitle) }}'
-                                )">View
+              '{{ $trainer->id }}',
+              '{{ addslashes($trainer->firstname . ' ' . $trainer->lastname) }}',
+              '{{ addslashes($trainer->email) }}',
+              'trainer',
+              '{{ addslashes($status) }}',
+              '{{ addslashes($courseTitle) }}',
+              '{{ addslashes($trainer->contact ?? '') }}',
+              '{{ addslashes($trainer->id_number ?? '') }}',
+              '{{ \Carbon\Carbon::parse($trainer->created_at ?? now())->format('F Y') }}',
+              '{{ addslashes($trainer->remarks ?? '') }}'
+            )">View
                   Profile</button>
               </div>
             @empty
@@ -1329,7 +1467,8 @@
             <div class="page-numbers" style="display: flex; gap: 4px;">
               @for ($i = 1; $i <= $courses->lastPage(); $i++)
                 @if ($i == $courses->currentPage())
-                  <button class="page-btn active">{{ $i }}</button>
+                  <button
+                    class="page-btn active">{{ $i }}</button>
                 @else
                   <a href="{{ $courses->url($i) }}&view=courses"
                     onclick="setActive(document.getElementById('nav-courses'))"
@@ -2208,7 +2347,8 @@
           style="margin-top: 16px; padding-bottom: 5px;">
           <button type="button" class="btn-cancel"
             onclick="closeAddTrainerModal(); return false;">Cancel</button>
-          <button type="submit" class="btn-save-main">Create Account</button>
+          <button type="submit" class="btn-save-main">Create
+            Account</button>
         </div>
       </form>
     </div>
@@ -2228,7 +2368,7 @@
       #userModal .modal-body {
         overflow-y: auto !important;
         max-height: calc(90vh - 120px);
-        padding-right: 4px;
+        padding-right: 6px;
       }
 
       #userModal .input-wrapper input,
@@ -2245,7 +2385,21 @@
       }
 
       #userModal .input-field {
-        margin-bottom: 10px !important;
+        margin-bottom: 12px !important;
+      }
+
+      #userModal .modal-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 16px;
+        padding-top: 12px;
+        border-top: 1px solid #e5e7eb;
+      }
+
+      #userModal .action-buttons {
+        display: flex;
+        gap: 8px;
       }
     </style>
 
@@ -2254,26 +2408,35 @@
         <h3><i class="fa-solid fa-user-gear"></i> Manage User Profile</h3>
         <span class="close-modal" onclick="closeUserModal()">&times;</span>
       </div>
+
       <form id="userForm" class="modal-body">
+        <!-- Hidden User ID Field (Critical for deleteUser & update AJAX) -->
+        <input type="hidden" id="editUserId" name="id"
+          value="">
+
+        <!-- Full Name -->
         <div class="input-field">
-          <label>Full Name</label>
+          <label for="editUserName">Full Name</label>
           <div class="input-wrapper">
             <i class="fa-solid fa-signature"></i>
-            <input type="text" id="editUserName" placeholder="Full Name">
+            <input type="text" id="editUserName" name="name"
+              placeholder="Full Name" required>
           </div>
         </div>
 
+        <!-- Email & Member Since -->
         <div class="modal-row">
           <div class="input-field">
-            <label>Email Address</label>
+            <label for="editUserEmail">Email Address</label>
             <div class="input-wrapper">
               <i class="fa-solid fa-envelope"></i>
-              <input type="email" id="editUserEmail" readonly
-                class="readonly-input">
+              <input type="email" id="editUserEmail" name="email"
+                readonly class="readonly-input">
             </div>
           </div>
+
           <div class="input-field">
-            <label>Member Since</label>
+            <label for="editUserCreated">Member Since</label>
             <div class="input-wrapper">
               <i class="fa-solid fa-calendar-days"></i>
               <input type="text" id="editUserCreated" readonly
@@ -2282,30 +2445,35 @@
           </div>
         </div>
 
+        <!-- Contact & Reference / ID Number -->
         <div id="trainerFieldsContainer" style="display: none;">
           <div class="modal-row">
             <div class="input-field">
-              <label>Contact Number</label>
+              <label for="editUserContact">Contact Number</label>
               <div class="input-wrapper">
                 <i class="fa-solid fa-phone"></i>
-                <input type="text" id="editUserContact"
-                  placeholder="Not provided">
+                <input type="text" id="editUserContact" name="contact"
+                  maxlength="11"
+                  oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11);"
+                  placeholder="09XXXXXXXXX">
               </div>
             </div>
+
             <div class="input-field">
-              <label>Reference / ID Number</label>
+              <label for="editUserIdNum">Reference / ID Number</label>
               <div class="input-wrapper">
                 <i class="fa-solid fa-id-card"></i>
-                <input type="text" id="editUserIdNum"
+                <input type="text" id="editUserIdNum" name="id_number"
                   placeholder="N/A">
               </div>
             </div>
           </div>
         </div>
 
+        <!-- Assigned Course -->
         <div class="input-field" id="trainerCourseField"
           style="display: none;">
-          <label>Assigned Course (Teaching)</label>
+          <label for="editTrainerCourse">Assigned Course (Teaching)</label>
           <div class="input-wrapper">
             <i class="fa-solid fa-book-open"></i>
             <input type="text" id="editTrainerCourse" readonly
@@ -2313,9 +2481,10 @@
           </div>
         </div>
 
+        <!-- Role & Status -->
         <div class="modal-row">
           <div class="input-field">
-            <label>Account Role</label>
+            <label for="editUserRole">Account Role</label>
             <div class="input-wrapper">
               <i class="fa-solid fa-user-tag"></i>
               <select id="editUserRole" class="modal-input-select" disabled
@@ -2328,11 +2497,13 @@
                 value="">
             </div>
           </div>
+
           <div class="input-field">
-            <label>Status</label>
+            <label for="editUserStatus">Status</label>
             <div class="input-wrapper">
               <i class="fa-solid fa-circle-check"></i>
-              <select id="editUserStatus" class="modal-input-select">
+              <select id="editUserStatus" name="status"
+                class="modal-input-select">
                 <option value="Active">Active</option>
                 <option value="Inactive">Inactive</option>
                 <option value="Pending">Pending</option>
@@ -2341,23 +2512,24 @@
           </div>
         </div>
 
+        <!-- Admin Remarks -->
         <div class="input-field" style="margin-top: 4px;">
-          <label>Admin Remarks / Internal Notes</label>
-          <textarea id="editUserRemarks"
+          <label for="editUserRemarks">Admin Remarks / Internal Notes</label>
+          <textarea id="editUserRemarks" name="remarks"
             placeholder="Add confidential notes or operational remarks regarding this profile..."
             rows="2"
-            style="width:100%; padding:8px; border:1px solid #ddd; border-radius:8px; font-size:13px; font-family:inherit; resize:vertical;"></textarea>
+            style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; font-family: inherit; resize: vertical; box-sizing: border-box;"></textarea>
         </div>
 
-        <div class="modal-footer"
-          style="margin-top: 12px; padding-bottom: 5px;">
+        <!-- Modal Footer -->
+        <div class="modal-footer">
           <button type="button" class="btn-delete-text"
             onclick="deleteUser()">
             <i class="fa-solid fa-user-slash"></i> Remove User
           </button>
           <div class="action-buttons">
             <button type="button" class="btn-cancel"
-              onclick="closeUserModal(); event.stopPropagation(); return false;">Cancel</button>
+              onclick="closeUserModal();">Cancel</button>
             <button type="submit" class="btn-save-main">Update
               User</button>
           </div>
@@ -3168,13 +3340,17 @@
         });
     }
 
-    function openUserModal(name, email, role, status, courseTitle = '', contact =
-      '', idNum = '', created = '', remarks = '') {
+    function openUserModal(id, name, email, role, status, courseTitle = '',
+      contact = '', idNum = '', created = '', remarks = '') {
       const modal = document.getElementById('userModal');
       if (modal) {
         modal.style.display = 'block';
         modal.style.setProperty('display', 'block', 'important');
       }
+
+      // Hidden User ID
+      const idInput = document.getElementById('editUserId');
+      if (idInput) idInput.value = id || '';
 
       const nameInput = document.getElementById('editUserName');
       if (nameInput) nameInput.value = name || '';
@@ -3183,18 +3359,21 @@
       if (emailInput) emailInput.value = email || '';
 
       const contactInput = document.getElementById('editUserContact');
-      if (contactInput) contactInput.value = contact || '';
+      if (contactInput) contactInput.value = (contact && contact !== 'null') ?
+        contact : '';
 
       const idNumInput = document.getElementById('editUserIdNum');
-      if (idNumInput) idNumInput.value = idNum || '';
+      if (idNumInput) idNumInput.value = (idNum && idNum !== 'null') ? idNum : '';
 
       const createdInput = document.getElementById('editUserCreated');
-      if (createdInput) createdInput.value = created || 'April 2026';
+      if (createdInput) createdInput.value = (created && created !== 'null') ?
+        created : 'August 2026';
 
       const remarksInput = document.getElementById('editUserRemarks');
-      if (remarksInput) remarksInput.value = remarks || '';
+      if (remarksInput) remarksInput.value = (remarks && remarks !== 'null') ?
+        remarks : '';
 
-      const cleanRole = (role || 'student').toLowerCase();
+      const cleanRole = (role || 'trainer').toLowerCase();
 
       const userRoleEl = document.getElementById('editUserRole');
       if (userRoleEl) userRoleEl.value = cleanRole;
@@ -3204,26 +3383,14 @@
 
       const statusSelect = document.getElementById('editUserStatus');
       if (statusSelect) {
-        let rawStatus = status;
-
-        if (!rawStatus && email) {
-          const badge = document.querySelector(
-            `.roster-status-badge[data-email="${email}"]`);
-          if (badge) {
-            rawStatus = badge.textContent.trim();
-          }
-        }
-
         let cleanStatus = 'Active';
-        if (rawStatus) {
-          const lowerStatus = String(rawStatus).trim().toLowerCase();
+        if (status) {
+          const lowerStatus = String(status).trim().toLowerCase();
           if (lowerStatus === 'inactive' || lowerStatus.includes('inactive')) {
             cleanStatus = 'Inactive';
           } else if (lowerStatus === 'pending' || lowerStatus.includes(
               'pending')) {
             cleanStatus = 'Pending';
-          } else {
-            cleanStatus = 'Active';
           }
         }
         statusSelect.value = cleanStatus;
@@ -3242,7 +3409,8 @@
       } else {
         if (courseFieldContainer) courseFieldContainer.style.display = 'none';
         if (courseInput) courseInput.value = '';
-        if (trainerFieldsContainer) trainerFieldsContainer.style.display = 'none';
+        if (trainerFieldsContainer) trainerFieldsContainer.style.display =
+          'block';
       }
     }
 
@@ -3408,17 +3576,29 @@
 
     document.getElementById('addTrainerForm').onsubmit = function(e) {
       e.preventDefault();
-      const name = document.getElementById('newTrainerName').value.trim().split(
-        ' ');
+
+      const name = document.getElementById('newTrainerName').value.trim();
       const email = document.getElementById('newTrainerEmail').value.trim();
       const password = document.getElementById('newTrainerPass').value.trim();
 
-      if (!name.length || !email || !password) {
+      // Grab all the optional/extra fields from the modal
+      const contactNumber = document.getElementById('newTrainerContact')?.value
+        .trim() || null;
+      const referenceId = document.getElementById('newTrainerReference')?.value
+        .trim() || null;
+      const role = document.getElementById('newTrainerRole')?.value ||
+        'trainer';
+      const status = document.getElementById('newTrainerStatus')?.value ||
+        'Active';
+      const remarks = document.getElementById('newTrainerRemarks')?.value
+        .trim() || null;
+      const courseId = document.getElementById('newTrainerCourse')?.value ||
+        null;
+
+      if (!name || !email || !password) {
         alert('Please fill in all required fields.');
         return;
       }
-
-      const courseId = document.getElementById('newTrainerCourse').value;
 
       fetch('/admin/trainer/store', {
           method: 'POST',
@@ -3427,11 +3607,15 @@
             'X-CSRF-TOKEN': csrfToken
           },
           body: JSON.stringify({
-            firstname: name[0],
-            lastname: name.slice(1).join(' ') || '-',
-            email,
-            password,
-            course_id: courseId || null,
+            name: name,
+            email: email,
+            password: password,
+            contact_number: contactNumber,
+            reference_id: referenceId,
+            role: role,
+            status: status,
+            remarks: remarks,
+            course_id: courseId,
           })
         })
         .then(r => r.json())
@@ -3444,7 +3628,10 @@
             alert(data.message || 'An error occurred. Please try again.');
           }
         })
-        .catch(() => alert('An error occurred. Please try again.'));
+        .catch((err) => {
+          console.error(err);
+          alert('An error occurred. Please try again.');
+        });
     };
 
     document.getElementById('courseForm').onsubmit = function(e) {
@@ -4117,13 +4304,13 @@
 
       <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
         ${m.file_path ? `
-                                                                            <a href="/admin/module/file/${m.id}/${encodeURIComponent(m.title)}.pdf" target="_blank" 
-                                                                               style="font-size:11px; padding:6px 12px; border-radius:6px; background:#e8f5e9; color:#025628; text-decoration:none; font-weight:700; display:inline-flex; align-items:center; gap:5px; white-space:nowrap; transition: background 0.2s;">
-                                                                              <i class="fa-solid fa-file-pdf"></i> View File
-                                                                            </a>
-                                                                          ` : `
-                                                                            <span style="font-size:11px; color:#9ca3af; padding:4px 8px; font-style:italic;">No PDF</span>
-                                                                          `}
+                                                                                                                                              <a href="/admin/module/file/${m.id}/${encodeURIComponent(m.title)}.pdf" target="_blank" 
+                                                                                                                                                 style="font-size:11px; padding:6px 12px; border-radius:6px; background:#e8f5e9; color:#025628; text-decoration:none; font-weight:700; display:inline-flex; align-items:center; gap:5px; white-space:nowrap; transition: background 0.2s;">
+                                                                                                                                                <i class="fa-solid fa-file-pdf"></i> View File
+                                                                                                                                              </a>
+                                                                                                                                            ` : `
+                                                                                                                                              <span style="font-size:11px; color:#9ca3af; padding:4px 8px; font-style:italic;">No PDF</span>
+                                                                                                                                            `}
 
         <button type="button" onclick="deleteModule(${m.id})"
           style="font-size:11px; padding:6px 12px; border-radius:6px; background:#FCEBEB; color:#A32D2D; border:none; cursor:pointer; font-family:inherit; font-weight:700; white-space:nowrap; display:inline-flex; align-items:center; gap:4px;">
@@ -5006,29 +5193,212 @@
       return String(str).replace(/['"]/g, '\\$&');
     }
 
+    /* ========================================================== */
+    /* USER PROFILE: UPDATE & DELETE HANDLERS                     */
+    /* ========================================================== */
+
+    // 1. UPDATE USER FORM SUBMISSION
     document.getElementById('userForm').onsubmit = function(e) {
       e.preventDefault();
 
-      const name = document.getElementById('editUserName').value.trim();
-      const email = document.getElementById('editUserEmail').value.trim();
-      const status = document.getElementById('editUserStatus').value;
-      const remarks = document.getElementById('editUserRemarks').value.trim();
-      const role = document.getElementById('hiddenUserRole').value || document
-        .getElementById('editUserRole').value;
+      // Target Submit Button & store original layout
+      const submitBtn = this.querySelector('button[type="submit"]');
+      const originalSubmitHtml = submitBtn ? submitBtn.innerHTML :
+        'Update User';
 
-      fetch(`/admin/user/update`, {
+      // Disable button & show loading state
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.7';
+        submitBtn.style.cursor = 'not-allowed';
+        submitBtn.innerHTML =
+          '<i class="fa-solid fa-spinner fa-spin"></i> Updating...';
+      }
+
+      const id = document.getElementById('editUserId')?.value || null;
+      const name = document.getElementById('editUserName')?.value.trim() || '';
+      const email = document.getElementById('editUserEmail')?.value.trim() ||
+        '';
+      const status = document.getElementById('editUserStatus')?.value ||
+        'Active';
+      const remarks = document.getElementById('editUserRemarks')?.value
+        .trim() || '';
+
+      // Clean contact number (max 11 digits)
+      const rawContact = document.getElementById('editUserContact')?.value
+        .trim() || '';
+      const contact = rawContact.replace(/[^0-9]/g, '').slice(0, 11) || null;
+
+      const rawIdNum = document.getElementById('editUserIdNum')?.value.trim() ||
+        null;
+      const id_number = (rawIdNum && rawIdNum !== 'N/A') ? rawIdNum : null;
+
+      const role = document.getElementById('hiddenUserRole')?.value ||
+        document.getElementById('editUserRole')?.value ||
+        'trainer';
+
+      const token = document.querySelector('meta[name="csrf-token"]')
+        ?.getAttribute('content') ||
+        (typeof csrfToken !== 'undefined' ? csrfToken : '');
+
+      fetch('/admin/user/update', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken,
+            'X-CSRF-TOKEN': token,
             'Accept': 'application/json'
           },
           body: JSON.stringify({
+            id,
             name,
             email,
             status,
             remarks,
+            contact,
+            id_number,
             role
+          })
+        })
+        .then(async r => {
+          const text = await r.text();
+          let data;
+          try {
+            data = JSON.parse(text);
+          } catch (err) {
+            console.error("Server response was not JSON:", text);
+            throw new Error("Server returned an invalid response.");
+          }
+
+          if (!r.ok) {
+            throw new Error(data.message || `Server error (${r.status})`);
+          }
+
+          return data;
+        })
+        .then(data => {
+          if (data && data.success) {
+            // Locate container row in live DOM
+            const row = document.querySelector(
+                `.user-item[data-user-id="${id}"]`) ||
+              document.querySelector(
+                `.user-item:has(.roster-status-badge[data-email="${email}"])`
+              );
+
+            if (row) {
+              const nameEl = row.querySelector('.user-name-text');
+              const emailEl = row.querySelector('.user-email-text');
+              const contactEl = row.querySelector('.user-contact-text');
+              const badgeEl = row.querySelector('.roster-status-badge');
+
+              if (nameEl) nameEl.textContent = name.toUpperCase();
+              if (emailEl) emailEl.innerHTML =
+                `<i class="fa-regular fa-envelope" style="margin-right: 4px;"></i>${email}`;
+              if (contactEl) contactEl.innerHTML =
+                `<i class="fa-solid fa-phone" style="margin-right: 4px;"></i>${contact || 'Not provided'}`;
+
+              if (badgeEl) {
+                badgeEl.textContent = status;
+                badgeEl.setAttribute('data-email', email);
+                const isInactive = status.toLowerCase() === 'inactive';
+                badgeEl.style.background = isInactive ? '#FCEBEB' : '#e8f5e9';
+                badgeEl.style.color = isInactive ? '#A32D2D' : '#025628';
+              }
+
+              const btn = row.querySelector('.btn-view');
+              if (btn) {
+                const courseTitle = document.getElementById(
+                  'editTrainerCourse')?.value || '';
+                const created = document.getElementById('editUserCreated')
+                  ?.value || '';
+
+                const safeName = name.replace(/'/g, "\\'");
+                const safeEmail = email.replace(/'/g, "\\'");
+                const safeCourse = courseTitle.replace(/'/g, "\\'");
+                const safeContact = (contact || '').replace(/'/g, "\\'");
+                const safeIdNum = (id_number || '').replace(/'/g, "\\'");
+                const safeRemarks = (remarks || '').replace(/'/g, "\\'");
+
+                btn.setAttribute('onclick', `openUserModal(
+              '${id}',
+              '${safeName}',
+              '${safeEmail}',
+              '${role}',
+              '${status}',
+              '${safeCourse}',
+              '${safeContact}',
+              '${safeIdNum}',
+              '${created}',
+              '${safeRemarks}'
+            )`);
+              }
+            }
+
+            // 1. Show feedback alert FIRST
+            alert(data.message || 'User profile updated successfully!');
+
+            // 2. Close modal safely
+            closeUserModal();
+          } else {
+            alert(data?.message || 'An error occurred while updating.');
+          }
+        })
+        .catch(err => {
+          console.error("Update error:", err);
+          alert(err.message ||
+            'An error occurred while updating. Please try again.');
+        })
+        .finally(() => {
+          // Restore submit button state
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '1';
+            submitBtn.style.cursor = 'pointer';
+            submitBtn.innerHTML = originalSubmitHtml;
+          }
+        });
+    };
+
+    // 2. DELETE USER FUNCTION
+    function deleteUser() {
+      const idInput = document.getElementById('editUserId');
+      const id = idInput ? idInput.value : null;
+
+      if (!id) {
+        alert('Error: Missing User ID.');
+        return;
+      }
+
+      if (!confirm(
+          'Are you sure you want to remove this user? This action cannot be undone.'
+        )) {
+        return;
+      }
+
+      const deleteBtn = document.querySelector('.btn-delete-text');
+      const originalDeleteHtml = deleteBtn ? deleteBtn.innerHTML :
+        '<i class="fa-solid fa-user-slash"></i> Remove User';
+
+      if (deleteBtn) {
+        deleteBtn.disabled = true;
+        deleteBtn.style.opacity = '0.7';
+        deleteBtn.style.cursor = 'not-allowed';
+        deleteBtn.innerHTML =
+          '<i class="fa-solid fa-spinner fa-spin"></i> Removing...';
+      }
+
+      const token = document.querySelector('meta[name="csrf-token"]')
+        ?.getAttribute('content') ||
+        (typeof csrfToken !== 'undefined' ? csrfToken : '');
+
+      fetch('/admin/user/delete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': token,
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            id: id
           })
         })
         .then(async r => {
@@ -5042,48 +5412,46 @@
         })
         .then(data => {
           if (data.success) {
-            const statusBadge = document.querySelector(
-              `.roster-status-badge[data-email="${email}"]`);
-
-            if (statusBadge) {
-              statusBadge.textContent = status;
-
-              if (status.toLowerCase() === 'active') {
-                statusBadge.style.background = '#e8f5e9';
-                statusBadge.style.color = '#025628';
-              } else if (status.toLowerCase() === 'inactive') {
-                statusBadge.style.background = '#FCEBEB';
-                statusBadge.style.color = '#A32D2D';
-              } else {
-                statusBadge.style.background = '#fff8e1';
-                statusBadge.style.color = '#854F0B';
-              }
+            const row = document.querySelector(
+              `.user-item[data-user-id="${id}"]`);
+            if (row) {
+              row.remove();
             }
 
-            alert('User profile updated successfully!');
+            alert('User removed successfully!');
             closeUserModal();
           } else {
-            alert(data.message || 'An error occurred while updating.');
+            alert(data.message || 'Failed to remove user.');
           }
         })
         .catch(err => {
           console.error(err);
-          alert('An error occurred while updating. Please try again.');
+          alert('Network error occurred while attempting to delete user.');
+        })
+        .finally(() => {
+          if (deleteBtn) {
+            deleteBtn.disabled = false;
+            deleteBtn.style.opacity = '1';
+            deleteBtn.style.cursor = 'pointer';
+            deleteBtn.innerHTML = originalDeleteHtml;
+          }
         });
-    };
+    }
 
     function togglePassword() {
       const passwordInput = document.getElementById('newTrainerPass');
       const icon = document.getElementById('togglePasswordIcon');
 
-      if (passwordInput.type === 'password') {
-        passwordInput.type = 'text';
-        icon.classList.remove('fa-eye');
-        icon.classList.add('fa-eye-slash');
-      } else {
-        passwordInput.type = 'password';
-        icon.classList.remove('fa-eye-slash');
-        icon.classList.add('fa-eye');
+      if (passwordInput && icon) {
+        if (passwordInput.type === 'password') {
+          passwordInput.type = 'text';
+          icon.classList.remove('fa-eye');
+          icon.classList.add('fa-eye-slash');
+        } else {
+          passwordInput.type = 'password';
+          icon.classList.remove('fa-eye-slash');
+          icon.classList.add('fa-eye');
+        }
       }
     }
 
@@ -5205,7 +5573,7 @@
       const searchVal = document.getElementById('annSearchInput')?.value
         .toLowerCase().trim() || '';
       const typeVal = document.getElementById('annTypeFilter')?.value
-      .toLowerCase() || '';
+        .toLowerCase() || '';
       const statusVal = document.getElementById('annStatusFilter')?.value
         .toLowerCase() || '';
 
@@ -5230,6 +5598,51 @@
         } else {
           item.style.setProperty('display', 'none', 'important');
         }
+      });
+    }
+
+    function filterTraineeCards() {
+      const searchVal = document.getElementById('traineeCourseSearch')?.value
+        .toLowerCase().trim() || '';
+      const cards = document.querySelectorAll('.trainee-course-card');
+      let visibleCount = 0;
+
+      cards.forEach(card => {
+        const title = card.getAttribute('data-title') || '';
+        if (searchVal === '' || title.includes(searchVal)) {
+          card.style.display = 'flex';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      const noResults = document.getElementById('noTraineeCardResults');
+      if (noResults) {
+        noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+      }
+    }
+
+    // Live search filter for Trainer Directory
+    function filterTrainerList() {
+      const input = document.getElementById('trainerSearchInput').value
+        .toLowerCase();
+      const items = document.querySelectorAll('#trainer-list-content .user-item');
+
+      items.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        item.style.display = text.includes(input) ? 'flex' : 'none';
+      });
+    }
+
+    function filterTrainerList() {
+      const input = document.getElementById('trainerSearchInput').value
+        .toLowerCase();
+      const items = document.querySelectorAll('#trainer-list-content .user-item');
+
+      items.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        item.style.display = text.includes(input) ? 'flex' : 'none';
       });
     }
   </script>

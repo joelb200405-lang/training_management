@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\RegistrationController;
 
 // ── PUBLIC ROUTES (walang login needed) ──────────────────────────────────────
 Route::get('/', [UserController::class, 'index'])->name('index');
@@ -17,20 +18,20 @@ Route::get("/contact-us", [UserController::class, "landingContact"])->name("land
 Route::post("/contact-us", [UserController::class, "landingContactSend"])->name("landing.contact.send");
 Route::get("/our-courses/{id}", [UserController::class, "landingCourseDetail"])->name("landing.course.detail");
 
-    // Email Verification
-    Route::get('/email/verify', function () {
+// Email Verification
+Route::get('/email/verify', function () {
     return view('student.verify_email');
-    })->middleware('auth')->name('verification.notice');
+})->middleware('auth')->name('verification.notice');
 
-    Route::get('/email/verify/{id}/{hash}', function (\Illuminate\Foundation\Auth\EmailVerificationRequest $request) {
-        $request->fulfill();
-        return redirect()->route('handle');
-    })->middleware(['auth', 'signed'])->name('verification.verify');
+Route::get('/email/verify/{id}/{hash}', function (\Illuminate\Foundation\Auth\EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect()->route('handle');
+})->middleware(['auth', 'signed'])->name('verification.verify');
 
-    Route::post('/email/verification-notification', function (\Illuminate\Http\Request $request) {
-        $request->user()->sendEmailVerificationNotification();
-        return back()->with('status', 'verification-link-sent');
-    })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+Route::post('/email/verification-notification', function (\Illuminate\Http\Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('status', 'verification-link-sent');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
 // Forgot/Reset Password (public)
 Route::get("/forgotpassword", [UserController::class, "ForgotPassword"])->name("ForgotPassword");
@@ -44,18 +45,34 @@ Route::post("/first-reset", [UserController::class, "firstResetSave"])->name("fi
 
 // ── ADMIN ROUTES ──────────────────────────────────────────────────────────────
 Route::middleware("admin")->group(function () {
-    Route::get("/admin1", [UserController::class, "admin1"])->name("admin1");
-    Route::get("/trainees", [UserController::class, "trainees"])->name("trainees");
+    // Registrations
+    Route::get('/admin/registrations/export/csv', [RegistrationController::class, 'exportCsv'])->name('admin.registrations.export');
+    Route::get('/admin/registrations/{registration}/pdf', [RegistrationController::class, 'downloadPdf'])->name('admin.registrations.pdf');
+    Route::get('/admin/registrations/{registration}', [RegistrationController::class, 'adminShow'])->name('admin.registrations.show');
 
-    // Trainer management
-    Route::post("/admin/trainer/store", [UserController::class, "storeTrainer"])->name("admin.trainer.store");
+    // Dashboard & Views
+    Route::get('/admin1', [UserController::class, 'admin1'])->name('admin1');
+    Route::get('/trainees', [UserController::class, 'trainees'])->name('trainees');
 
-    // Course management
-    Route::post("/admin/course/{courseId}/assign-trainer", [UserController::class, "assignTrainer"])->name("admin.course.assignTrainer");
-    Route::post("/admin/course/{courseId}/remove-trainer", [UserController::class, "removeTrainer"])->name("admin.course.removeTrainer");
+    // Trainers & Users
+    Route::post('/admin/trainer/store', [UserController::class, 'storeTrainer'])->name('admin.trainer.store');
+    Route::post('/admin/user/update', [UserController::class, 'updateUser'])->name('admin.user.update');
+    Route::post('/admin/user/delete', [UserController::class, 'deleteUser']);
+
+    // Courses & Trainers Assignment
+    Route::post('/admin/course/store', [UserController::class, 'storeCourse']);
+    Route::put('/admin/course/{courseId}', [UserController::class, 'updateCourse'])->name('admin.course.update');
+    Route::put('/admin/course/{id}', [UserController::class, 'updateCourse']);
+    Route::delete('/admin/course/{id}', [UserController::class, 'destroy']);
+    Route::get('/admin/course/{courseId}/content', [UserController::class, 'getCourseContent'])->name('admin.course.content');
+    Route::post('/admin/course/{courseId}/assign-trainer', [UserController::class, 'assignTrainer'])->name('admin.course.assignTrainer');
+    Route::post('/admin/course/{courseId}/remove-trainer', [UserController::class, 'removeTrainer'])->name('admin.course.removeTrainer');
+
+    // Facilities
+    Route::post('/admin/facility/save', [UserController::class, 'saveFacility'])->name('admin.facility.save');
+    Route::post('/admin/facility/delete', [UserController::class, 'deleteFacility']);
 
     // Modules
-    Route::get("/admin/course/{courseId}/content", [UserController::class, "getCourseContent"])->name("admin.course.content");
     Route::post("/admin/module", [UserController::class, "storeModule"])->name("admin.module.store");
     Route::match(['POST', 'DELETE'], "/admin/module/{id}", [UserController::class, "destroyModule"])->name("admin.module.destroy");
 
@@ -67,6 +84,13 @@ Route::middleware("admin")->group(function () {
     Route::get("/admin/quiz/{quizId}/questions", [UserController::class, "getQuizQuestions"])->name("admin.quiz.questions");
     Route::post("/admin/quiz-question", [UserController::class, "storeQuizQuestion"])->name("admin.quiz.question.store");
     Route::match(['POST', 'DELETE'], "/admin/quiz-question/{id}", [UserController::class, "destroyQuizQuestion"])->name("admin.quiz.question.destroy");
+
+    // Announcements
+    Route::get("/admin/announcements", [UserController::class, "admin1"])->name("admin.announcements");
+    Route::post("/admin/announcement", [UserController::class, "storeAnnouncement"])->name("admin.announcement.store");
+    Route::put("/admin/announcement/{id}", [UserController::class, "updateAnnouncement"])->name("admin.announcement.update");
+    Route::delete("/admin/announcement/{id}", [UserController::class, "destroyAnnouncement"])->name("admin.announcement.destroy");
+    Route::post("/admin/announcement/{id}/toggle", [UserController::class, "toggleAnnouncement"])->name("admin.announcement.toggle");
 });
 
 // ── TRAINER ROUTES ────────────────────────────────────────────────────────────
@@ -83,7 +107,6 @@ Route::middleware("trainer")->group(function () {
     Route::get("/trainer/profile", [UserController::class, "trainerProfile"])->name("trainer.profile");
     Route::post("/trainer/profile/update", [UserController::class, "trainerProfileUpdate"])->name("trainer.profile.update");
     Route::post("/trainer/profile/password", [UserController::class, "trainerProfilePassword"])->name("trainer.profile.password");
- 
 
     // Trainer course content
     Route::get("/trainer/course/{courseId}/content", [UserController::class, "getCourseContent"])->name("trainer.course.content");
@@ -113,10 +136,5 @@ Route::middleware("student")->group(function () {
     Route::post("/student/profile/password", [UserController::class, "studentProfilePassword"])->name("student.profile.password");
     Route::get("/student/modules", [UserController::class, "studentModules"])->name("student.modules");
     Route::get('/student/announcements', function () { return view('student.announcements'); })->name('student.announcements');
-  
-    Route::get("/admin/announcements", [UserController::class, "admin1"])->name("admin.announcements");
-    Route::post("/admin/announcement", [UserController::class, "storeAnnouncement"])->name("admin.announcement.store")->middleware("admin");
-    Route::put("/admin/announcement/{id}", [UserController::class, "updateAnnouncement"])->name("admin.announcement.update")->middleware("admin");
-    Route::delete("/admin/announcement/{id}", [UserController::class, "destroyAnnouncement"])->name("admin.announcement.destroy")->middleware("admin");
-    Route::post("/admin/announcement/{id}/toggle", [UserController::class, "toggleAnnouncement"])->name("admin.announcement.toggle")->middleware("admin");
+    Route::get('/registration/step1', [RegistrationController::class, 'step1'])->name('registration.step1');
 });

@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User_tbl extends Authenticatable implements MustVerifyEmail
@@ -21,9 +21,14 @@ class User_tbl extends Authenticatable implements MustVerifyEmail
         "role",
         "must_reset_password",
         "email_verified_at",
-        "status",   // <-- ADD THIS
-        "remarks",  // <-- ADD THIS
+        "status",
+        "remarks",
+        "contact",
+        "id_number",
     ];
 
-    protected $dates = ['email_verified_at'];
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
 }

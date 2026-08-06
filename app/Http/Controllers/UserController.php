@@ -210,8 +210,11 @@ class UserController extends Controller
                 'recentActivity'
             ));
         }
-        public function admin1()
+
+public function admin1(Request $request)
 {
+    $currentView = $request->input('view', 'overview');
+
     // Eager-load relationships & counts, then paginate 9 items per page
     $courses = \App\Models\Course_tbl::with(['facility', 'trainer'])
         ->withCount(['enrollments', 'modules', 'quizzes'])
@@ -227,6 +230,24 @@ class UserController extends Controller
     $registrations = \App\Models\Registration::latest()->paginate(10, ['*'], 'reg_page');
     $facilities    = \App\Models\Facility::with('courses')->get();
 
+    // --- CHART DATA AGGREGATIONS ---
+
+    // 1. Courses grouped by Sector
+    $sectorData = \App\Models\Course_tbl::select('sector', \DB::raw('COUNT(*) as total'))
+        ->whereNotNull('sector')
+        ->groupBy('sector')
+        ->pluck('total', 'sector')
+        ->toArray();
+
+    $sectorLabels = array_keys($sectorData);
+    $sectorCounts = array_values($sectorData);
+
+    // 2. Capacity: Slots per Course Title
+    $slotData = \App\Models\Course_tbl::pluck('slots', 'title')->toArray();
+
+    $courseTitles = array_keys($slotData);
+    $courseSlots  = array_values($slotData);
+
     return view('admin.admin1', compact(
         'courses',
         'allCourses',
@@ -235,8 +256,86 @@ class UserController extends Controller
         'trainersList',
         'announcements',
         'registrations',
-        'facilities'
+        'facilities',
+        'sectorLabels',
+        'sectorCounts',
+        'courseTitles',
+        'courseSlots',
+        'currentView'
     ));
+}
+
+public function updateUser(Request $request)
+{
+    // 1. Validation
+    $request->validate([
+        'id'        => 'nullable|integer',
+        'email'     => 'required_without:id|email',
+        'name'      => 'nullable|string|max:255',
+        'status'    => 'nullable|string',
+        'contact'   => 'nullable|string|max:11',
+        'id_number' => 'nullable|string|max:100',
+        'role'      => 'nullable|string',
+    ]);
+
+    // 2. Locate user record
+    $user = User_tbl::find($request->id) 
+         ?? User_tbl::where('email', $request->email)->first();
+
+    if (!$user) {
+        return response()->json([
+            'success' => false, 
+            'message' => 'User record not found.'
+        ], 404);
+    }
+
+    // 3. Safely update fields
+    if ($request->filled('name')) {
+        $nameParts = explode(' ', trim($request->name), 2);
+        $user->firstname = $nameParts[0];
+        $user->lastname  = $nameParts[1] ?? $user->lastname; // Retains existing lastname if only 1 name was provided
+    }
+
+    if ($request->has('status'))    $user->status    = $request->status;
+    if ($request->has('remarks'))   $user->remarks   = $request->remarks;
+    if ($request->has('contact'))   $user->contact   = $request->contact;
+    if ($request->has('id_number')) $user->id_number = $request->id_number;
+    if ($request->filled('role'))   $user->role      = $request->role;
+
+    $user->save();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'User profile updated successfully!'
+    ]);
+}
+
+public function deleteUser(Request $request)
+{
+    $request->validate([
+        'id' => 'required'
+    ]);
+
+    $user = User_tbl::find($request->id);
+
+    if (!$user) {
+        return response()->json([
+            'success' => false,
+            'message' => 'User not found in database.'
+        ], 404);
+    }
+
+    // Unassign trainer from courses before deleting to avoid foreign key errors
+    if (class_exists(Course_tbl::class)) {
+        Course_tbl::where('trainer_id', $user->id)->update(['trainer_id' => null]);
+    }
+
+    $user->delete();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'User deleted successfully.'
+    ]);
 }
 
         public function saveFacility(Request $request)
@@ -293,6 +392,8 @@ class UserController extends Controller
     }
 }
 
+
+
 public function deleteFacility(Request $request)
 {
     $request->validate([
@@ -321,18 +422,6 @@ public function deleteFacility(Request $request)
         ], 500);
     }
 }
-        public function updateUser(Request $request) {
-        $user = User::where('email', $request->email)->first();
-        if ($user) {
-            $user->status = $request->status;
-            $user->name = $request->name; // Update to match your column name (e.g., firstname if split)
-            $user->remarks = $request->remarks;
-            $user->save();
-
-            return response()->json(['success' => true]);
-        }
-        return response()->json(['success' => false, 'message' => 'User not found.'], 404);
-    }
 
     public function destroy($id)
     {
@@ -1258,33 +1347,64 @@ public function trainerStudents()
 }
 
     public function storeTrainer(Request $request)
-    {
-        $request->validate([
-            'firstname' => 'required|string',
-            'lastname'  => 'required|string',
-            'email'     => 'required|email|unique:user_tbls,email',
-            'password'  => 'required|min:6',
-            'course_id' => 'nullable|exists:course_tbls,id',
+{
+    // 1. Auto-split "name" into firstname and lastname if passed from frontend
+    if ($request->has('name') && (!$request->filled('firstname') || !$request->filled('lastname'))) {
+        $nameParts = explode(' ', trim($request->name), 2);
+        $request->merge([
+            'firstname' => $nameParts[0] ?? '',
+            'lastname'  => $nameParts[1] ?? '',
         ]);
-
-        $trainer = \App\Models\User_tbl::create([
-            'firstname'            => $request->firstname,
-            'lastname'             => $request->lastname,
-            'email'                => $request->email,
-            'username'             => strtolower($request->firstname . '.' . $request->lastname),
-            'password'             => bcrypt($request->password),
-            'role'                 => 'trainer',
-            'must_reset_password'  => true,
-        ]);
-
-        // I-assign sa course kung may pinili
-        if ($request->course_id) {
-            \App\Models\Course_tbl::where('id', $request->course_id)
-                ->update(['trainer_id' => $trainer->id]);
-        }
-
-        return response()->json(['success' => true]);
     }
+
+    // 2. Validation
+    $request->validate([
+        'firstname' => 'required|string|max:255',
+        'lastname'  => 'nullable|string|max:255',
+        'email'     => 'required|email|unique:user_tbls,email',
+        'password'  => 'required|string|min:6',
+        'course_id' => 'nullable|exists:course_tbls,id',
+        'contact'   => 'nullable|string|max:11',
+        'id_number' => 'nullable|string|max:100',
+        'remarks'   => 'nullable|string',
+    ]);
+
+    // 3. Generate clean username from email or name
+    $cleanFirstName = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $request->firstname));
+    $cleanLastName  = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $request->lastname));
+    $baseUsername   = $cleanLastName ? "{$cleanFirstName}.{$cleanLastName}" : $cleanFirstName;
+
+    $username = $baseUsername;
+    if (\App\Models\User_tbl::where('username', $username)->exists()) {
+        $username .= rand(10, 99);
+    }
+
+    // 4. Create Trainer Record
+    $trainer = \App\Models\User_tbl::create([
+        'firstname'           => $request->firstname,
+        'lastname'            => $request->lastname ?: 'N/A',
+        'email'               => $request->email,
+        'username'            => $username,
+        'password'            => bcrypt($request->password),
+        'role'                => 'trainer',
+        'status'              => 'Active',
+        'contact'             => $request->contact ?? null,
+        'id_number'           => $request->id_number ?? null,
+        'remarks'             => $request->remarks ?? null,
+        'must_reset_password' => true,
+    ]);
+
+    // 5. Assign to Course if selected
+    if ($request->filled('course_id') && class_exists(\App\Models\Course_tbl::class)) {
+        \App\Models\Course_tbl::where('id', $request->course_id)
+            ->update(['trainer_id' => $trainer->id]);
+    }
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Trainer registered successfully!'
+    ]);
+}
 
     // ── FIRST TIME RESET PASSWORD ─────────────────────────────────────────────
     public function firstResetPage()
