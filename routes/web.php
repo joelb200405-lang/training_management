@@ -112,8 +112,8 @@ Route::middleware("student")->group(function () {
     Route::post("/student/profile/update", [UserController::class, "studentProfileUpdate"])->name("student.profile.update");
     Route::post("/student/profile/password", [UserController::class, "studentProfilePassword"])->name("student.profile.password");
     Route::get("/student/modules", [UserController::class, "studentModules"])->name("student.modules");
-
-    // Announcements
+    Route::get('/student/announcements', function () { return view('student.announcements'); })->name('student.announcements');
+  
     Route::get("/admin/announcements", [UserController::class, "admin1"])->name("admin.announcements");
     Route::post("/admin/announcement", [UserController::class, "storeAnnouncement"])->name("admin.announcement.store")->middleware("admin");
     Route::put("/admin/announcement/{id}", [UserController::class, "updateAnnouncement"])->name("admin.announcement.update")->middleware("admin");
