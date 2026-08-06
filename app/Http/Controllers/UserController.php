@@ -563,20 +563,35 @@ public function removeTrainer($courseId)
     public function teacher()
     {
         // ── Existing stat cards ───────────────────────────────────────────────
-        $totalTrainees     = \App\Models\Enrollment_tbl::where('status', 'active')->count();
+        $trainer = Auth::user();
+        $course = Course_tbl::where('trainer_id', $trainer->id)->first();
+
+        $totalTrainees = $course
+        ? \App\Models\Enrollment_tbl::where('course_id', $course->id)
+            ->where('status', 'active')
+            ->count()
+        : 0;
     
-        $monthlyEnrollment = \App\Models\Enrollment_tbl::whereMonth('enrolled_at', now()->month)
-                            ->whereYear('enrolled_at', now()->year)
-                            ->count();
+        $monthlyEnrollment = $course
+            ? \App\Models\Enrollment_tbl::where('course_id', $course->id)
+                ->whereMonth('enrolled_at', now()->month)
+                ->whereYear('enrolled_at', now()->year)
+                ->count()
+            : 0;
     
-        $completionRate    = \App\Models\Enrollment_tbl::count() > 0
-                            ? round(\App\Models\Enrollment_tbl::where('status', 'completed')->count()
-                            / \App\Models\Enrollment_tbl::count() * 100) . '%'
-                            : '0%';
+        $totalInCourse = $course ? \App\Models\Enrollment_tbl::where('course_id', $course->id)->count() : 0;
+        $completedInCourse = $course ? \App\Models\Enrollment_tbl::where('course_id', $course->id)->where('status', 'completed')->count() : 0;
+
+        $completionRate = $totalInCourse > 0
+            ? round($completedInCourse / $totalInCourse * 100) . '%'
+            : '0%';
     
-        $urgentAssessments = \App\Models\Deadline_tbl::where('due_date', '<=', now()->addDays(3))
-                            ->where('due_date', '>=', now())
-                            ->count();
+        $urgentAssessments = $course
+            ? \App\Models\Deadline_tbl::where('course_id', $course->id)
+                ->where('due_date', '<=', now()->addDays(3))
+                ->where('due_date', '>=', now())
+                ->count()
+            : 0;
     
         // ── Low performing trainees ───────────────────────────────────────────
         $lowPerforming = \App\Models\Enrollment_tbl::with(['user', 'course'])
