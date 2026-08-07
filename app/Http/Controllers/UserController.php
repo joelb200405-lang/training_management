@@ -145,9 +145,11 @@ class UserController extends Controller
                 : $enrollments->where('status', 'active')->first() ?? $enrollments->first();
         
             // ── Deadlines ─────────────────────────────────────────────────────────────
-            $upcomingDeadlines = \App\Models\Deadline_tbl::where('due_date', '>=', now())
-                                    ->where('due_date', '<=', now()->addDays(30))
-                                    ->count();
+            $courseIds = $enrollments->pluck('course_id');
+            $upcomingDeadlines = \App\Models\Deadline_tbl::whereIn('course_id', $courseIds)
+                ->where('due_date', '>=', now())
+                ->where('due_date', '<=', now()->addDays(30))
+                ->count();
         
             // ── Announcements ─────────────────────────────────────────────────────────
             $announcements = \App\Models\Announcement::active()->latest()->take(5)->get();
