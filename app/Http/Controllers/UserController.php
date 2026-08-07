@@ -1570,6 +1570,27 @@ public function trainerStudents()
         return redirect()->route('trainer.profile')->with('success', 'Profile updated successfully!');
     }
 
+    public function trainerCertificateUpload(Request $request)
+    {
+        $request->validate([
+            'certificate' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
+        ]);
+
+        $user = Auth::user();
+
+        // Delete old certificate file if one exists, so we don't leave orphaned files
+        if ($user->certificate_path && Storage::disk('public')->exists($user->certificate_path)) {
+            Storage::disk('public')->delete($user->certificate_path);
+        }
+
+        $path = $request->file('certificate')->store('certificates', 'public');
+
+        $user->certificate_path = $path;
+        $user->save();
+
+        return back()->with('success', 'Certificate uploaded successfully!');
+    }
+
     public function trainerProfilePassword(Request $request)
     {
         $user = Auth::user();

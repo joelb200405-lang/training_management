@@ -100,6 +100,7 @@ Route::middleware("trainer")->group(function () {
     Route::get("/trainer/courses", [UserController::class, "courses"])->name("trainer.courses");
     Route::get("/assessment", [UserController::class, "assessment"])->name("assessment");
     Route::get("/certificates", [UserController::class, "certificates"])->name("certificates");
+    Route::post("/trainer/certificate", [UserController::class, "trainerCertificateUpload"])->name("trainer.certificate.upload"); //new
     Route::get("/reports", [UserController::class, "reports"])->name("reports");
     Route::get("/settings", [UserController::class, "settings"])->name("settings");
     Route::get("/trainer/students", [UserController::class, "trainerStudents"])->name("trainer.students");

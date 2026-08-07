@@ -228,6 +228,64 @@
       width: 13px;
     }
 
+    .pf-modal {
+      display: none;
+      position: fixed;
+      z-index: 3000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+    }
+
+    .pf-modal.open {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .pf-modal-content {
+      background: #fff;
+      border-radius: 14px;
+      width: 90%;
+      max-width: 700px;
+      height: 85vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .pf-modal-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f9fdf9;
+    }
+
+    .pf-modal-header h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #025628;
+      margin: 0;
+    }
+
+    .pf-modal-close {
+      font-size: 22px;
+      color: #aaa;
+      cursor: pointer;
+      background: none;
+      border: none;
+      line-height: 1;
+    }
+
+    .pf-modal-close:hover {
+      color: #A32D2D;
+    }
+
     @media (max-width: 600px) {
       .pf-wrap {
         padding: 18px 16px;
@@ -240,6 +298,11 @@
       .pf-stats {
         grid-template-columns: 1fr 1fr;
       }
+      .pf-modal-content {
+      width: 96%;
+      height: 90vh;
+      max-width: none;
+  }
     }
   </style>
 @endsection
@@ -352,6 +415,38 @@
       @endif
     </div>
 
+      {{-- ── TESDA CERTIFICATE ──────────────────────────────────── --}}
+      <div class="pf-card">
+        <div class="pf-card-title">TESDA certificate</div>
+
+        @if ($user->certificate_path)
+          <div class="pf-course-card" style="margin-bottom:14px;">
+            <div class="pf-course-meta-item">
+              <i class="fa fa-file-circle-check"></i>
+                <a href="javascript:void(0)" onclick="openCertModal()" style="color:#025628;font-weight:600;text-decoration:none;">
+                              View current certificate
+                            </a>
+            </div>
+          </div>
+        @else
+          <div style="text-align:center;padding:20px;color:#aaa;font-size:13px;margin-bottom:14px;">
+            <i class="fa fa-file-circle-xmark" style="font-size:24px;opacity:0.3;display:block;margin-bottom:8px;"></i>
+            No certificate uploaded yet.
+          </div>
+        @endif
+
+        <form action="{{ route('trainer.certificate.upload') }}" method="POST" enctype="multipart/form-data">
+          @csrf
+          <div class="pf-field full" style="margin-bottom:14px;">
+            <label class="pf-label">Upload certificate (PDF, JPG, or PNG, max 5MB)</label>
+            <input type="file" name="certificate" class="pf-input" accept=".pdf,.jpg,.jpeg,.png" required>
+          </div>
+          <div class="pf-btn-row">
+            <button type="submit" class="pf-btn">Upload certificate</button>
+          </div>
+        </form>
+      </div>
+
     {{-- ── CHANGE PASSWORD ────────────────────────────────────── --}}
     <div class="pf-card">
       <div class="pf-card-title">Change password</div>
@@ -379,5 +474,26 @@
       </form>
     </div>
 
+    <div id="certModal" class="pf-modal">
+    <div class="pf-modal-content">
+      <div class="pf-modal-header">
+        <h3><i class="fa fa-file-pdf"></i> TESDA Certificate</h3>
+        <button class="pf-modal-close" onclick="closeCertModal()">&times;</button>
+      </div>
+      <iframe src="{{ $user->certificate_path ? asset('storage/' . $user->certificate_path) : '' }}" style="flex:1;border:none;width:100%;"></iframe>
+    </div>
+  </div>
+
   </div>
 @endsection
+
+  @section('scripts')
+  <script>
+    function openCertModal() {
+      document.getElementById('certModal').classList.add('open');
+    }
+    function closeCertModal() {
+      document.getElementById('certModal').classList.remove('open');
+    }
+  </script>
+
