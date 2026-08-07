@@ -273,6 +273,44 @@ public function admin1(Request $request)
     $courseTitles = array_keys($slotData);
     $courseSlots  = array_values($slotData);
 
+    // 3. Trainees Enrolled Per Course (For Overview Bar Graph)
+    $coursesWithTrainees = \App\Models\Course_tbl::withCount('enrollments')->get();
+    $traineeCourseLabels = $coursesWithTrainees->pluck('title')->toArray();
+    $traineeCourseCounts = $coursesWithTrainees->pluck('enrollments_count')->toArray();
+
+    // 4. Monthly Enrollment Trends (For Overview Line Chart - Last 4 Months)
+    $months = collect(range(3, 0))->map(function ($i) {
+        return now()->subMonths($i)->format('M');
+    })->toArray();
+
+    $monthNumbers = collect(range(3, 0))->map(function ($i) {
+        return (int) now()->subMonths($i)->format('m');
+    })->toArray();
+
+    $colors = ['#c19a6b', '#6b9e7c', '#f4d03f', '#004d26', '#854f0b'];
+    $topCourses = \App\Models\Course_tbl::take(5)->get();
+    $overviewCourseDatasets = [];
+
+    foreach ($topCourses as $index => $course) {
+        $monthlyCounts = [];
+        foreach ($monthNumbers as $m) {
+            $count = \DB::table('enrollment_tbls')
+                ->where('course_id', $course->id)
+                ->whereMonth('created_at', $m)
+                ->whereYear('created_at', date('Y'))
+                ->count();
+            $monthlyCounts[] = $count;
+        }
+
+        $overviewCourseDatasets[] = [
+            'label'       => $course->title,
+            'data'        => $monthlyCounts,
+            'borderColor' => $colors[$index % count($colors)],
+            'tension'     => 0.3,
+            'fill'        => false,
+        ];
+    }
+
     return view('admin.admin1', compact(
         'courses',
         'allCourses',
@@ -286,7 +324,11 @@ public function admin1(Request $request)
         'sectorCounts',
         'courseTitles',
         'courseSlots',
-        'currentView'
+        'currentView',
+        'traineeCourseLabels',
+        'traineeCourseCounts',
+        'months',
+        'overviewCourseDatasets'
     ));
 }
 
@@ -318,7 +360,7 @@ public function updateUser(Request $request)
     if ($request->filled('name')) {
         $nameParts = explode(' ', trim($request->name), 2);
         $user->firstname = $nameParts[0];
-        $user->lastname  = $nameParts[1] ?? $user->lastname; // Retains existing lastname if only 1 name was provided
+        $user->lastname  = $nameParts[1] ?? ''; // Empty string if single name given
     }
 
     if ($request->has('status'))    $user->status    = $request->status;
@@ -329,9 +371,31 @@ public function updateUser(Request $request)
 
     $user->save();
 
+    // 4. Fetch assigned course title if user is a trainer
+    $courseTitle = 'No course assigned';
+    if ($user->role === 'trainer' && class_exists(Course_tbl::class)) {
+        $course = Course_tbl::where('trainer_id', $user->id)->first();
+        if ($course) {
+            $courseTitle = $course->title;
+        }
+    }
+
     return response()->json([
-        'success' => true,
-        'message' => 'User profile updated successfully!'
+        'success'      => true,
+        'message'      => 'User profile updated successfully!',
+        'user'         => [
+            'id'           => $user->id,
+            'firstname'    => $user->firstname,
+            'lastname'     => $user->lastname,
+            'fullname'     => trim($user->firstname . ' ' . $user->lastname),
+            'email'        => $user->email,
+            'status'       => $user->status,
+            'contact'      => $user->contact,
+            'id_number'    => $user->id_number,
+            'remarks'      => $user->remarks,
+            'role'         => $user->role,
+            'course_title' => $courseTitle,
+        ]
     ]);
 }
 
@@ -359,7 +423,8 @@ public function deleteUser(Request $request)
 
     return response()->json([
         'success' => true,
-        'message' => 'User deleted successfully.'
+        'message' => 'User deleted successfully.',
+        'deleted_id' => $user->id
     ]);
 }
 

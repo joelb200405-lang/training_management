@@ -554,140 +554,319 @@
       </nav>
       <h1 class="page-title" id="main-title">System Overview</h1>
 
-      <!-- 1. OVERVIEW VIEW -->
-      <div id="view-overview">
-        <div class="charts-row">
-          <div class="card chart-card">
-            <h3>Trainees</h3>
-            <canvas id="traineeChart"></canvas>
-            <a href="#" class="view-more"
-              onclick="showView('analytics'); setActive(document.getElementById('nav-analytics')); return false;">View
-              more</a>
-          </div>
-          <div class="card chart-card">
-            <h3>Courses</h3>
-            <canvas id="courseChart"></canvas>
-            <a href="#" class="view-more"
-              onclick="showView('analytics'); setActive(document.getElementById('nav-analytics')); return false;">View
-              more</a>
-          </div>
-        </div>
+      <!-- 1. OVERVIEW VIEW CONTAINER -->
+      <div id="view-overview" style="width: 100%;">
 
-        <div class="card updates-card">
-          <h3><i class="fa-solid fa-bell"></i> Updates</h3>
+        <!-- 2-COLUMN MAIN DASHBOARD GRID -->
+        <div class="overview-dashboard-layout"
+          style="display: grid; grid-template-columns: 1fr 340px; gap: 20px; align-items: start; width: 100%;">
 
-          <!-- Primary 3 Announcements -->
-          <ul class="update-list" id="updateList"
-            style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px;">
-            @forelse($announcements->take(3) as $ann)
-              @php
-                $icon = match ($ann->type) {
-                    'urgent' => 'fa-circle-exclamation',
-                    'notice' => 'fa-bullhorn',
-                    default => 'fa-bell',
-                };
-                $badgeColor = match ($ann->type) {
-                    'urgent' => '#A32D2D',
-                    'notice' => '#854F0B',
-                    default => '#025628',
-                };
-                $bgColor = match ($ann->type) {
-                    'urgent' => '#FCEBEB',
-                    'notice' => '#FFF8E1',
-                    default => '#E8F5E9',
-                };
-              @endphp
-              <li
-                style="display: flex; align-items: flex-start; gap: 12px; padding: 10px 12px; background: #fff; border: 1px solid #f0f0f0; border-radius: 8px;">
+          <!-- LEFT COLUMN: Analytics Charts Section -->
+          <div class="charts-section"
+            style="display: flex; flex-direction: column; gap: 20px; min-width: 0;">
+
+            <div class="charts-row"
+              style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; align-items: stretch;">
+
+              <!-- Trainees Chart Card -->
+              <div class="card chart-card"
+                style="background: #ffffff; border-radius: 10px; border: 1px solid #dcdcdc; padding: 18px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: space-between; height: 100%; min-width: 0;">
+
+                <!-- Card Header -->
                 <div
-                  style="width: 32px; height: 32px; border-radius: 50%; background: {{ $bgColor }}; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">
-                  <i class="fa-solid {{ $icon }}"
-                    style="color: {{ $badgeColor }}; font-size: 13px;"></i>
+                  style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                  <h3
+                    style="margin: 0; font-size: 15px; font-weight: 700; color: #004d26; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-users" style="color: #004d26;"></i>
+                    Trainees Enrollment
+                  </h3>
+                  <span
+                    style="font-size: 10.5px; background: #e8f5e9; color: #004d26; padding: 3px 10px; border-radius: 12px; font-weight: 700; border: 1px solid #c8e6c9;">
+                    Course Breakdown
+                  </span>
                 </div>
 
-                <div style="flex: 1; min-width: 0;">
-                  <strong
-                    style="font-size: 13px; color: #1a1a1a; display: block; margin-bottom: 2px;">{{ $ann->title }}</strong>
-                  <small
-                    style="color: #666; font-size: 12px; display: block; line-height: 1.4; margin-bottom: 4px;">{{ $ann->message }}</small>
-
-                  <!-- Fixed static date rendering -->
-                  <small
-                    style="color: #aaa; font-size: 10px; display: inline-flex; align-items: center; gap: 4px;">
-                    <i class="fa-regular fa-clock"
-                      style="font-size: 9px;"></i>
-                    {{ $ann->created_at->format('M j, Y h:i A') }}
-                  </small>
+                <!-- Canvas Container -->
+                <div
+                  style="position: relative; height: 260px; width: 100%; min-width: 0;"
+                  title="Click to enlarge chart">
+                  <canvas id="traineeChart" style="cursor: pointer;"></canvas>
                 </div>
-              </li>
-            @empty
-              <li
-                style="text-align: center; color: #aaa; padding: 20px 0; font-size: 13px;">
-                <i class="fa-solid fa-bell-slash"
-                  style="font-size: 20px; display: block; margin-bottom: 6px; color: #ccc;"></i>
-                No recent updates or announcements.
-              </li>
-            @endforelse
-          </ul>
 
-          <!-- Collapsible Extra Announcements (Items past index 3) -->
-          @if ($announcements->count() > 3)
-            <div id="extra-updates" style="display: none; margin-top: 12px;">
-              <ul
-                style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px;">
-                @foreach ($announcements->slice(3) as $ann)
-                  @php
-                    $icon = match ($ann->type) {
-                        'urgent' => 'fa-circle-exclamation',
-                        'notice' => 'fa-bullhorn',
-                        default => 'fa-bell',
-                    };
-                    $badgeColor = match ($ann->type) {
-                        'urgent' => '#A32D2D',
-                        'notice' => '#854F0B',
-                        default => '#025628',
-                    };
-                    $bgColor = match ($ann->type) {
-                        'urgent' => '#FCEBEB',
-                        'notice' => '#FFF8E1',
-                        default => '#E8F5E9',
-                    };
-                  @endphp
-                  <li
-                    style="display: flex; align-items: flex-start; gap: 12px; padding: 10px 12px; background: #fff; border: 1px solid #f0f0f0; border-radius: 8px;">
-                    <div
-                      style="width: 32px; height: 32px; border-radius: 50%; background: {{ $bgColor }}; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">
-                      <i class="fa-solid {{ $icon }}"
-                        style="color: {{ $badgeColor }}; font-size: 13px;"></i>
-                    </div>
+                <!-- Card Footer -->
+                <div
+                  style="border-top: 1px solid #f2f2f2; margin-top: 14px; padding-top: 10px; display: flex; justify-content: space-between; align-items: center;">
+                  <span style="font-size: 11px; color: #888888;">
+                    <i class="fa-solid fa-chart-simple"
+                      style="margin-right: 4px; color: #004d26;"></i> Enrolled
+                    distribution
+                  </span>
+                  <a href="#" class="view-more"
+                    onclick="openExpandedChartModal('trainees'); return false;"
+                    style="color: #004d26; font-weight: 700; font-size: 12px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                    View details <i class="fa-solid fa-arrow-right"
+                      style="font-size: 11px;"></i>
+                  </a>
+                </div>
 
-                    <div style="flex: 1; min-width: 0;">
-                      <strong
-                        style="font-size: 13px; color: #1a1a1a; display: block; margin-bottom: 2px;">{{ $ann->title }}</strong>
-                      <small
-                        style="color: #666; font-size: 12px; display: block; line-height: 1.4; margin-bottom: 4px;">{{ $ann->message }}</small>
-                      <small
-                        style="color: #aaa; font-size: 10px;">{{ $ann->created_at->diffForHumans() }}</small>
-                    </div>
-                  </li>
-                @endforeach
-              </ul>
+              </div>
+
+              <!-- Courses Chart Card: Completion vs Active Status -->
+              <div class="card chart-card"
+                style="background: #ffffff; border-radius: 10px; border: 1px solid #dcdcdc; padding: 18px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: space-between; height: 100%; min-width: 0;">
+
+                <!-- Card Header -->
+                <div
+                  style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                  <h3
+                    style="margin: 0; font-size: 15px; font-weight: 700; color: #004d26; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-chart-pie"
+                      style="color: #004d26;"></i> Completion vs Active Status
+                  </h3>
+                  <span
+                    style="font-size: 10.5px; background: #e8f5e9; color: #004d26; padding: 3px 10px; border-radius: 12px; font-weight: 700; border: 1px solid #c8e6c9;">
+                    Overall Ratio
+                  </span>
+                </div>
+
+                <!-- Canvas Container -->
+                <div
+                  style="position: relative; height: 260px; width: 100%; display: flex; justify-content: center; align-items: center; min-width: 0;"
+                  title="Click to view enlarged chart">
+                  <canvas id="courseChart" style="cursor: pointer;"></canvas>
+                </div>
+
+                <!-- Card Footer -->
+                <div
+                  style="border-top: 1px solid #f2f2f2; margin-top: 14px; padding-top: 10px; display: flex; justify-content: space-between; align-items: center;">
+                  <span style="font-size: 11px; color: #888888;">
+                    <i class="fa-solid fa-graduation-cap"
+                      style="margin-right: 4px; color: #004d26;"></i> Active vs
+                    Graduated trainees
+                  </span>
+                  <a href="#" class="view-more"
+                    onclick="openExpandedChartModal('courses'); return false;"
+                    style="color: #004d26; font-weight: 700; font-size: 12px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                    View details <i class="fa-solid fa-arrow-right"
+                      style="font-size: 11px;"></i>
+                  </a>
+                </div>
+
+              </div>
+
             </div>
 
-            <div style="text-align: center; margin-top: 15px;">
-              <button class="view-more-btn" id="viewMoreBtn"
-                onclick="toggleUpdates()">
-                View More <i class="fa-solid fa-chevron-down"></i>
-              </button>
-            </div>
-          @endif
-
-          <div class="sidebar-calendar" style="margin-top: 20px;">
-            <div id="calendar"></div>
           </div>
+
+          <!-- RIGHT COLUMN: Updates & Calendar Sidebar (Isolated Container) -->
+          <div class="card updates-card"
+            style="background: #ffffff; border-radius: 10px; border: 1px solid #dcdcdc; padding: 18px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); width: 100%; box-sizing: border-box;">
+
+            <h3
+              style="margin-top: 0; margin-bottom: 14px; font-size: 15px; font-weight: 700; color: #004d26; display: flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-bell"></i> Updates
+            </h3>
+
+            <!-- Primary 3 Announcements -->
+            <ul class="update-list" id="updateList"
+              style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px;">
+              @forelse($announcements->take(3) as $ann)
+                @php
+                  $icon = match ($ann->type) {
+                      'urgent' => 'fa-circle-exclamation',
+                      'notice' => 'fa-bullhorn',
+                      default => 'fa-bell',
+                  };
+                  $badgeColor = match ($ann->type) {
+                      'urgent' => '#A32D2D',
+                      'notice' => '#854F0B',
+                      default => '#025628',
+                  };
+                  $bgColor = match ($ann->type) {
+                      'urgent' => '#FCEBEB',
+                      'notice' => '#FFF8E1',
+                      default => '#E8F5E9',
+                  };
+                @endphp
+                <li
+                  style="display: flex; align-items: flex-start; gap: 12px; padding: 10px 12px; background: #fff; border: 1px solid #f0f0f0; border-radius: 8px;">
+                  <div
+                    style="width: 32px; height: 32px; border-radius: 50%; background: {{ $bgColor }}; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">
+                    <i class="fa-solid {{ $icon }}"
+                      style="color: {{ $badgeColor }}; font-size: 13px;"></i>
+                  </div>
+
+                  <div style="flex: 1; min-width: 0;">
+                    <strong
+                      style="font-size: 13px; color: #1a1a1a; display: block; margin-bottom: 2px;">{{ $ann->title }}</strong>
+                    <small
+                      style="color: #666; font-size: 12px; display: block; line-height: 1.4; margin-bottom: 4px;">{{ $ann->message }}</small>
+                    <small
+                      style="color: #aaa; font-size: 10px; display: inline-flex; align-items: center; gap: 4px;">
+                      <i class="fa-regular fa-clock"
+                        style="font-size: 9px;"></i>
+                      {{ $ann->created_at->format('M j, Y h:i A') }}
+                    </small>
+                  </div>
+                </li>
+              @empty
+                <li
+                  style="text-align: center; color: #aaa; padding: 20px 0; font-size: 13px;">
+                  <i class="fa-solid fa-bell-slash"
+                    style="font-size: 20px; display: block; margin-bottom: 6px; color: #ccc;"></i>
+                  No recent updates or announcements.
+                </li>
+              @endforelse
+            </ul>
+
+            <!-- Collapsible Extra Announcements -->
+            @if ($announcements->count() > 3)
+              <div id="extra-updates"
+                style="display: none; margin-top: 12px;">
+                <ul
+                  style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px;">
+                  @foreach ($announcements->slice(3) as $ann)
+                    @php
+                      $icon = match ($ann->type) {
+                          'urgent' => 'fa-circle-exclamation',
+                          'notice' => 'fa-bullhorn',
+                          default => 'fa-bell',
+                      };
+                      $badgeColor = match ($ann->type) {
+                          'urgent' => '#A32D2D',
+                          'notice' => '#854F0B',
+                          default => '#025628',
+                      };
+                      $bgColor = match ($ann->type) {
+                          'urgent' => '#FCEBEB',
+                          'notice' => '#FFF8E1',
+                          default => '#E8F5E9',
+                      };
+                    @endphp
+                    <li
+                      style="display: flex; align-items: flex-start; gap: 12px; padding: 10px 12px; background: #fff; border: 1px solid #f0f0f0; border-radius: 8px;">
+                      <div
+                        style="width: 32px; height: 32px; border-radius: 50%; background: {{ $bgColor }}; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">
+                        <i class="fa-solid {{ $icon }}"
+                          style="color: {{ $badgeColor }}; font-size: 13px;"></i>
+                      </div>
+
+                      <div style="flex: 1; min-width: 0;">
+                        <strong
+                          style="font-size: 13px; color: #1a1a1a; display: block; margin-bottom: 2px;">{{ $ann->title }}</strong>
+                        <small
+                          style="color: #666; font-size: 12px; display: block; line-height: 1.4; margin-bottom: 4px;">{{ $ann->message }}</small>
+                        <small
+                          style="color: #aaa; font-size: 10px;">{{ $ann->created_at->diffForHumans() }}</small>
+                      </div>
+                    </li>
+                  @endforeach
+                </ul>
+              </div>
+
+              <div style="text-align: center; margin-top: 15px;">
+                <button class="view-more-btn" id="viewMoreBtn"
+                  onclick="toggleUpdates()"
+                  style="background: none; border: none; color: #004d26; font-weight: 700; font-size: 12px; cursor: pointer;">
+                  View More <i class="fa-solid fa-chevron-down"></i>
+                </button>
+              </div>
+            @endif
+
+            <!-- Sidebar Calendar Component -->
+            <div class="sidebar-calendar" style="margin-top: 20px;">
+              <div id="calendar"></div>
+            </div>
+
+          </div>
+
         </div>
+
       </div>
 
+      <!-- EXPANDED CHART MODAL (PLACED OUTSIDE OVERVIEW VIEW TO PREVENT Z-INDEX OVERLAPS) -->
+      <div id="expandedChartModal"
+        style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center; padding: 20px;">
+        <div
+          style="background: #ffffff; width: 100%; max-width: 920px; border-radius: 12px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); position: relative; max-height: 92vh; overflow-y: auto;">
+
+          <!-- Modal Header -->
+          <div
+            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid #ececec; padding-bottom: 12px;">
+            <h3 id="expandedModalTitle"
+              style="margin: 0; color: #004d26; font-size: 18px; font-weight: 700;">
+              Analytics View
+            </h3>
+            <button onclick="closeExpandedChartModal()"
+              style="background: none; border: none; font-size: 20px; color: #888888; cursor: pointer; padding: 4px;">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <!-- Dynamic KPI Cards Row -->
+          <div id="modalKpiRow"
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px;">
+            <div
+              style="background: #f8faf8; border: 1px solid #e0eae2; border-radius: 8px; padding: 12px; text-align: center;">
+              <span id="kpiLabel1"
+                style="font-size: 11px; color: #666666; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px;">Total
+                Trainees</span>
+              <strong id="kpiVal1"
+                style="display: block; font-size: 20px; color: #004d26; font-weight: 800; margin-top: 2px;">0</strong>
+            </div>
+
+            <div
+              style="background: #f8faf8; border: 1px solid #e0eae2; border-radius: 8px; padding: 12px; text-align: center;">
+              <span id="kpiLabel2"
+                style="font-size: 11px; color: #666666; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px;">Top
+                Performing Course</span>
+              <strong id="kpiVal2"
+                style="display: block; font-size: 20px; color: #004d26; font-weight: 800; margin-top: 2px;">N/A</strong>
+            </div>
+
+            <div
+              style="background: #f8faf8; border: 1px solid #e0eae2; border-radius: 8px; padding: 12px; text-align: center;">
+              <span id="kpiLabel3"
+                style="font-size: 11px; color: #666666; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px;">Active
+                Modules</span>
+              <strong id="kpiVal3"
+                style="display: block; font-size: 20px; color: #004d26; font-weight: 800; margin-top: 2px;">0
+                / 0</strong>
+            </div>
+          </div>
+
+          <!-- Scaled Chart Canvas Container -->
+          <div
+            style="position: relative; height: 480px; width: 100%; display: flex; justify-content: center; align-items: center; margin-bottom: 16px;">
+            <canvas id="expandedCanvas"></canvas>
+
+            <!-- Centered Doughnut Text Overlay -->
+            <div id="doughnutCenterText"
+              style="position: absolute; top: 43%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none; display: none;">
+              <span
+                style="font-size: 42px; font-weight: 800; color: #004d26; display: block; line-height: 1;">33%</span>
+              <span
+                style="font-size: 13px; font-weight: 700; color: #666666; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; display: block;">Completed</span>
+            </div>
+          </div>
+
+          <!-- Bottom Action Bar -->
+          <div
+            style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #ececec; padding-top: 14px; flex-wrap: wrap; gap: 10px;">
+            <span style="font-size: 12px; color: #666666;">
+              <i class="fa-solid fa-circle-info"
+                style="margin-right: 4px; color: #004d26;"></i> Metrics reflect
+              real-time active enrollments and module completion data.
+            </span>
+
+            <button onclick="window.print()"
+              style="background: #ffffff; border: 1px solid #004d26; color: #004d26; padding: 7px 16px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.15s ease;">
+              <i class="fa-solid fa-print"></i> Print Report
+            </button>
+          </div>
+
+        </div>
+      </div>
       <!-- 2. ANALYTICS VIEW -->
       <div id="view-analytics" style="display: none;">
         <div class="analytics-header-row">
@@ -729,7 +908,8 @@
             <h3
               style="margin: 0; font-size: 15px; font-weight: 700; color: #025628; display: flex; align-items: center; gap: 8px;">
               <i class="fa-solid fa-chalkboard-user"
-                style="color: #025628;"></i> Courses & Enrolled Trainees
+                style="color: #025628;"></i>
+              Courses & Enrolled Trainees
             </h3>
 
             <!-- Live Search Field -->
@@ -913,40 +1093,48 @@
       </div>
 
       <!-- 4. TRAINER LIST VIEW -->
-      <div id="view-trainer-list" style="display: none;">
-        <!-- Header Controls: Search & Actions -->
+      <div id="view-trainer-list" style="display: none; width: 100%;">
+
+        <!-- Header Controls Bar -->
         <div
-          style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; gap: 10px; flex-wrap: wrap;">
-          <div style="position: relative; width: 260px;">
+          style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 12px; flex-wrap: wrap;">
+          <!-- Search Input -->
+          <div style="position: relative; width: 280px; max-width: 100%;">
             <i class="fa-solid fa-magnifying-glass"
-              style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #888; font-size: 12px;"></i>
+              style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #888; font-size: 13px;"></i>
             <input type="text" id="trainerSearchInput"
               onkeyup="filterTrainerList()"
-              placeholder="Search trainer name or email..."
-              style="width: 100%; padding: 8px 10px 8px 30px; font-size: 12px; border: 1px solid #ccc; border-radius: 6px; outline: none; box-sizing: border-box;">
+              placeholder="Search trainer name, ID, or email..."
+              style="width: 100%; padding: 8px 12px 8px 34px; font-size: 12.5px; border: 1px solid #dcdcdc; border-radius: 6px; outline: none; box-sizing: border-box; background: #ffffff; transition: border-color 0.2s ease;">
           </div>
 
+          <!-- Add Trainer Button -->
           <button class="btn-save-main" onclick="openAddTrainerModal()"
-            style="width: auto; padding: 8px 16px; font-size: 12px; display: flex; align-items: center; gap: 6px;">
+            style="background: #025628; color: #ffffff; padding: 8px 16px; font-size: 12.5px; font-weight: 600; border-radius: 6px; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px; white-space: nowrap;">
             <i class="fa-solid fa-user-plus"></i> Add Trainer
           </button>
         </div>
 
-        <div class="card list-card">
+        <!-- Main Card Container -->
+        <div class="card list-card"
+          style="background: #ffffff; border-radius: 10px; border: 1px solid #dcdcdc; padding: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.02); overflow: hidden;">
+
+          <!-- Card Header -->
           <div class="card-header"
-            style="display: flex; justify-content: space-between; align-items: center;">
+            style="display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-bottom: 1px solid #ececec; background: #ffffff;">
             <h3
-              style="margin: 0; font-size: 15px; font-weight: 700; color: #025628;">
-              <i class="fa-solid fa-chalkboard-user"
-                style="margin-right: 6px;"></i> Trainer Directory
+              style="margin: 0; font-size: 15px; font-weight: 700; color: #025628; display: flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-chalkboard-user"></i> Trainer Directory
             </h3>
             <span
-              style="font-size: 11px; background: #e8f5e9; color: #025628; padding: 3px 10px; border-radius: 12px; font-weight: 700;">
+              style="font-size: 11px; background: #e8f5e9; color: #025628; padding: 3px 12px; border-radius: 12px; font-weight: 700;">
               Total: {{ count($trainersList) }}
             </span>
           </div>
 
-          <div class="user-list-body" id="trainer-list-content">
+          <!-- List Body -->
+          <div class="user-list-body" id="trainer-list-content"
+            style="display: flex; flex-direction: column;">
             @forelse($trainersList as $trainer)
               @php
                 $assignedCourse = isset($courses)
@@ -957,13 +1145,20 @@
                     : 'No course assigned';
                 $status = $trainer->status ?? 'Active';
                 $isInactive = strtolower($status) === 'inactive';
+                $fullName = trim(
+                    ($trainer->firstname ?? '') .
+                        ' ' .
+                        ($trainer->lastname ?? ''),
+                );
               @endphp
 
-              <!-- Added data-user-id attribute for real-time DOM updates -->
+              <!-- Single Trainer Row -->
               <div class="user-item" data-user-id="{{ $trainer->id }}"
-                style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #f0f0f0; gap: 12px;">
+                style="display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; border-bottom: 1px solid #f2f2f2; gap: 16px; background: #ffffff; transition: background-color 0.15s ease;">
+
                 <div
-                  style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0;">
+                  style="display: flex; align-items: center; gap: 14px; flex: 1; min-width: 0;">
+                  <!-- Avatar Icon -->
                   <div
                     style="width: 38px; height: 38px; border-radius: 50%; background: #e8f5e9; display: flex; align-items: center; justify-content: center; color: #025628; flex-shrink: 0;">
                     <i class="fa-solid fa-user-tie"
@@ -971,61 +1166,89 @@
                   </div>
 
                   <div class="user-info" style="min-width: 0; flex: 1;">
+                    <!-- Primary Row: Name & Status Badge -->
                     <div
                       style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                       <strong class="user-name-text"
-                        style="font-size: 13px; color: #1a1a1a;">
-                        {{ strtoupper($trainer->firstname . ' ' . $trainer->lastname) }}
+                        style="font-size: 13.5px; font-weight: 700; color: #111111; letter-spacing: 0.2px;">
+                        {{ strtoupper($fullName) }}
                       </strong>
+
                       <!-- Status Badge -->
                       <span class="roster-status-badge"
                         data-email="{{ $trainer->email }}"
-                        style="font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 12px; background: {{ $isInactive ? '#FCEBEB' : '#e8f5e9' }}; color: {{ $isInactive ? '#A32D2D' : '#025628' }};">
+                        style="font-size: 10.5px; font-weight: 700; padding: 2px 9px; border-radius: 12px; background: {{ $isInactive ? '#FCEBEB' : '#e8f5e9' }}; color: {{ $isInactive ? '#A32D2D' : '#025628' }}; display: inline-block;">
                         {{ $status }}
                       </span>
                     </div>
 
-                    <!-- Secondary Details: Email, Course & Contact -->
+                    <!-- Secondary Details Bar -->
                     <div
-                      style="display: flex; align-items: center; gap: 12px; margin-top: 3px; font-size: 11px; color: #666; flex-wrap: wrap;">
-                      <span class="user-email-text"><i
-                          class="fa-regular fa-envelope"
-                          style="margin-right: 4px;"></i>{{ $trainer->email }}</span>
+                      style="display: flex; align-items: center; gap: 16px; margin-top: 4px; font-size: 11.5px; color: #666666; flex-wrap: wrap;">
+                      <!-- ID Number -->
+                      <span class="user-id-text"
+                        style="color: #025628; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                        <i class="fa-solid fa-id-card"></i>
+                        <span
+                          class="user-id-value">{{ $trainer->id_number ?? 'N/A' }}</span>
+                      </span>
+
+                      <!-- Email -->
+                      <span class="user-email-text"
+                        style="display: inline-flex; align-items: center; gap: 6px; color: #666666;">
+                        <i class="fa-regular fa-envelope"></i>
+                        <span
+                          class="user-email-value">{{ $trainer->email }}</span>
+                      </span>
+
+                      <!-- Assigned Course -->
                       <span class="user-course-text"
-                        style="color: #025628; font-weight: 600;"><i
-                          class="fa-solid fa-book-open"
-                          style="margin-right: 4px;"></i>{{ $courseTitle }}</span>
-                      <span class="user-contact-text" style="color: #888;"><i
-                          class="fa-solid fa-phone"
-                          style="margin-right: 4px;"></i>{{ $trainer->contact ?? 'Not provided' }}</span>
+                        style="color: #025628; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                        <i class="fa-solid fa-book-open"></i>
+                        <span
+                          class="user-course-value">{{ $courseTitle }}</span>
+                      </span>
+
+                      <!-- Contact Number -->
+                      <span class="user-contact-text"
+                        style="color: #888888; display: inline-flex; align-items: center; gap: 6px;">
+                        <i class="fa-solid fa-phone"></i>
+                        <span
+                          class="user-contact-value">{{ $trainer->contact ?? 'Not provided' }}</span>
+                      </span>
                     </div>
                   </div>
                 </div>
 
+                <!-- View Profile Action Button -->
                 <button class="btn-view"
                   onclick="openUserModal(
-              '{{ $trainer->id }}',
-              '{{ addslashes($trainer->firstname . ' ' . $trainer->lastname) }}',
-              '{{ addslashes($trainer->email) }}',
-              'trainer',
-              '{{ addslashes($status) }}',
-              '{{ addslashes($courseTitle) }}',
-              '{{ addslashes($trainer->contact ?? '') }}',
-              '{{ addslashes($trainer->id_number ?? '') }}',
-              '{{ \Carbon\Carbon::parse($trainer->created_at ?? now())->format('F Y') }}',
-              '{{ addslashes($trainer->remarks ?? '') }}'
-            )">View
-                  Profile</button>
+            '{{ $trainer->id }}',
+            '{{ addslashes(e($fullName)) }}',
+            '{{ addslashes(e($trainer->email)) }}',
+            'trainer',
+            '{{ addslashes(e($status)) }}',
+            '{{ addslashes(e($courseTitle)) }}',
+            '{{ addslashes(e($trainer->contact ?? '')) }}',
+            '{{ addslashes(e($trainer->id_number ?? '')) }}',
+            '{{ \Carbon\Carbon::parse($trainer->created_at ?? now())->format('F Y') }}',
+            '{{ addslashes(e($trainer->remarks ?? '')) }}'
+          )"
+                  style="background: #025628; color: #ffffff; border: none; padding: 7px 16px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: background-color 0.15s ease; white-space: nowrap; flex-shrink: 0;">
+                  View Profile
+                </button>
+
               </div>
             @empty
               <div
-                style="text-align: center; color: #aaa; padding: 30px; font-size: 13px;">
+                style="text-align: center; color: #888888; padding: 40px 20px; font-size: 13px;">
                 <i class="fa-solid fa-user-slash"
-                  style="font-size: 24px; display: block; margin-bottom: 8px; color: #ccc;"></i>
+                  style="font-size: 26px; display: block; margin-bottom: 8px; color: #cccccc;"></i>
                 No trainers registered yet.
               </div>
             @endforelse
           </div>
+
         </div>
       </div>
 
@@ -2172,7 +2395,8 @@
         <!-- Row 1: Type & Status (Kill Switch) -->
         <div class="form-row">
           <div class="form-group flex-1">
-            <label for="annType">Type <span class="required">*</span></label>
+            <label for="annType">Type <span
+                class="required">*</span></label>
             <div class="input-container">
               <i class="fa-solid fa-tag input-icon"></i>
               <select id="annType" class="modal-input-select">
@@ -2825,18 +3049,31 @@
       }
     });
 
+    window.traineeCourseLabels = @json($traineeCourseLabels);
+    window.traineeCourseCounts = @json($traineeCourseCounts);
+    window.overviewMonths = @json($months);
+    window.overviewCourseDatasets = @json($overviewCourseDatasets);
+
+    let traineeChartInstance = null;
+
     function setActive(el) {
+      if (!el) return;
       document.querySelectorAll('.sidebar .nav-item').forEach(i => i.classList
         .remove('active'));
       el.classList.add('active');
     }
 
-    function initHistoryChart() {
+    function initHistoryChart(traineeData = [], courseData = []) {
+      // 1. TRAINEE HISTORY CHART
       const traineeCanvas = document.getElementById('traineeHistoryChart');
       if (traineeCanvas) {
         traineeCanvas.style.height = '500px';
         const traineeCtx = traineeCanvas.getContext('2d');
-        if (traineeHistoryInstance) traineeHistoryInstance.destroy();
+
+        if (traineeHistoryInstance) {
+          traineeHistoryInstance.destroy();
+        }
+
         traineeHistoryInstance = new Chart(traineeCtx, {
           type: 'bar',
           data: {
@@ -2845,9 +3082,7 @@
             ],
             datasets: [{
               label: 'Trainees',
-              data: [150, 170, 160, 190, 220, 210, 250, 280, 310, 340,
-                390, 420
-              ],
+              data: traineeData,
               backgroundColor: '#7fb092',
               borderRadius: 5
             }]
@@ -2863,17 +3098,26 @@
             },
             scales: {
               y: {
-                beginAtZero: true
+                beginAtZero: true,
+                ticks: {
+                  precision: 0
+                }
               }
             }
           }
         });
       }
+
+      // 2. COURSE HISTORY CHART
       const courseCanvas = document.getElementById('courseHistoryChart');
       if (courseCanvas) {
         courseCanvas.style.height = '500px';
         const courseCtx = courseCanvas.getContext('2d');
-        if (courseHistoryInstance) courseHistoryInstance.destroy();
+
+        if (courseHistoryInstance) {
+          courseHistoryInstance.destroy();
+        }
+
         courseHistoryInstance = new Chart(courseCtx, {
           type: 'line',
           data: {
@@ -2882,7 +3126,7 @@
             ],
             datasets: [{
               label: 'Courses',
-              data: [5, 6, 8, 8, 10, 12, 12, 15, 15, 18, 20, 22],
+              data: courseData,
               borderColor: '#004d26',
               backgroundColor: 'rgba(0,77,38,0.1)',
               fill: true,
@@ -2894,7 +3138,10 @@
             maintainAspectRatio: false,
             scales: {
               y: {
-                beginAtZero: true
+                beginAtZero: true,
+                ticks: {
+                  precision: 0
+                }
               }
             }
           }
@@ -2903,7 +3150,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-      // Form Listeners for Announcement Modal counters & label sync
+      // 1. Announcement Modal Character Counters & Status Toggle
       const titleInput = document.getElementById('annTitle');
       const messageInput = document.getElementById('annMessage');
       const titleCounter = document.getElementById('titleCounter');
@@ -2930,9 +3177,10 @@
         });
       }
 
-      var calendarEl = document.getElementById('calendar');
+      // 2. FullCalendar Sidebar Initialization
+      const calendarEl = document.getElementById('calendar');
       if (calendarEl) {
-        var calendar = new FullCalendar.Calendar(calendarEl, {
+        const calendar = new FullCalendar.Calendar(calendarEl, {
           initialView: 'dayGridMonth',
           fixedWeekCount: true,
           headerToolbar: {
@@ -2949,88 +3197,183 @@
         calendar.render();
       }
 
-      const ctxBar = document.getElementById('traineeChart')?.getContext(
-        '2d');
-      if (ctxBar) {
-        new Chart(ctxBar, {
+      // 3. Trainees Enrolled Per Course Bar Chart (Overview View)
+      const traineeCanvas = document.getElementById('traineeChart');
+      if (traineeCanvas) {
+        const ctxBar = traineeCanvas.getContext('2d');
+
+        if (window.traineeChartInstance) {
+          window.traineeChartInstance.destroy();
+        }
+
+        // Safely retrieve global variables initialized by Blade
+        const labels = (typeof window.traineeCourseLabels !== 'undefined' &&
+            window.traineeCourseLabels.length) ?
+          window.traineeCourseLabels :
+          (typeof traineeCourseLabels !== 'undefined' ? traineeCourseLabels :
+            []);
+
+        const dataCounts = (typeof window.traineeCourseCounts !==
+            'undefined' && window.traineeCourseCounts.length) ?
+          window.traineeCourseCounts :
+          (typeof traineeCourseCounts !== 'undefined' ? traineeCourseCounts :
+            []);
+
+        window.traineeChartInstance = new Chart(ctxBar, {
           type: 'bar',
           data: {
-            labels: ['Sept', 'Oct', 'Nov', 'Dec'],
+            labels: labels,
             datasets: [{
-              data: [40, 65, 80, 95],
+              label: 'Enrolled Trainees',
+              data: dataCounts,
               backgroundColor: '#004d26',
               borderRadius: 4,
-              barPercentage: 0.6
+              barPercentage: 0.65
+            }]
+          },
+          options: {
+            indexAxis: 'y', // Makes bars horizontal so long course names render cleanly
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: false
+              },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    return `Trainees: ${context.raw}`;
+                  }
+                }
+              }
+            },
+            scales: {
+              x: {
+                beginAtZero: true,
+                grid: {
+                  color: '#f0f0f0'
+                },
+                ticks: {
+                  precision: 0
+                }
+              },
+              y: {
+                grid: {
+                  display: false
+                },
+                ticks: {
+                  font: {
+                    size: 11,
+                    weight: '600'
+                  },
+                  color: '#333333'
+                }
+              }
+            },
+            layout: {
+              padding: {
+                left: 10,
+                right: 20,
+                top: 10,
+                bottom: 10
+              }
+            }
+          }
+        });
+      }
+
+      // 4. Trainee Status Ratio Pie Chart (Overview View)
+      const courseCanvas = document.getElementById('courseChart');
+      if (courseCanvas) {
+        const ctxPie = courseCanvas.getContext('2d');
+
+        // Destroy previous instance to prevent rendering overlap or chart type caching issues
+        if (window.courseChartInstance) {
+          window.courseChartInstance.destroy();
+          window.courseChartInstance = null;
+        }
+
+        // Retrieve active and completed array data or fallback to safe defaults
+        const activeData = (typeof window.courseActiveCounts !==
+            'undefined' && window.courseActiveCounts.length) ?
+          window.courseActiveCounts :
+          (typeof courseActiveCounts !== 'undefined' ? courseActiveCounts : [
+            10, 2, 3, 1, 4
+          ]);
+
+        const completedData = (typeof window.courseCompletedCounts !==
+            'undefined' && window.courseCompletedCounts.length) ?
+          window.courseCompletedCounts :
+          (typeof courseCompletedCounts !== 'undefined' ?
+            courseCompletedCounts : [4, 1, 2, 0, 3]);
+
+        // Aggregate total active and completed counts
+        const totalActive = activeData.reduce((a, b) => a + b, 0);
+        const totalCompleted = completedData.reduce((a, b) => a + b, 0);
+
+        window.courseChartInstance = new Chart(ctxPie, {
+          type: 'pie',
+          data: {
+            labels: ['Active / Enrolled', 'Completed / Graduated'],
+            datasets: [{
+              data: [totalActive, totalCompleted],
+              backgroundColor: ['#004d26',
+                '#eab308'
+              ], // Dark Green for Active, Yellow for Completed
+              borderWidth: 2,
+              borderColor: '#ffffff'
             }]
           },
           options: {
             responsive: true,
-            plugins: {
-              legend: {
-                display: false
+            maintainAspectRatio: false,
+            onClick: function() {
+              if (typeof openExpandedChartModal === 'function') {
+                openExpandedChartModal('courses');
               }
             },
-            scales: {
-              y: {
-                beginAtZero: true,
-                display: false
-              },
-              x: {
-                grid: {
-                  display: false
+            plugins: {
+              legend: {
+                display: true,
+                position: 'bottom',
+                labels: {
+                  boxWidth: 12,
+                  padding: 14,
+                  font: {
+                    size: 11,
+                    weight: '600'
+                  },
+                  color: '#333333'
                 }
+              },
+              tooltip: {
+                backgroundColor: '#1a1a1a',
+                titleColor: '#ffffff',
+                bodyColor: '#ffffff',
+                padding: 10,
+                cornerRadius: 6,
+                callbacks: {
+                  label: (ctx) => {
+                    const total = totalActive + totalCompleted;
+                    const val = ctx.raw;
+                    const pct = total > 0 ? Math.round((val / total) *
+                      100) : 0;
+                    return ` ${ctx.label}: ${val} (${pct}%)`;
+                  }
+                }
+              }
+            },
+            layout: {
+              padding: {
+                top: 5,
+                bottom: 5
               }
             }
           }
         });
       }
 
-      const ctxLine = document.getElementById('courseChart')?.getContext(
-        '2d');
-      if (ctxLine) {
-        new Chart(ctxLine, {
-          type: 'line',
-          data: {
-            labels: ['Sept', 'Oct', 'Nov', 'Dec'],
-            datasets: [{
-                label: 'Carpentry',
-                data: [30, 58, 98, 65],
-                borderColor: '#c19a6b',
-                tension: 0.3
-              },
-              {
-                label: 'Dressmaking',
-                data: [45, 68, 40, 82],
-                borderColor: '#6b9e7c',
-                tension: 0.3
-              },
-              {
-                label: 'Candle Making',
-                data: [25, 62, 25, 18],
-                borderColor: '#f4d03f',
-                tension: 0.3
-              }
-            ]
-          },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: {
-                position: 'bottom'
-              }
-            },
-            scales: {
-              y: {
-                grid: {
-                  color: '#f0f0f0'
-                }
-              }
-            }
-          }
-        });
-      }
-
-      // --- URL PARAMETER & LOCALSTORAGE VIEW RESTORATION ---
+      // 5. URL Parameter & LocalStorage View Restoration
       const urlParams = new URLSearchParams(window.location.search);
       const savedTab = localStorage.getItem('activeAdminTab');
 
@@ -3111,7 +3454,7 @@
         ],
         registrations: ['view-registrations', 'Registrations',
           `<a href="#" onclick="showView('overview');return false;">System Overview</a> / Registrations`
-        ],
+        ]
       };
 
       const entry = map[viewName] || map['overview'];
@@ -4304,13 +4647,13 @@
 
       <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
         ${m.file_path ? `
-                                                                                                                                              <a href="/admin/module/file/${m.id}/${encodeURIComponent(m.title)}.pdf" target="_blank" 
-                                                                                                                                                 style="font-size:11px; padding:6px 12px; border-radius:6px; background:#e8f5e9; color:#025628; text-decoration:none; font-weight:700; display:inline-flex; align-items:center; gap:5px; white-space:nowrap; transition: background 0.2s;">
-                                                                                                                                                <i class="fa-solid fa-file-pdf"></i> View File
-                                                                                                                                              </a>
-                                                                                                                                            ` : `
-                                                                                                                                              <span style="font-size:11px; color:#9ca3af; padding:4px 8px; font-style:italic;">No PDF</span>
-                                                                                                                                            `}
+                                                                                                                                                                                                                                          <a href="/admin/module/file/${m.id}/${encodeURIComponent(m.title)}.pdf" target="_blank" 
+                                                                                                                                                                                                                                             style="font-size:11px; padding:6px 12px; border-radius:6px; background:#e8f5e9; color:#025628; text-decoration:none; font-weight:700; display:inline-flex; align-items:center; gap:5px; white-space:nowrap; transition: background 0.2s;">
+                                                                                                                                                                                                                                            <i class="fa-solid fa-file-pdf"></i> View File
+                                                                                                                                                                                                                                          </a>
+                                                                                                                                                                                                                                        ` : `
+                                                                                                                                                                                                                                          <span style="font-size:11px; color:#9ca3af; padding:4px 8px; font-style:italic;">No PDF</span>
+                                                                                                                                                                                                                                        `}
 
         <button type="button" onclick="deleteModule(${m.id})"
           style="font-size:11px; padding:6px 12px; border-radius:6px; background:#FCEBEB; color:#A32D2D; border:none; cursor:pointer; font-family:inherit; font-weight:700; white-space:nowrap; display:inline-flex; align-items:center; gap:4px;">
@@ -5198,6 +5541,7 @@
     /* ========================================================== */
 
     // 1. UPDATE USER FORM SUBMISSION
+    // 1. UPDATE USER FORM SUBMISSION
     document.getElementById('userForm').onsubmit = function(e) {
       e.preventDefault();
 
@@ -5286,16 +5630,19 @@
 
             if (row) {
               const nameEl = row.querySelector('.user-name-text');
-              const emailEl = row.querySelector('.user-email-text');
-              const contactEl = row.querySelector('.user-contact-text');
+              const emailVal = row.querySelector('.user-email-value');
+              const contactVal = row.querySelector('.user-contact-value');
+              const idNumVal = row.querySelector('.user-id-value');
               const badgeEl = row.querySelector('.roster-status-badge');
 
+              // Update text values safely
               if (nameEl) nameEl.textContent = name.toUpperCase();
-              if (emailEl) emailEl.innerHTML =
-                `<i class="fa-regular fa-envelope" style="margin-right: 4px;"></i>${email}`;
-              if (contactEl) contactEl.innerHTML =
-                `<i class="fa-solid fa-phone" style="margin-right: 4px;"></i>${contact || 'Not provided'}`;
+              if (emailVal) emailVal.textContent = email;
+              if (contactVal) contactVal.textContent = contact ||
+                'Not provided';
+              if (idNumVal) idNumVal.textContent = id_number || 'N/A';
 
+              // Update status badge styling
               if (badgeEl) {
                 badgeEl.textContent = status;
                 badgeEl.setAttribute('data-email', email);
@@ -5304,6 +5651,7 @@
                 badgeEl.style.color = isInactive ? '#A32D2D' : '#025628';
               }
 
+              // Update View Profile modal trigger button onclick attributes
               const btn = row.querySelector('.btn-view');
               if (btn) {
                 const courseTitle = document.getElementById(
@@ -5333,10 +5681,7 @@
               }
             }
 
-            // 1. Show feedback alert FIRST
             alert(data.message || 'User profile updated successfully!');
-
-            // 2. Close modal safely
             closeUserModal();
           } else {
             alert(data?.message || 'An error occurred while updating.');
@@ -5418,7 +5763,7 @@
               row.remove();
             }
 
-            alert('User removed successfully!');
+            alert(data.message || 'User removed successfully!');
             closeUserModal();
           } else {
             alert(data.message || 'Failed to remove user.');
@@ -5645,6 +5990,303 @@
         item.style.display = text.includes(input) ? 'flex' : 'none';
       });
     }
+
+    let expandedChartInstance = null;
+
+    // Custom Chart.js plugin to render value labels next to horizontal bars (used for bar charts)
+    const barValueLabelsPlugin = {
+      id: 'barValueLabels',
+      afterDatasetsDraw(chart) {
+        if (chart.config.options.indexAxis !== 'y') return;
+        const {
+          ctx
+        } = chart;
+        ctx.save();
+        ctx.font = '600 11px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+
+        chart.data.datasets.forEach((dataset, datasetIdx) => {
+          const meta = chart.getDatasetMeta(datasetIdx);
+          meta.data.forEach((bar, index) => {
+            const val = dataset.data[index];
+            if (val > 0) {
+              ctx.fillStyle = dataset.backgroundColor || '#004d26';
+              ctx.fillText(val, bar.x + 6, bar.y);
+            }
+          });
+        });
+        ctx.restore();
+      }
+    };
+
+    function openExpandedChartModal(type) {
+      const modal = document.getElementById('expandedChartModal');
+      const canvas = document.getElementById('expandedCanvas');
+      const title = document.getElementById('expandedModalTitle');
+      const centerTextObj = document.getElementById('doughnutCenterText');
+      if (!modal || !canvas) return;
+
+      modal.style.display = 'flex';
+      const ctx = canvas.getContext('2d');
+
+      if (expandedChartInstance) {
+        expandedChartInstance.destroy();
+      }
+
+      const courseLabels = (window.traineeCourseLabels && window
+          .traineeCourseLabels.length) ?
+        window.traineeCourseLabels : ['Baking', 'Street Food', 'Basic Sewing',
+          'Candle Making', 'Carpentry'
+        ];
+
+      // Cache element references for KPI Badges
+      const kpi1Label = document.getElementById('kpiLabel1');
+      const kpi1Val = document.getElementById('kpiVal1') || document
+        .getElementById('kpiTotalTrainees');
+      const kpi2Label = document.getElementById('kpiLabel2');
+      const kpi2Val = document.getElementById('kpiVal2') || document
+        .getElementById('kpiTopCourse');
+      const kpi3Label = document.getElementById('kpiLabel3');
+      const kpi3Val = document.getElementById('kpiVal3') || document
+        .getElementById('kpiActiveCourses');
+
+      if (type === 'trainees') {
+        if (title) title.textContent = 'Enrolled Trainees Breakdown per Course';
+        if (centerTextObj) centerTextObj.style.display = 'none';
+
+        const dataCounts = (window.traineeCourseCounts && window
+            .traineeCourseCounts.length) ?
+          window.traineeCourseCounts : [10, 2, 3, 1, 4];
+
+        // Compute Trainee KPIs
+        const totalTrainees = dataCounts.reduce((a, b) => a + b, 0);
+        const maxVal = dataCounts.length ? Math.max(...dataCounts) : 0;
+        const topIdx = dataCounts.indexOf(maxVal);
+        const topCourse = (topIdx !== -1 && courseLabels[topIdx]) ? courseLabels[
+          topIdx] : 'N/A';
+        const activeCount = dataCounts.filter(c => c > 0).length;
+
+        if (kpi1Label) kpi1Label.textContent = 'TOTAL TRAINEES';
+        if (kpi1Val) {
+          kpi1Val.textContent = totalTrainees;
+          kpi1Val.style.color = '#004d26';
+          kpi1Val.style.fontSize = '20px';
+          kpi1Val.style.fontWeight = '800';
+          kpi1Val.style.display = 'block';
+        }
+        if (kpi2Label) kpi2Label.textContent = 'TOP ENROLLED COURSE';
+        if (kpi2Val) {
+          kpi2Val.textContent = topCourse;
+          kpi2Val.style.color = '#004d26';
+          kpi2Val.style.fontSize =
+            '14px'; // Kept slightly smaller to prevent text wrapping on long course names
+          kpi2Val.style.fontWeight = '700';
+          kpi2Val.style.display = 'block';
+        }
+        if (kpi3Label) kpi3Label.textContent = 'ACTIVE MODULES';
+        if (kpi3Val) {
+          kpi3Val.textContent = `${activeCount} / ${courseLabels.length}`;
+          kpi3Val.style.color = '#004d26';
+          kpi3Val.style.fontSize = '20px';
+          kpi3Val.style.fontWeight = '800';
+          kpi3Val.style.display = 'block';
+        }
+
+        expandedChartInstance = new Chart(ctx, {
+          type: 'bar',
+          plugins: [barValueLabelsPlugin],
+          data: {
+            labels: courseLabels,
+            datasets: [{
+              label: 'Enrolled Trainees',
+              data: dataCounts,
+              backgroundColor: '#004d26',
+              borderRadius: 4,
+              barPercentage: 0.6
+            }]
+          },
+          options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: false
+              },
+              tooltip: {
+                backgroundColor: '#1a1a1a',
+                titleColor: '#ffffff',
+                bodyColor: '#ffffff',
+                padding: 10,
+                cornerRadius: 6,
+                callbacks: {
+                  title: (items) => items[0]?.label || '',
+                  label: (ctx) => ` Total Enrolled: ${ctx.raw} Trainees`
+                }
+              }
+            },
+            scales: {
+              x: {
+                beginAtZero: true,
+                grid: {
+                  color: '#f2f2f2'
+                },
+                ticks: {
+                  precision: 0
+                }
+              },
+              y: {
+                grid: {
+                  display: false
+                },
+                ticks: {
+                  font: {
+                    size: 12,
+                    weight: '600'
+                  },
+                  color: '#111'
+                }
+              }
+            },
+            layout: {
+              padding: {
+                right: 35
+              }
+            }
+          }
+        });
+
+      } else if (type === 'courses') {
+        if (title) title.textContent =
+          'Overall Trainee Status: Completion vs Active';
+
+        const activeData = window.courseActiveCounts || [10, 2, 3, 1, 4];
+        const completedData = window.courseCompletedCounts || [4, 1, 2, 0, 3];
+
+        const totalActive = activeData.reduce((a, b) => a + b, 0);
+        const totalCompleted = completedData.reduce((a, b) => a + b, 0);
+        const grandTotal = totalActive + totalCompleted;
+        const completionRate = grandTotal > 0 ? Math.round((totalCompleted /
+          grandTotal) * 100) : 0;
+
+        // Apply specific theme colors, font sizes, and styles to KPI cards
+        if (kpi1Label) kpi1Label.textContent = 'ACTIVE ENROLLED';
+        if (kpi1Val) {
+          kpi1Val.textContent = totalActive;
+          kpi1Val.style.color = '#004d26'; // Green
+          kpi1Val.style.fontSize = '20px';
+          kpi1Val.style.fontWeight = '800';
+          kpi1Val.style.display = 'block';
+        }
+
+        if (kpi2Label) kpi2Label.textContent = 'TOTAL GRADUATED';
+        if (kpi2Val) {
+          kpi2Val.textContent = totalCompleted;
+          kpi2Val.style.color = '#ca8a04'; // Warm Yellow/Gold Accent
+          kpi2Val.style.fontSize = '20px'; // Matching 20px size
+          kpi2Val.style.fontWeight = '800';
+          kpi2Val.style.display = 'block';
+        }
+
+        if (kpi3Label) kpi3Label.textContent = 'COMPLETION RATE';
+        if (kpi3Val) {
+          kpi3Val.textContent = `${completionRate}%`;
+          kpi3Val.style.color = '#004d26'; // Green
+          kpi3Val.style.fontSize = '20px';
+          kpi3Val.style.fontWeight = '800';
+          kpi3Val.style.display = 'block';
+        }
+
+        // Render scaled center text overlay for enlarged doughnut chart
+        if (centerTextObj) {
+          centerTextObj.style.display = 'block';
+          centerTextObj.innerHTML = `
+        <span style="font-size: 32px; font-weight: 800; color: #004d26; display: block; line-height: 1;">${completionRate}%</span>
+        <span style="font-size: 11px; font-weight: 700; color: #666666; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px;">Completed</span>
+      `;
+        }
+
+        expandedChartInstance = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: ['Active / Enrolled', 'Completed / Graduated'],
+            datasets: [{
+              data: [totalActive, totalCompleted],
+              backgroundColor: ['#004d26',
+                '#eab308'
+              ], // Brand Green & Bright Yellow
+              borderWidth: 3,
+              borderColor: '#ffffff'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '65%', // Thicker ring for larger overall chart display
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: {
+                  font: {
+                    size: 12,
+                    weight: '600'
+                  },
+                  color: '#333333',
+                  padding: 8,
+                  boxWidth: 12,
+                  boxHeight: 12
+                }
+              },
+              tooltip: {
+                backgroundColor: '#1a1a1a',
+                titleColor: '#ffffff',
+                bodyColor: '#ffffff',
+                padding: 12,
+                cornerRadius: 6,
+                callbacks: {
+                  label: (ctx) => {
+                    const val = ctx.raw;
+                    const pct = grandTotal > 0 ? Math.round((val /
+                      grandTotal) * 100) : 0;
+                    return ` ${ctx.label}: ${val} Trainees (${pct}%)`;
+                  }
+                }
+              }
+            },
+            layout: {
+              padding: {
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0
+              }
+            }
+          }
+        });
+      }
+    }
+
+    function closeExpandedChartModal() {
+      const modal = document.getElementById('expandedChartModal');
+      const centerTextObj = document.getElementById('doughnutCenterText');
+
+      if (modal) modal.style.display = 'none';
+      if (centerTextObj) centerTextObj.style.display = 'none';
+
+      if (expandedChartInstance) {
+        expandedChartInstance.destroy();
+        expandedChartInstance = null;
+      }
+    }
+
+    // Close when clicking outside the modal box
+    document.getElementById('expandedChartModal')?.addEventListener('click',
+      function(e) {
+        if (e.target === this) {
+          closeExpandedChartModal();
+        }
+      });
   </script>
 </body>
 
