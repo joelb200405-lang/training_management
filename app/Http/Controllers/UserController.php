@@ -1379,9 +1379,7 @@ public function trainerStudents()
     public function trainerSchedule()
 {
     $trainer = Auth::user();
- 
     $course = Course_tbl::where('trainer_id', $trainer->id)->first();
- 
     $totalStudents = $course
         ? \App\Models\Enrollment_tbl::where('course_id', $course->id)->count()
         : 0;

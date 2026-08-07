@@ -535,7 +535,7 @@
               <td>{{ $result->user->id }}</td>
               <td><strong>{{ $result->user->lastname }},
                   {{ $result->user->firstname }}</strong></td>
-              <td>{{ $result->quiz->title }}</td>
+              <td>{{ $course->title }}</td>
               <td>
                 <span
                   class="as-badge {{ $result->status === 'passed' ? 'complete' : 'incomplete' }}">
