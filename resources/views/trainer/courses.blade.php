@@ -405,7 +405,7 @@
                         '{{ addslashes($course->title) }}',
                         '{{ addslashes($course->description ?? '') }}',
                         '{{ addslashes($course->duration ?? '') }}',
-                        '{{ $course->slots }}',
+                        '{{ $totalStudents }}/{{ $course->slots }}',
                         '{{ addslashes($course->schedule ?? '') }}',
                         '{{ addslashes($course->location ?? '') }}',
                         '{{ addslashes($course->sector ?? '') }}',

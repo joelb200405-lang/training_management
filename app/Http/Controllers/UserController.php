@@ -771,9 +771,7 @@ public function ResetPassword(Request $request)
     public function courses()
     {
         $trainer = Auth::user();
-
         $course = Course_tbl::where('trainer_id', $trainer->id)->first();
-
         $totalStudents = $course
             ? \App\Models\Enrollment_tbl::where('course_id', $course->id)->count()
             : 0;
@@ -1377,15 +1375,19 @@ public function trainerStudents()
     }
 
     public function trainerSchedule()
-{
-    $trainer = Auth::user();
-    $course = Course_tbl::where('trainer_id', $trainer->id)->first();
-    $totalStudents = $course
-        ? \App\Models\Enrollment_tbl::where('course_id', $course->id)->count()
-        : 0;
- 
-    return view('trainer.schedule', compact('course', 'totalStudents'));
-}
+    {
+        $trainer = Auth::user();
+        $course = Course_tbl::where('trainer_id', $trainer->id)->first();
+        $totalStudents = $course
+            ? \App\Models\Enrollment_tbl::where('course_id', $course->id)->count()
+            : 0;
+
+        $deadlines = $course
+            ? $course->deadlines()->orderBy('due_date', 'asc')->get()
+            : collect();
+
+        return view('trainer.schedule', compact('course', 'totalStudents', 'deadlines'));
+    }
 
     public function storeTrainer(Request $request)
 {

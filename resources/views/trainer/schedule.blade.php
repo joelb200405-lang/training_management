@@ -218,8 +218,32 @@
             </div>
           </div>
 
-        </div>
       </div>
+      </div>
+
+      <div class="sc-page-title" style="margin-top:28px;">Upcoming Deadlines</div>
+
+      @if ($deadlines->isEmpty())
+        <div class="sc-empty">
+          <i class="fa fa-calendar-check"></i>
+          <p>No deadlines set for this course yet.</p>
+        </div>
+      @else
+        <div class="sc-card">
+          <div class="sc-info-list">
+            @foreach ($deadlines as $deadline)
+              <div class="sc-info-row">
+                <div class="sc-info-icon"><i class="fa fa-flag"></i></div>
+                <div>
+                  <div class="sc-info-label">{{ ucfirst($deadline->type) }} · {{ \Carbon\Carbon::parse($deadline->due_date)->format('M d, Y') }}</div>
+                  <div class="sc-info-value">{{ $deadline->title }}</div>
+                </div>
+              </div>
+            @endforeach
+          </div>
+        </div>
+      @endif
+
     @else
       <div class="sc-empty">
         <i class="fa fa-calendar-xmark"></i>

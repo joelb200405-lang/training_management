@@ -78,6 +78,14 @@ class Course_tbl extends Model
         return $this->hasMany(Quiz::class, 'course_id');
     }
 
+    /**
+     * Relationship to Course Deadlines
+     */
+    public function deadlines()
+    {
+        return $this->hasMany(Deadline_tbl::class, 'course_id');
+    }
+
     /* ==========================================================
      * ACCESSORS & VIRTUAL ATTRIBUTES
      * ========================================================== */
