@@ -594,16 +594,21 @@ public function removeTrainer($courseId)
             : 0;
     
         // ── Low performing trainees ───────────────────────────────────────────
-        $lowPerforming = \App\Models\Enrollment_tbl::with(['user', 'course'])
-                        ->where('status', 'active')
-                        ->where('progress', '<', 50)
-                        ->orderBy('progress', 'asc')
-                        ->take(5)
-                        ->get();
+        $lowPerforming = $course
+            ? \App\Models\Enrollment_tbl::with(['user', 'course'])
+                ->where('course_id', $course->id)
+                ->where('status', 'active')
+                ->where('progress', '<', 50)
+                ->orderBy('progress', 'asc')
+                ->take(5)
+                ->get()
+            : collect();
     
         // ── NEW: Progress distribution for donut chart ────────────────────────
         // Counts students in each progress bracket across all enrollments
-        $allEnrollments = \App\Models\Enrollment_tbl::all();
+        $allEnrollments = $course
+        ? \App\Models\Enrollment_tbl::where('course_id', $course->id)->get()
+        : collect();
     
         $progressDistribution = [
             $allEnrollments->where('status', 'completed')->count(),                                          // Completed
