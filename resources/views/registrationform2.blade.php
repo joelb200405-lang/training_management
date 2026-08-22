@@ -431,6 +431,9 @@
       gap: 12px;
     }
   </style>
+  
+  <link rel="icon" type="image/png" href="{{ asset('images/logo_ledipo.png') }}">
+  
 </head>
 
 <body>

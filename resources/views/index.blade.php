@@ -23,8 +23,8 @@
 
   <!-- font awesome cdn link -->
   <link rel="stylesheet" href="../font-awesome-icon/css/all.min.css">
-</head>
-
+  <!-- Tab Icon -->
+   <link rel="icon" type="image/png" href="{{ asset('images/logo_ledipo.png') }}">
 </head>
 
 <body>

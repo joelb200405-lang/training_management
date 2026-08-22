@@ -25,6 +25,9 @@
     integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
     crossorigin="anonymous">
 
+    <!-- Tab Icon -->
+   <link rel="icon" type="image/png" href="{{ asset('images/logo_ledipo.png') }}">
+
   <style>
     .modal {
       position: fixed;

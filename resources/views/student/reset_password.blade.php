@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="{{ asset('stylesheet/login.css') }}">
   <link rel="stylesheet" href="../bootstrap_folder/css/bootstrap.min.css">
   <link rel="stylesheet" href="../font-awesome-icon/css/all.min.css">
+  <!-- Tab Icon -->
+ <link rel="icon" type="image/png" href="{{ asset('images/logo_ledipo.png') }}">
 </head>
 
 <body>

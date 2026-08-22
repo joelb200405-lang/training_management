@@ -9,6 +9,8 @@
   <link rel="stylesheet"
     href="{{ asset('bootstrap_folder/css/bootstrap.min.css') }}">
   <link rel="stylesheet" href="{{ asset('font-awesome-icon/css/all.min.css') }}">
+  <!-- Tab Icon -->
+ <link rel="icon" type="image/png" href="{{ asset('images/logo_ledipo.png') }}">
 </head>
 
 <body>
