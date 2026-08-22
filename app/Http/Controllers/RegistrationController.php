@@ -10,6 +10,14 @@ use Illuminate\Support\Facades\Session;
 class RegistrationController extends Controller
 {
     /**
+     * Alias for showStep1 to handle route definitions calling `step1`.
+     */
+    public function step1()
+    {
+        return $this->showStep1();
+    }
+
+    /**
      * GET /register — show step 1 (Learner's Profile).
      */
     public function showStep1()
@@ -56,7 +64,7 @@ class RegistrationController extends Controller
             'guardian_address'    => ['nullable', 'string', 'max:255'],
         ]);
 
-        // Files can't survive a redirect, so upload now and carry the path instead.
+        // Upload picture immediately to persist file across redirects
         if ($request->hasFile('id_picture')) {
             $validated['id_picture_path'] = $request->file('id_picture')
                 ->store('registrations/id_pictures', 'public');
@@ -110,7 +118,7 @@ class RegistrationController extends Controller
 
             'date_accomplished'             => ['nullable', 'date'],
             'date_received'                 => ['nullable', 'date'],
-            'photo_1x1'                      => ['nullable', 'image', 'max:2048'],
+            'photo_1x1'                     => ['nullable', 'image', 'max:2048'],
         ]);
 
         if ($request->hasFile('photo_1x1')) {
@@ -129,72 +137,82 @@ class RegistrationController extends Controller
             ->route('registration.step1')
             ->with('success', "Registration submitted! Reference #{$registration->id}.");
     }
-        public function adminShow(Registration $registration)
-            {
-                return view('admin.registrations_show', compact('registration'));
-            }
 
-            public function exportCsv()
-            {
-                $filename = 'registrations_' . now()->format('Y-m-d_His') . '.csv';
+    /**
+     * Display administrative detail view for a specific registration.
+     */
+    public function adminShow(Registration $registration)
+    {
+        return view('admin.registrations_show', compact('registration'));
+    }
 
-                $headers = [
-                    'Content-Type'        => 'text/csv',
-                    'Content-Disposition' => "attachment; filename=\"$filename\"",
-                ];
+    /**
+     * Export registered learners to CSV format.
+     */
+    public function exportCsv()
+    {
+        $filename = 'registrations_' . now()->format('Y-m-d_His') . '.csv';
 
-                $columns = [
-                    'ID', 'ULI Number', 'Entry Date', 'Last Name', 'First Name', 'Middle Name',
-                    'Address Street', 'Barangay', 'City', 'Province', 'District', 'Region',
-                    'Email', 'Contact No', 'Nationality', 'Training Venue',
-                    'Sex', 'Civil Status', 'Employment Status',
-                    'Birth Month', 'Birth Day', 'Birth Year', 'Age',
-                    'Birthplace City', 'Birthplace Province', 'Birthplace Region',
-                    'Educational Attainment', 'Guardian Name', 'Guardian Address',
-                    'Classification', 'Classification Other',
-                    'Disability Type', 'Disability Multiple Specify', 'Disability Cause', 'Disability Cause Other',
-                    'Course Name', 'Scholarship Package', 'Privacy Consent',
-                    'Date Accomplished', 'Date Received', 'Submitted At',
-                ];
+        $headers = [
+            'Content-Type'        => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+        ];
 
-                $callback = function () use ($columns) {
-                    $file = fopen('php://output', 'w');
-                    fputcsv($file, $columns);
+        $columns = [
+            'ID', 'ULI Number', 'Entry Date', 'Last Name', 'First Name', 'Middle Name',
+            'Address Street', 'Barangay', 'City', 'Province', 'District', 'Region',
+            'Email', 'Contact No', 'Nationality', 'Training Venue',
+            'Sex', 'Civil Status', 'Employment Status',
+            'Birth Month', 'Birth Day', 'Birth Year', 'Age',
+            'Birthplace City', 'Birthplace Province', 'Birthplace Region',
+            'Educational Attainment', 'Guardian Name', 'Guardian Address',
+            'Classification', 'Classification Other',
+            'Disability Type', 'Disability Multiple Specify', 'Disability Cause', 'Disability Cause Other',
+            'Course Name', 'Scholarship Package', 'Privacy Consent',
+            'Date Accomplished', 'Date Received', 'Submitted At',
+        ];
 
-                    Registration::latest()->chunk(200, function ($rows) use ($file) {
-                        foreach ($rows as $r) {
-                            fputcsv($file, [
-                                $r->id, $r->uli_number, optional($r->entry_date)->format('Y-m-d'),
-                                $r->last_name, $r->first_name, $r->middle_name,
-                                $r->address_street, $r->address_barangay, $r->address_city,
-                                $r->address_province, $r->address_district, $r->address_region,
-                                $r->email, $r->contact_no, $r->nationality, $r->training_venue,
-                                $r->sex, $r->civil_status, $r->employment_status,
-                                $r->birth_month, $r->birth_day, $r->birth_year, $r->age,
-                                $r->birthplace_city, $r->birthplace_province, $r->birthplace_region,
-                                $r->education_attainment, $r->guardian_name, $r->guardian_address,
-                                implode('; ', $r->classification ?? []), $r->classification_other,
-                                implode('; ', $r->disability_type ?? []), $r->disability_multiple_specify,
-                                $r->disability_cause, $r->disability_cause_other,
-                                $r->course_name, $r->scholarship_package, $r->privacy_consent,
-                                optional($r->date_accomplished)->format('Y-m-d'),
-                                optional($r->date_received)->format('Y-m-d'),
-                                $r->created_at->format('Y-m-d H:i:s'),
-                            ]);
-                        }
-                    });
+        $callback = function () use ($columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
 
-                    fclose($file);
-                };
-
-                return response()->stream($callback, 200, $headers);
-                    }
-
-                    public function downloadPdf(Registration $registration)
-                    {
-                        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.registrations_pdf', compact('registration'))
-                            ->setPaper('a4', 'portrait');
-
-                        return $pdf->download('registration_' . $registration->id . '.pdf');
-                    }
+            Registration::latest()->chunk(200, function ($rows) use ($file) {
+                foreach ($rows as $r) {
+                    fputcsv($file, [
+                        $r->id, $r->uli_number, optional($r->entry_date)->format('Y-m-d'),
+                        $r->last_name, $r->first_name, $r->middle_name,
+                        $r->address_street, $r->address_barangay, $r->address_city,
+                        $r->address_province, $r->address_district, $r->address_region,
+                        $r->email, $r->contact_no, $r->nationality, $r->training_venue,
+                        $r->sex, $r->civil_status, $r->employment_status,
+                        $r->birth_month, $r->birth_day, $r->birth_year, $r->age,
+                        $r->birthplace_city, $r->birthplace_province, $r->birthplace_region,
+                        $r->education_attainment, $r->guardian_name, $r->guardian_address,
+                        implode('; ', $r->classification ?? []), $r->classification_other,
+                        implode('; ', $r->disability_type ?? []), $r->disability_multiple_specify,
+                        $r->disability_cause, $r->disability_cause_other,
+                        $r->course_name, $r->scholarship_package, $r->privacy_consent,
+                        optional($r->date_accomplished)->format('Y-m-d'),
+                        optional($r->date_received)->format('Y-m-d'),
+                        $r->created_at->format('Y-m-d H:i:s'),
+                    ]);
                 }
+            });
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Download registration document in PDF format.
+     */
+    public function downloadPdf(Registration $registration)
+    {
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.registrations_pdf', compact('registration'))
+            ->setPaper('a4', 'portrait');
+
+        return $pdf->download('registration_' . $registration->id . '.pdf');
+    }
+}

@@ -14,6 +14,7 @@ class Announcement extends Model
         'title',
         'message',
         'type',
+        'audience', // Added audience field
         'is_active',
         'publish_at',
         'expires_at',
@@ -50,6 +51,19 @@ class Announcement extends Model
                 $q->whereNull('expires_at')
                   ->orWhere('expires_at', '>=', $now);
             });
+    }
+
+    /**
+     * Scope — Filter announcements targeted for a specific role ('student' or 'trainer').
+     * Always includes 'general' announcements alongside role-specific ones.
+     */
+    public function scopeForAudience(Builder $query, string $role = 'general'): Builder
+    {
+        if ($role === 'general') {
+            return $query->where('audience', 'general');
+        }
+
+        return $query->whereIn('audience', ['general', $role]);
     }
 
     /**

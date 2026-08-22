@@ -936,6 +936,7 @@
 
             @forelse($courses as $course)
               @php
+                // CRITICAL FIX: Explicitly select user_tbls fields to avoid ID collisions from enrollment_tbls
                 $enrolledTrainees = Illuminate\Support\Facades\DB::table(
                     'enrollment_tbls',
                 )
@@ -947,10 +948,16 @@
                     )
                     ->where('enrollment_tbls.course_id', $course->id)
                     ->select(
-                        'enrollment_tbls.*',
+                        'user_tbls.id as user_id',
                         'user_tbls.firstname',
                         'user_tbls.lastname',
                         'user_tbls.email',
+                        'user_tbls.contact',
+                        'user_tbls.id_number',
+                        'user_tbls.status',
+                        'user_tbls.remarks',
+                        'user_tbls.role',
+                        'user_tbls.created_at as member_since',
                     )
                     ->get();
 
@@ -983,7 +990,6 @@
               <div class="card trainee-course-card"
                 data-title="{{ strtolower($course->title) }}"
                 style="background: #ffffff; border-radius: 10px; border: 1px solid #e0e0e0; padding: 18px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: space-between; gap: 14px; transition: background-color 0.15s ease;">
-
                 <div>
                   <!-- Title & Enrollment Badge -->
                   <div
@@ -1062,7 +1068,6 @@
         <!-- View B: Full Page Roster View -->
         <div id="full-course-roster-view"
           style="display: none; background: #ffffff; border-radius: 10px; border: 1px solid #e0e0e0; padding: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.02); overflow: hidden;">
-
           <div
             style="display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-bottom: 1px solid #ececec; background: #fafafa; flex-wrap: wrap; gap: 12px;">
             <div style="display: flex; align-items: center; gap: 12px;">
@@ -3683,77 +3688,123 @@
         });
     }
 
-    function openUserModal(id, name, email, role, status, courseTitle = '',
+    function openUserModal(idOrUser, name, email, role, status, courseTitle = '',
       contact = '', idNum = '', created = '', remarks = '') {
+      // 1. Support both Object payload and positional parameters
+      const isObj = typeof idOrUser === 'object' && idOrUser !== null;
+      const data = isObj ? idOrUser : {
+        id: idOrUser,
+        name,
+        email,
+        role,
+        status,
+        courseTitle,
+        contact,
+        idNum,
+        created,
+        remarks
+      };
+
+      // Helper function to sanitize input strings
+      const sanitize = (val, fallback = '') => {
+        if (val === null || val === undefined) return fallback;
+        const str = String(val).trim();
+        if (str === '' || str === 'null' || str === 'undefined')
+          return fallback;
+        return str;
+      };
+
+      // 2. Display Modal
       const modal = document.getElementById('userModal');
       if (modal) {
         modal.style.display = 'block';
         modal.style.setProperty('display', 'block', 'important');
       }
 
-      // Hidden User ID
-      const idInput = document.getElementById('editUserId');
-      if (idInput) idInput.value = id || '';
+      // 3. Set Inputs
+      const fields = {
+        'editUserId': sanitize(data.id),
+        'editUserName': sanitize(data.name),
+        'editUserEmail': sanitize(data.email),
+        'editUserContact': sanitize(data.contact),
+        'editUserIdNum': sanitize(data.idNum || data.id_number),
+        'editUserCreated': sanitize(data.created, 'August 2026'),
+        'editUserRemarks': sanitize(data.remarks)
+      };
 
-      const nameInput = document.getElementById('editUserName');
-      if (nameInput) nameInput.value = name || '';
+      Object.entries(fields).forEach(([fieldId, value]) => {
+        const el = document.getElementById(fieldId);
+        if (el) el.value = value;
+      });
 
-      const emailInput = document.getElementById('editUserEmail');
-      if (emailInput) emailInput.value = email || '';
-
-      const contactInput = document.getElementById('editUserContact');
-      if (contactInput) contactInput.value = (contact && contact !== 'null') ?
-        contact : '';
-
-      const idNumInput = document.getElementById('editUserIdNum');
-      if (idNumInput) idNumInput.value = (idNum && idNum !== 'null') ? idNum : '';
-
-      const createdInput = document.getElementById('editUserCreated');
-      if (createdInput) createdInput.value = (created && created !== 'null') ?
-        created : 'August 2026';
-
-      const remarksInput = document.getElementById('editUserRemarks');
-      if (remarksInput) remarksInput.value = (remarks && remarks !== 'null') ?
-        remarks : '';
-
-      const cleanRole = (role || 'trainer').toLowerCase();
-
+      // 4. Normalize & Assign Role Dropdown
+      const cleanRole = sanitize(data.role, 'student').toLowerCase();
       const userRoleEl = document.getElementById('editUserRole');
-      if (userRoleEl) userRoleEl.value = cleanRole;
+
+      if (userRoleEl) {
+        const matchedOption = Array.from(userRoleEl.options).find(
+          opt => opt.value.toLowerCase() === cleanRole
+        );
+        userRoleEl.value = matchedOption ? matchedOption.value : (userRoleEl
+          .options[0]?.value || cleanRole);
+      }
 
       const hiddenRoleEl = document.getElementById('hiddenUserRole');
       if (hiddenRoleEl) hiddenRoleEl.value = cleanRole;
 
+      // 5. Normalize & Assign Status Dropdown (Role-Specific Defaulting)
+      const isTraineeRole = ['student', 'trainee', 'trainees'].includes(
+        cleanRole);
+      const defaultStatusFallback = isTraineeRole ? 'Pending' : 'Active';
+
       const statusSelect = document.getElementById('editUserStatus');
       if (statusSelect) {
-        let cleanStatus = 'Active';
-        if (status) {
-          const lowerStatus = String(status).trim().toLowerCase();
-          if (lowerStatus === 'inactive' || lowerStatus.includes('inactive')) {
-            cleanStatus = 'Inactive';
-          } else if (lowerStatus === 'pending' || lowerStatus.includes(
-              'pending')) {
-            cleanStatus = 'Pending';
-          }
+        const rawStatus = sanitize(data.status, defaultStatusFallback)
+          .toLowerCase();
+        let cleanStatus = defaultStatusFallback;
+
+        if (rawStatus.includes('inactive')) {
+          cleanStatus = 'Inactive';
+        } else if (rawStatus.includes('pending')) {
+          cleanStatus = 'Pending';
+        } else if (rawStatus.includes('active')) {
+          cleanStatus = 'Active';
         }
-        statusSelect.value = cleanStatus;
+
+        const matchedStatus = Array.from(statusSelect.options).find(
+          opt => opt.value.toLowerCase() === cleanStatus.toLowerCase()
+        );
+        statusSelect.value = matchedStatus ? matchedStatus.value : cleanStatus;
       }
 
+      // 6. Dynamic Label Logic: Trainee vs. Trainer / Admin
+      const idNumLabel = document.getElementById('idNumLabel') ||
+        document.querySelector('label[for="editUserIdNum"]');
+
+      if (idNumLabel) {
+        idNumLabel.textContent = isTraineeRole ? 'Unique Learner Identifier' :
+          'Reference / ID Number';
+      }
+
+      // 7. Toggle Course/Trainer Visibility Fields
       const courseFieldContainer = document.getElementById('trainerCourseField');
       const courseInput = document.getElementById('editTrainerCourse');
       const trainerFieldsContainer = document.getElementById(
         'trainerFieldsContainer');
 
-      if (cleanRole === 'trainer') {
-        if (courseFieldContainer) courseFieldContainer.style.display = 'block';
-        if (courseInput) courseInput.value = courseTitle || 'No course assigned';
-        if (trainerFieldsContainer) trainerFieldsContainer.style.display =
-          'block';
-      } else {
-        if (courseFieldContainer) courseFieldContainer.style.display = 'none';
-        if (courseInput) courseInput.value = '';
-        if (trainerFieldsContainer) trainerFieldsContainer.style.display =
-          'block';
+      const isTrainer = cleanRole === 'trainer';
+
+      if (courseFieldContainer) {
+        courseFieldContainer.style.display = isTrainer ? 'block' : 'none';
+      }
+
+      if (courseInput) {
+        courseInput.value = isTrainer ? sanitize(data.courseTitle,
+          'No course assigned') : '';
+      }
+
+      if (trainerFieldsContainer) {
+        trainerFieldsContainer.style.display = 'block';
       }
     }
 
@@ -4647,13 +4698,13 @@
 
       <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
         ${m.file_path ? `
-                                                                                                                                                                                                                                          <a href="/admin/module/file/${m.id}/${encodeURIComponent(m.title)}.pdf" target="_blank" 
-                                                                                                                                                                                                                                             style="font-size:11px; padding:6px 12px; border-radius:6px; background:#e8f5e9; color:#025628; text-decoration:none; font-weight:700; display:inline-flex; align-items:center; gap:5px; white-space:nowrap; transition: background 0.2s;">
-                                                                                                                                                                                                                                            <i class="fa-solid fa-file-pdf"></i> View File
-                                                                                                                                                                                                                                          </a>
-                                                                                                                                                                                                                                        ` : `
-                                                                                                                                                                                                                                          <span style="font-size:11px; color:#9ca3af; padding:4px 8px; font-style:italic;">No PDF</span>
-                                                                                                                                                                                                                                        `}
+                                                                                                                                                                                                                                                                                            <a href="/admin/module/file/${m.id}/${encodeURIComponent(m.title)}.pdf" target="_blank" 
+                                                                                                                                                                                                                                                                                               style="font-size:11px; padding:6px 12px; border-radius:6px; background:#e8f5e9; color:#025628; text-decoration:none; font-weight:700; display:inline-flex; align-items:center; gap:5px; white-space:nowrap; transition: background 0.2s;">
+                                                                                                                                                                                                                                                                                              <i class="fa-solid fa-file-pdf"></i> View File
+                                                                                                                                                                                                                                                                                            </a>
+                                                                                                                                                                                                                                                                                          ` : `
+                                                                                                                                                                                                                                                                                            <span style="font-size:11px; color:#9ca3af; padding:4px 8px; font-style:italic;">No PDF</span>
+                                                                                                                                                                                                                                                                                          `}
 
         <button type="button" onclick="deleteModule(${m.id})"
           style="font-size:11px; padding:6px 12px; border-radius:6px; background:#FCEBEB; color:#A32D2D; border:none; cursor:pointer; font-family:inherit; font-weight:700; white-space:nowrap; display:inline-flex; align-items:center; gap:4px;">
@@ -5434,29 +5485,31 @@
 
       document.getElementById('rosterCourseTitle').textContent = courseTitle +
         " - Enrolled Trainees";
-      document.getElementById('rosterCountBadge').textContent = trainees.length +
-        " Enrolled";
+      document.getElementById('rosterCountBadge').textContent = (trainees ?
+        trainees.length : 0) + " Enrolled";
 
       const container = document.getElementById('fullRosterContainer');
 
       if (!trainees || trainees.length === 0) {
         container.innerHTML = `
-            <div style="text-align: center; color: #aaa; padding: 40px 0; font-size: 13px; font-style: italic;">
-                <i class="fa-solid fa-users-slash" style="font-size: 28px; display: block; margin-bottom: 8px; color: #ccc;"></i>
-                No trainees enrolled in this course yet.
-            </div>`;
+      <div style="text-align: center; color: #aaa; padding: 40px 0; font-size: 13px; font-style: italic;">
+          <i class="fa-solid fa-users-slash" style="font-size: 28px; display: block; margin-bottom: 8px; color: #ccc;"></i>
+          No trainees enrolled in this course yet.
+      </div>`;
       } else {
         let html = `
-            <div style="display: flex; align-items: center; justify-content: space-between; background: #e8f5e9; padding: 10px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; color: #025628; margin-bottom: 4px;">
-                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                    <input type="checkbox" id="selectAllTrainees" onclick="toggleSelectAllTrainees(this)" style="width: 16px; height: 16px; accent-color: #025628; cursor: pointer;">
-                    Select All Trainees
-                </label>
-                <span id="selectedCountLabel">0 selected</span>
-            </div>
-        `;
+      <div style="display: flex; align-items: center; justify-content: space-between; background: #e8f5e9; padding: 10px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; color: #025628; margin-bottom: 4px;">
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" id="selectAllTrainees" onclick="toggleSelectAllTrainees(this)" style="width: 16px; height: 16px; accent-color: #025628; cursor: pointer;">
+              Select All Trainees
+          </label>
+          <span id="selectedCountLabel">0 selected</span>
+      </div>
+    `;
 
         html += trainees.map(t => {
+          // Map all required attributes from DB payload
+          const userId = t.user_id || t.id || '';
           const firstName = t.firstname || '';
           const lastName = t.lastname || '';
           const fullName = (firstName + ' ' + lastName).trim()
@@ -5464,40 +5517,85 @@
           const initials = ((firstName[0] || '') + (lastName[0] || ''))
             .toUpperCase() || 'TR';
           const email = t.email || 'No email provided';
+          const contact = t.contact || '';
+          const idNum = t.id_number || 'N/A'; // Learner ID
+          const status = t.status ||
+            'Pending'; // Default to Pending for trainees
+          const remarks = t.remarks || '';
+          const role = t.role || 'student';
 
-          const status = t.status || 'Active';
-          const statusBg = status.toLowerCase() === 'active' ? '#e8f5e9' :
-            '#fff8e1';
-          const statusColor = status.toLowerCase() === 'active' ? '#025628' :
-            '#854F0B';
+          // Safe Date Parsing
+          let created = 'August 2026';
+          if (t.member_since) {
+            const parsedDate = new Date(t.member_since);
+            if (!isNaN(parsedDate.getTime())) {
+              created = parsedDate.toLocaleDateString('en-US', {
+                month: 'long',
+                year: 'numeric'
+              });
+            }
+          } else if (t.created) {
+            created = t.created;
+          }
+
+          // Role & Status Badge Color Logic
+          const cleanStatus = status.toLowerCase();
+          let statusBg = '#f0f0f0'; // Gray Background
+          let statusColor = '#555555'; // Dark Gray Text
+
+          if (cleanStatus === 'inactive') {
+            statusBg = '#FCEBEB'; // Soft Red
+            statusColor = '#A32D2D';
+          } else if (cleanStatus === 'active') {
+            statusBg = '#e8f5e9'; // Active Green
+            statusColor = '#025628';
+          }
+
           const safeEmailId = email.replace(/[^a-zA-Z0-9]/g, '_');
 
+          // String escape helper for inline onclick attributes
+          const escapeAttr = (str) => String(str || '').replace(/\\/g, '\\\\')
+            .replace(/'/g, "\\'").replace(/\n/g, ' ');
+
           return `
-            <div id="roster-row-${safeEmailId}" style="display: flex; justify-content: space-between; align-items: center; background: #f9f9f9; padding: 12px 16px; border-radius: 8px; border: 1px solid #eee;">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <input type="checkbox" class="roster-checkbox" onclick="updateSelectedCount()" style="width: 16px; height: 16px; accent-color: #025628; cursor: pointer;">
-                    <div style="width: 36px; height: 36px; border-radius: 50%; background: #e8f5e9; display: flex; align-items: center; justify-content: center; color: #025628; font-weight: 700; font-size: 12px; flex-shrink: 0;">
-                        ${initials}
-                    </div>
-                    <div>
-                        <strong style="color: #1a1a1a; display: block; font-size: 13px;">${fullName}</strong>
-                        <small style="color: #888; font-size: 12px;">${email}</small>
-                    </div>
+        <div id="roster-row-${safeEmailId}" class="user-item" data-user-id="${userId}" style="display: flex; justify-content: space-between; align-items: center; background: #f9f9f9; padding: 12px 16px; border-radius: 8px; border: 1px solid #eee;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <input type="checkbox" class="roster-checkbox" onclick="updateSelectedCount()" style="width: 16px; height: 16px; accent-color: #025628; cursor: pointer;">
+                <div style="width: 36px; height: 36px; border-radius: 50%; background: #e8f5e9; display: flex; align-items: center; justify-content: center; color: #025628; font-weight: 700; font-size: 12px; flex-shrink: 0;">
+                    ${initials}
                 </div>
-                
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span class="roster-status-badge" data-email="${email}" style="font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; background: ${statusBg}; color: ${statusColor};">
-                        ${status}
-                    </span>
-                    <button class="btn-view" onclick="openUserModal(
-                    '${addslashes(fullName)}',
-                    '${addslashes(email)}',
-                    'student',
-                    '${addslashes(status)}'
-                )">View Profile</button>
+                <div>
+                    <strong class="user-name-text" style="color: #1a1a1a; display: block; font-size: 13px;">${fullName}</strong>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 2px;">
+                        <small class="user-email-value" style="color: #888; font-size: 11.5px;">${email}</small>
+                        <span style="color: #ccc; font-size: 10px;">•</span>
+                        <small style="color: #025628; font-size: 11px; font-weight: 600; background: #e8f5e9; padding: 1px 6px; border-radius: 4px;">
+                          ULI: <span class="user-id-value">${idNum}</span>
+                        </small>
+                    </div>
+                    <span class="user-contact-value" style="display:none;">${contact}</span>
                 </div>
             </div>
-          `;
+            
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span class="roster-status-badge" data-email="${email}" style="font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; background: ${statusBg}; color: ${statusColor};">
+                    ${status.charAt(0).toUpperCase() + status.slice(1)}
+                </span>
+                <button class="btn-view" onclick="openUserModal(
+                  '${escapeAttr(userId)}',
+                  '${escapeAttr(fullName)}',
+                  '${escapeAttr(email)}',
+                  '${escapeAttr(role)}',
+                  '${escapeAttr(status)}',
+                  '',
+                  '${escapeAttr(contact)}',
+                  '${escapeAttr(idNum)}',
+                  '${escapeAttr(created)}',
+                  '${escapeAttr(remarks)}'
+                )">View Profile</button>  
+            </div>
+        </div>
+      `;
         }).join('');
 
         container.innerHTML = html;
@@ -5535,22 +5633,18 @@
     function addslashes(str) {
       return String(str).replace(/['"]/g, '\\$&');
     }
-
     /* ========================================================== */
     /* USER PROFILE: UPDATE & DELETE HANDLERS                     */
     /* ========================================================== */
 
     // 1. UPDATE USER FORM SUBMISSION
-    // 1. UPDATE USER FORM SUBMISSION
     document.getElementById('userForm').onsubmit = function(e) {
       e.preventDefault();
 
-      // Target Submit Button & store original layout
       const submitBtn = this.querySelector('button[type="submit"]');
       const originalSubmitHtml = submitBtn ? submitBtn.innerHTML :
         'Update User';
 
-      // Disable button & show loading state
       if (submitBtn) {
         submitBtn.disabled = true;
         submitBtn.style.opacity = '0.7';
@@ -5559,27 +5653,26 @@
           '<i class="fa-solid fa-spinner fa-spin"></i> Updating...';
       }
 
-      const id = document.getElementById('editUserId')?.value || null;
+      const id = document.getElementById('editUserId')?.value || '';
       const name = document.getElementById('editUserName')?.value.trim() || '';
       const email = document.getElementById('editUserEmail')?.value.trim() ||
         '';
       const status = document.getElementById('editUserStatus')?.value ||
-        'Active';
+        'Pending';
       const remarks = document.getElementById('editUserRemarks')?.value
         .trim() || '';
 
-      // Clean contact number (max 11 digits)
       const rawContact = document.getElementById('editUserContact')?.value
         .trim() || '';
-      const contact = rawContact.replace(/[^0-9]/g, '').slice(0, 11) || null;
+      const contact = rawContact.replace(/[^0-9]/g, '').slice(0, 11) || '';
 
       const rawIdNum = document.getElementById('editUserIdNum')?.value.trim() ||
-        null;
-      const id_number = (rawIdNum && rawIdNum !== 'N/A') ? rawIdNum : null;
+        '';
+      const id_number = (rawIdNum && rawIdNum !== 'N/A') ? rawIdNum : '';
 
       const role = document.getElementById('hiddenUserRole')?.value ||
         document.getElementById('editUserRole')?.value ||
-        'trainer';
+        'student';
 
       const token = document.querySelector('meta[name="csrf-token"]')
         ?.getAttribute('content') ||
@@ -5621,68 +5714,98 @@
         })
         .then(data => {
           if (data && data.success) {
-            // Locate container row in live DOM
-            const row = document.querySelector(
-                `.user-item[data-user-id="${id}"]`) ||
+            const updatedUser = data.user || {};
+            const freshName = updatedUser.fullname || name;
+            const freshEmail = updatedUser.email || email;
+            const freshStatus = updatedUser.status || status;
+            const freshContact = updatedUser.contact || contact;
+            const freshIdNum = updatedUser.id_number || id_number;
+            const freshRemarks = updatedUser.remarks || remarks;
+            const freshRole = updatedUser.role || role;
+            const freshCourse = updatedUser.course_title || '';
+
+            const row = document.querySelector(`[data-user-id="${id}"]`) ||
+              document.querySelector(`.user-item[data-user-id="${id}"]`) ||
+              document.querySelector(`.user-card[data-user-id="${id}"]`) ||
               document.querySelector(
                 `.user-item:has(.roster-status-badge[data-email="${email}"])`
-              );
+              ) ||
+              Array.from(document.querySelectorAll('button')).find(b => b
+                .getAttribute('onclick')?.includes(`'${id}'`))?.closest(
+                'div');
+
+            const btn = (row ? row.querySelector('.btn-view') : null) ||
+              Array.from(document.querySelectorAll('button')).find(b => b
+                .getAttribute('onclick')?.includes(`'${id}'`));
 
             if (row) {
-              const nameEl = row.querySelector('.user-name-text');
+              const nameEl = row.querySelector('.user-name-text') || row
+                .querySelector('strong');
               const emailVal = row.querySelector('.user-email-value');
               const contactVal = row.querySelector('.user-contact-value');
               const idNumVal = row.querySelector('.user-id-value');
-              const badgeEl = row.querySelector('.roster-status-badge');
+              const badgeEl = row.querySelector('.roster-status-badge') || row
+                .querySelector('.badge');
 
-              // Update text values safely
-              if (nameEl) nameEl.textContent = name.toUpperCase();
-              if (emailVal) emailVal.textContent = email;
-              if (contactVal) contactVal.textContent = contact ||
-                'Not provided';
-              if (idNumVal) idNumVal.textContent = id_number || 'N/A';
+              if (nameEl) nameEl.textContent = freshName.toUpperCase();
+              if (emailVal) emailVal.textContent = freshEmail;
+              if (contactVal) contactVal.textContent = freshContact || '';
+              if (idNumVal) idNumVal.textContent = freshIdNum || '';
 
-              // Update status badge styling
+              // Live Badge Color Update Logic
               if (badgeEl) {
-                badgeEl.textContent = status;
-                badgeEl.setAttribute('data-email', email);
-                const isInactive = status.toLowerCase() === 'inactive';
-                badgeEl.style.background = isInactive ? '#FCEBEB' : '#e8f5e9';
-                badgeEl.style.color = isInactive ? '#A32D2D' : '#025628';
-              }
+                const cleanStatus = freshStatus.toLowerCase();
+                badgeEl.textContent = cleanStatus.charAt(0).toUpperCase() +
+                  cleanStatus.slice(1);
+                badgeEl.setAttribute('data-email', freshEmail);
 
-              // Update View Profile modal trigger button onclick attributes
-              const btn = row.querySelector('.btn-view');
-              if (btn) {
-                const courseTitle = document.getElementById(
-                  'editTrainerCourse')?.value || '';
-                const created = document.getElementById('editUserCreated')
-                  ?.value || '';
-
-                const safeName = name.replace(/'/g, "\\'");
-                const safeEmail = email.replace(/'/g, "\\'");
-                const safeCourse = courseTitle.replace(/'/g, "\\'");
-                const safeContact = (contact || '').replace(/'/g, "\\'");
-                const safeIdNum = (id_number || '').replace(/'/g, "\\'");
-                const safeRemarks = (remarks || '').replace(/'/g, "\\'");
-
-                btn.setAttribute('onclick', `openUserModal(
-              '${id}',
-              '${safeName}',
-              '${safeEmail}',
-              '${role}',
-              '${status}',
-              '${safeCourse}',
-              '${safeContact}',
-              '${safeIdNum}',
-              '${created}',
-              '${safeRemarks}'
-            )`);
+                if (cleanStatus === 'pending') {
+                  badgeEl.style.background = '#f0f0f0'; // Gray Background
+                  badgeEl.style.color = '#555555'; // Dark Gray Text
+                } else if (cleanStatus === 'inactive') {
+                  badgeEl.style.background = '#FCEBEB'; // Soft Red
+                  badgeEl.style.color = '#A32D2D';
+                } else {
+                  badgeEl.style.background = '#e8f5e9'; // Active Green
+                  badgeEl.style.color = '#025628';
+                }
               }
             }
 
+            if (btn) {
+              const created = document.getElementById('editUserCreated')
+                ?.value || 'August 2026';
+
+              btn.dataset.id = id;
+              btn.dataset.name = freshName;
+              btn.dataset.email = freshEmail;
+              btn.dataset.role = freshRole;
+              btn.dataset.status = freshStatus;
+              btn.dataset.courseTitle = freshCourse;
+              btn.dataset.contact = freshContact;
+              btn.dataset.idNum = freshIdNum;
+              btn.dataset.created = created;
+              btn.dataset.remarks = freshRemarks;
+
+              const escapeAttr = (str) => String(str || '').replace(/\\/g,
+                '\\\\').replace(/'/g, "\\'").replace(/\n/g, ' ');
+
+              btn.setAttribute('onclick', `openUserModal(
+          '${escapeAttr(id)}',
+          '${escapeAttr(freshName)}',
+          '${escapeAttr(freshEmail)}',
+          '${escapeAttr(freshRole)}',
+          '${escapeAttr(freshStatus)}',
+          '${escapeAttr(freshCourse)}',
+          '${escapeAttr(freshContact)}',
+          '${escapeAttr(freshIdNum)}',
+          '${escapeAttr(created)}',
+          '${escapeAttr(freshRemarks)}'
+        )`);
+            }
+
             alert(data.message || 'User profile updated successfully!');
-            closeUserModal();
+            if (typeof closeUserModal === 'function') closeUserModal();
           } else {
             alert(data?.message || 'An error occurred while updating.');
           }
@@ -5693,7 +5816,6 @@
             'An error occurred while updating. Please try again.');
         })
         .finally(() => {
-          // Restore submit button state
           if (submitBtn) {
             submitBtn.disabled = false;
             submitBtn.style.opacity = '1';
@@ -5702,6 +5824,87 @@
           }
         });
     };
+
+    // 2. DELETE USER FUNCTION
+    function deleteUser() {
+      const idInput = document.getElementById('editUserId');
+      const id = idInput ? idInput.value : null;
+
+      if (!id) {
+        alert('Error: Missing User ID.');
+        return;
+      }
+
+      if (!confirm(
+          'Are you sure you want to remove this user? This action cannot be undone.'
+        )) {
+        return;
+      }
+
+      const deleteBtn = document.querySelector('.btn-delete-text');
+      const originalDeleteHtml = deleteBtn ? deleteBtn.innerHTML :
+        '<i class="fa-solid fa-user-slash"></i> Remove User';
+
+      if (deleteBtn) {
+        deleteBtn.disabled = true;
+        deleteBtn.style.opacity = '0.7';
+        deleteBtn.style.cursor = 'not-allowed';
+        deleteBtn.innerHTML =
+          '<i class="fa-solid fa-spinner fa-spin"></i> Removing...';
+      }
+
+      const token = document.querySelector('meta[name="csrf-token"]')
+        ?.getAttribute('content') ||
+        (typeof csrfToken !== 'undefined' ? csrfToken : '');
+
+      fetch('/admin/user/delete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': token,
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            id: id
+          })
+        })
+        .then(async r => {
+          const text = await r.text();
+          try {
+            return JSON.parse(text);
+          } catch (err) {
+            console.error("Server response was not JSON:", text);
+            throw new Error("Server returned an invalid response.");
+          }
+        })
+        .then(data => {
+          if (data.success) {
+            const row = document.querySelector(
+                `.user-item[data-user-id="${id}"]`) ||
+              document.querySelector(`[data-user-id="${id}"]`);
+            if (row) {
+              row.remove();
+            }
+
+            alert(data.message || 'User removed successfully!');
+            if (typeof closeUserModal === 'function') closeUserModal();
+          } else {
+            alert(data.message || 'Failed to remove user.');
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          alert('Network error occurred while attempting to delete user.');
+        })
+        .finally(() => {
+          if (deleteBtn) {
+            deleteBtn.disabled = false;
+            deleteBtn.style.opacity = '1';
+            deleteBtn.style.cursor = 'pointer';
+            deleteBtn.innerHTML = originalDeleteHtml;
+          }
+        });
+    }
 
     // 2. DELETE USER FUNCTION
     function deleteUser() {

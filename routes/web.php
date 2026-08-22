@@ -100,7 +100,7 @@ Route::middleware("trainer")->group(function () {
     Route::get("/trainer/courses", [UserController::class, "courses"])->name("trainer.courses");
     Route::get("/assessment", [UserController::class, "assessment"])->name("assessment");
     Route::get("/certificates", [UserController::class, "certificates"])->name("certificates");
-    Route::post("/trainer/certificate", [UserController::class, "trainerCertificateUpload"])->name("trainer.certificate.upload"); //new
+    Route::post("/trainer/certificate", [UserController::class, "trainerCertificateUpload"])->name("trainer.certificate.upload");
     Route::get("/reports", [UserController::class, "reports"])->name("reports");
     Route::get("/settings", [UserController::class, "settings"])->name("settings");
     Route::get("/trainer/students", [UserController::class, "trainerStudents"])->name("trainer.students");
@@ -137,5 +137,16 @@ Route::middleware("student")->group(function () {
     Route::post("/student/profile/password", [UserController::class, "studentProfilePassword"])->name("student.profile.password");
     Route::get("/student/modules", [UserController::class, "studentModules"])->name("student.modules");
     Route::get('/student/announcements', function () { return view('student.announcements'); })->name('student.announcements');
-    Route::get('/registration/step1', [RegistrationController::class, 'step1'])->name('registration.step1');
+
+    // Registration Routes (Step 1 & Step 2)
+Route::get('/registration/step1', [RegistrationController::class, 'showStep1'])->name('registration.step1');
+Route::post('/registration/step1', [RegistrationController::class, 'saveStep1'])->name('registration.step1.save');
+
+// ADD THIS POST ALIAS to catch form submissions sent to /registration/step-2
+Route::post('/registration/step-2', [RegistrationController::class, 'saveStep1']);
+
+// Step 2 Display & Final Submission Routes
+Route::get('/registration/step2', [RegistrationController::class, 'showStep2'])->name('registration.step2.show');
+Route::get('/registration/step-2', [RegistrationController::class, 'showStep2'])->name('registration.step2'); // GET alias
+Route::post('/registration/submit', [RegistrationController::class, 'store'])->name('registration.submit');
 });

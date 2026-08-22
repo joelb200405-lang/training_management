@@ -334,15 +334,16 @@ public function admin1(Request $request)
 
 public function updateUser(Request $request)
 {
-    // 1. Validation
+    // 1. Validation (Allows 'Pending', 'Active', 'Inactive')
     $request->validate([
         'id'        => 'nullable|integer',
-        'email'     => 'required_without:id|email',
+        'email'     => 'required_without:id|nullable|email',
         'name'      => 'nullable|string|max:255',
-        'status'    => 'nullable|string',
-        'contact'   => 'nullable|string|max:11',
-        'id_number' => 'nullable|string|max:100',
-        'role'      => 'nullable|string',
+        'status'    => 'nullable|string|max:50',
+        'contact'   => 'nullable|string|max:255',
+        'id_number' => 'nullable|string|max:255',
+        'role'      => 'nullable|string|max:255',
+        'remarks'   => 'nullable|string',
     ]);
 
     // 2. Locate user record
@@ -356,24 +357,37 @@ public function updateUser(Request $request)
         ], 404);
     }
 
-    // 3. Safely update fields
+    // 3. Name Parsing (Supports multi-word first names cleanly)
     if ($request->filled('name')) {
-        $nameParts = explode(' ', trim($request->name), 2);
-        $user->firstname = $nameParts[0];
-        $user->lastname  = $nameParts[1] ?? ''; // Empty string if single name given
+        $nameParts = preg_split('/\s+/', trim($request->name));
+        if (count($nameParts) > 1) {
+            $user->lastname  = array_pop($nameParts);
+            $user->firstname = implode(' ', $nameParts);
+        } else {
+            $user->firstname = $nameParts[0] ?? '';
+            $user->lastname  = ''; 
+        }
     }
 
-    if ($request->has('status'))    $user->status    = $request->status;
-    if ($request->has('remarks'))   $user->remarks   = $request->remarks;
-    if ($request->has('contact'))   $user->contact   = $request->contact;
-    if ($request->has('id_number')) $user->id_number = $request->id_number;
-    if ($request->filled('role'))   $user->role      = $request->role;
+    // 4. Role-Based Status & Safe Field Updates
+    $targetRole = strtolower($request->role ?? $user->role ?? 'student');
+    $isTrainee  = in_array($targetRole, ['student', 'trainee', 'trainees']);
+
+    if ($request->has('status')) {
+        // Fallback to 'Pending' for Trainees, 'Active' for Trainers/Admins if empty
+        $user->status = $request->status ?: ($isTrainee ? 'Pending' : 'Active');
+    }
+
+    if ($request->has('remarks'))   $user->remarks   = $request->remarks ?: null;
+    if ($request->has('contact'))   $user->contact   = $request->contact ?: null;
+    if ($request->has('id_number')) $user->id_number = $request->id_number ?: null;
+    if ($request->filled('role'))   $user->role      = strtolower($request->role);
 
     $user->save();
 
-    // 4. Fetch assigned course title if user is a trainer
+    // 5. Fetch assigned course title if user is a trainer
     $courseTitle = 'No course assigned';
-    if ($user->role === 'trainer' && class_exists(Course_tbl::class)) {
+    if (strtolower($user->role) === 'trainer' && class_exists(Course_tbl::class)) {
         $course = Course_tbl::where('trainer_id', $user->id)->first();
         if ($course) {
             $courseTitle = $course->title;
@@ -1678,19 +1692,11 @@ public function trainerStudents()
 
         return redirect()->route('trainer.profile')->with('success', 'Password updated successfully!');
         }
-
-        // ── ANNOUNCEMENTS ─────────────────────────────────────────────────────────
+// ── ANNOUNCEMENTS ─────────────────────────────────────────────────────────
 
 public function storeAnnouncement(Request $request)
 {
-    $validated = $request->validate([
-        'title'      => 'required|string|max:100',
-        'message'    => 'required|string|max:500',
-        'type'       => 'required|in:reminder,notice,urgent',
-        'is_active'  => 'required|boolean',
-        'publish_at' => 'nullable|date',
-        'expires_at' => 'nullable|date|after_or_equal:publish_at',
-    ]);
+    $validated = $this->validateAnnouncement($request);
 
     \App\Models\Announcement::create($validated);
 
@@ -1702,21 +1708,7 @@ public function storeAnnouncement(Request $request)
 
 public function updateAnnouncement(Request $request, $id)
 {
-    // Convert empty string dates to NULL and sanitize boolean
-    $request->merge([
-        'publish_at' => $request->publish_at ?: null,
-        'expires_at' => $request->expires_at ?: null,
-        'is_active'  => filter_var($request->is_active, FILTER_VALIDATE_BOOLEAN),
-    ]);
-
-    $validated = $request->validate([
-        'title'      => 'required|string|max:100',
-        'message'    => 'required|string|max:500',
-        'type'       => 'required|in:reminder,notice,urgent',
-        'is_active'  => 'required|boolean',
-        'publish_at' => 'nullable|date',
-        'expires_at' => 'nullable|date',
-    ]);
+    $validated = $this->validateAnnouncement($request);
 
     $announcement = \App\Models\Announcement::findOrFail($id);
     $announcement->update($validated);
@@ -1748,6 +1740,29 @@ public function toggleAnnouncement($id)
         'success'   => true,
         'is_active' => $announcement->is_active,
         'message'   => 'Announcement status updated successfully!'
+    ]);
+}
+
+/**
+ * Shared Helper — Sanitize input and validate request payload.
+ */
+private function validateAnnouncement(Request $request): array
+{
+    $request->merge([
+        'audience'   => $request->audience ?: 'general',
+        'publish_at' => $request->publish_at ?: null,
+        'expires_at' => $request->expires_at ?: null,
+        'is_active'  => filter_var($request->is_active, FILTER_VALIDATE_BOOLEAN),
+    ]);
+
+    return $request->validate([
+        'title'      => 'required|string|max:100',
+        'message'    => 'required|string|max:500',
+        'type'       => 'required|in:reminder,notice,urgent',
+        'audience'   => 'required|in:general,student,trainer',
+        'is_active'  => 'required|boolean',
+        'publish_at' => 'nullable|date',
+        'expires_at' => 'nullable|date|after_or_equal:publish_at',
     ]);
 }
 
