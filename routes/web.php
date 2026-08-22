@@ -43,6 +43,19 @@ Route::post("/reset-password", [UserController::class, "ResetPassword"])->name("
 Route::get("/first-reset", [UserController::class, "firstResetPage"])->name("first.reset")->middleware("auth");
 Route::post("/first-reset", [UserController::class, "firstResetSave"])->name("first.reset.save")->middleware("auth");
 
+// ── REGISTRATION (public — TESDA Learner's Profile Form, 2 steps) ────────────
+Route::get('/registration/step1', [RegistrationController::class, 'showStep1'])
+    ->name('registration.step1');
+
+Route::post('/registration/step2', [RegistrationController::class, 'saveStep1'])
+    ->name('registration.step2');
+
+Route::get('/registration/step2', [RegistrationController::class, 'showStep2'])
+    ->name('registration.step2.show');
+
+Route::post('/registration/submit', [RegistrationController::class, 'store'])
+    ->name('registration.submit');
+
 // ── ADMIN ROUTES ──────────────────────────────────────────────────────────────
 Route::middleware("admin")->group(function () {
     // Registrations
@@ -137,7 +150,7 @@ Route::middleware("student")->group(function () {
     Route::post("/student/profile/password", [UserController::class, "studentProfilePassword"])->name("student.profile.password");
     Route::get("/student/modules", [UserController::class, "studentModules"])->name("student.modules");
     Route::get('/student/announcements', function () { return view('student.announcements'); })->name('student.announcements');
-
+    
     // Registration Routes (Step 1 & Step 2)
 Route::get('/registration/step1', [RegistrationController::class, 'showStep1'])->name('registration.step1');
 Route::post('/registration/step1', [RegistrationController::class, 'saveStep1'])->name('registration.step1.save');
@@ -149,4 +162,5 @@ Route::post('/registration/step-2', [RegistrationController::class, 'saveStep1']
 Route::get('/registration/step2', [RegistrationController::class, 'showStep2'])->name('registration.step2.show');
 Route::get('/registration/step-2', [RegistrationController::class, 'showStep2'])->name('registration.step2'); // GET alias
 Route::post('/registration/submit', [RegistrationController::class, 'store'])->name('registration.submit');
+
 });
