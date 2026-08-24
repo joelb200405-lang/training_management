@@ -19,9 +19,11 @@
   </script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
+  </script>
+  <script
     src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
   </script>
-
   <style>
     /* ========================================================== */
     /* GENERAL & COMPONENT STYLES                                 */
@@ -211,7 +213,6 @@
     /* ========================================================== */
     /* ANNOUNCEMENT MODAL STYLES                                  */
     /* ========================================================== */
-    /* Modal Container & Content Card */
     #announcementModal .modal-content.card {
       max-width: 520px !important;
       width: 95% !important;
@@ -226,7 +227,6 @@
       text-align: left !important;
     }
 
-    /* Form Structure & Labels */
     #announcementModal .form-group {
       display: flex !important;
       flex-direction: column !important;
@@ -261,7 +261,6 @@
       color: #888 !important;
     }
 
-    /* Input Wrappers & Icon Alignment */
     #announcementModal .input-container {
       position: relative !important;
       display: flex !important;
@@ -279,7 +278,6 @@
       z-index: 2 !important;
     }
 
-    /* Text Inputs & Select Dropdowns */
     #announcementModal .input-container input[type="text"],
     #announcementModal .input-container select {
       width: 100% !important;
@@ -294,7 +292,6 @@
       outline: none !important;
     }
 
-    /* Textarea Layout */
     #announcementModal .textarea-container {
       align-items: flex-start !important;
     }
@@ -318,7 +315,6 @@
       outline: none !important;
     }
 
-    /* Focus States */
     #announcementModal .input-container input:focus,
     #announcementModal .input-container select:focus,
     #announcementModal .input-container textarea:focus,
@@ -327,7 +323,6 @@
       box-shadow: 0 0 0 2px rgba(2, 86, 40, 0.1) !important;
     }
 
-    /* Datetime Local Inputs & Container */
     #announcementModal .datetime-container {
       position: relative !important;
       width: 100% !important;
@@ -348,7 +343,6 @@
       cursor: pointer !important;
     }
 
-    /* WebKit Native Calendar Indicator Icon */
     #announcementModal input[type="datetime-local"]::-webkit-calendar-picker-indicator {
       cursor: pointer !important;
       opacity: 0.6;
@@ -359,7 +353,6 @@
       opacity: 1;
     }
 
-    /* Form Row Grid & Checkbox Card */
     #announcementModal .form-row {
       display: flex !important;
       gap: 16px !important;
@@ -402,7 +395,6 @@
       user-select: none !important;
     }
 
-    /* Modal Footer */
     #announcementModal .modal-footer {
       display: flex !important;
       justify-content: flex-end !important;
@@ -410,6 +402,612 @@
       margin-top: 8px !important;
       padding-top: 14px !important;
       border-top: 1px solid #eee !important;
+    }
+
+    /* ========================================================== */
+    /* CERTIFICATES VIEW & TABLE STYLES                           */
+    /* ========================================================== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: #025628;
+      color: #ffffff;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .stat-card.urgent {
+      background: #025628;
+    }
+
+    .stat-card h3,
+    .stat-card .stat-number {
+      font-size: 28px;
+      font-weight: 700;
+      margin: 0 0 6px 0;
+    }
+
+    .stat-card p,
+    .stat-card .stat-label {
+      font-size: 13px;
+      opacity: 0.9;
+      margin: 0;
+    }
+
+    .filter-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .dropdown-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .filter-dropdown {
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 13px;
+      background-color: #fff;
+      color: #333;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .filter-dropdown:focus {
+      border-color: #025628;
+    }
+
+    .selection-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .custom-checkbox {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: #333;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .custom-checkbox input[type="checkbox"] {
+      accent-color: #025628;
+      cursor: pointer;
+    }
+
+    .table-outline {
+      border: 1px solid #d4edda;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    .trainee-data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    .trainee-data-table thead {
+      background-color: #f7ea72;
+    }
+
+    .trainee-data-table th {
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #1a1a1a;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .trainee-data-table td {
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #333;
+      border-bottom: 1px solid #f0f0f0;
+      vertical-align: middle;
+    }
+
+    .trainee-data-table tbody tr:hover {
+      background-color: #fcfcfc;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .badge-success {
+      background-color: #e8f5e9;
+      color: #025628;
+    }
+
+    .badge-warning {
+      background-color: #fff8e1;
+      color: #b78103;
+    }
+
+    /* Action Buttons Inside Table */
+    .action-icons {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-icon {
+      background: transparent;
+      border: none;
+      padding: 4px 6px;
+      cursor: pointer;
+      font-size: 15px;
+      color: #025628;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.15s ease;
+    }
+
+    .btn-icon:hover {
+      background-color: #f0faf3;
+    }
+
+    .btn-icon.btn-danger {
+      color: #dc3545;
+    }
+
+    .btn-icon.btn-danger:hover {
+      background-color: #fcebeb;
+    }
+
+    /* Bottom Action Footer */
+    .action-footer {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .btn-primary {
+      background-color: #025628;
+      color: #ffffff;
+    }
+
+    .btn-secondary {
+      background-color: #e8f5e9;
+      color: #025628;
+    }
+
+    .text-btn-add {
+      background: none;
+      border: none;
+      color: #025628;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pill-btn-export {
+      background-color: #025628;
+      color: #fff;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    /* ========================================================== */
+    /* CERTIFICATE MODAL PREVIEWS & FORMS                         */
+    /* ========================================================== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1050;
+      padding: 16px;
+    }
+
+    .modal-box-fixed {
+      background: #ffffff;
+      border-radius: 12px;
+      max-width: 900px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-split {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .split-left-preview {
+      flex: 1.2;
+      min-width: 320px;
+      padding: 24px;
+      background-color: #f9fbf9;
+    }
+
+    .split-right-info {
+      flex: 1;
+      min-width: 280px;
+      padding: 24px;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .border-right {
+      border-right: 1px solid #ececec;
+    }
+
+    .modal-section-header,
+    .modal-title {
+      font-size: 18px;
+      color: #025628;
+      font-weight: 700;
+      margin-top: 0;
+      margin-bottom: 16px;
+    }
+
+    /* Certificate Preview Certificate Layout */
+    .ui-cert-frame {
+      box-sizing: border-box;
+      width: 100%;
+      max-width: 580px;
+      aspect-ratio: 1 / 1;
+      /* Keeps it square */
+      border: 8px solid #025628;
+      background: #ffffff;
+      padding: 18px;
+      margin: 0 auto;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ui-cert-inner {
+      box-sizing: border-box;
+      border: 1px dashed #025628;
+      padding: 16px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .cert-logos-header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 10px;
+    }
+
+    .cert-logo-img {
+      height: 36px;
+      object-fit: contain;
+    }
+
+    .cert-authority-text {
+      font-size: 9px;
+      font-weight: 700;
+      line-height: 1.3;
+      color: #333;
+      margin: 6px 0;
+    }
+
+    .cert-title-primary {
+      font-size: 16px;
+      font-weight: 800;
+      color: #025628;
+      margin: 10px 0 4px 0;
+      letter-spacing: 0.05em;
+    }
+
+    .cert-certify-line {
+      font-size: 8px;
+      letter-spacing: 0.08em;
+      color: #555;
+      margin-bottom: 4px;
+    }
+
+    .cert-recipient-name {
+      font-size: 30px;
+      font-weight: 700;
+      text-decoration: underline;
+      margin: 6px 0;
+      color: #1a1a1a;
+      text-transform: none !important;
+      /* Disables any automatic text conversion */
+    }
+
+    .cert-training-msg {
+      font-size: 8px;
+      margin: 4px 0;
+      color: #555;
+    }
+
+    .cert-course-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #025628;
+      margin: 4px 0 16px 0;
+      text-transform: uppercase;
+    }
+
+    .cert-signatures {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 18px;
+    }
+
+    .sig-item {
+      width: 110px;
+      border-top: 1px solid #333;
+      padding-top: 4px;
+    }
+
+    .sig-name {
+      font-size: 8px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .sig-rank {
+      font-size: 7px;
+      color: #666;
+      margin: 0;
+    }
+
+    .cert-serial-footer {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 14px;
+      font-size: 8px;
+      font-weight: 600;
+      color: #555;
+    }
+
+    .info-block {
+      margin-bottom: 16px;
+    }
+
+    .info-label {
+      font-size: 12px;
+      color: #777;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .info-value.grade-success {
+      font-size: 15px;
+      font-weight: 700;
+      color: #025628;
+      margin: 0;
+    }
+
+    .sig-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-size: 13px;
+      color: #333;
+    }
+
+    .sig-list li {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .sig-list i {
+      color: #025628;
+    }
+
+    .modal-actions-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: auto;
+      padding-top: 16px;
+    }
+
+    .btn-pdf {
+      background-color: #dc3545;
+      color: #fff;
+    }
+
+    .btn-print {
+      background-color: #025628;
+      color: #fff;
+    }
+
+    /* Modal Form Inputs */
+    .ui-form-group {
+      border: none;
+      padding: 0;
+      margin: 0 0 14px 0;
+    }
+
+    .form-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #025628;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .form-control,
+    .ui-select {
+      width: 100%;
+      height: 38px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 13px;
+      box-sizing: border-box;
+      outline: none;
+    }
+
+    .form-control:focus,
+    .ui-select:focus {
+      border-color: #025628;
+    }
+
+    .resize-none {
+      resize: none;
+      height: 60px;
+    }
+
+    /* Utility Classes */
+    .hidden {
+      display: none !important;
+    }
+
+    .w-full {
+      width: 100%;
+    }
+
+    .mt-2 {
+      margin-top: 8px;
+    }
+
+    .mt-4 {
+      margin-top: 16px;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    /* Print View */
+    @media print {
+
+      /* 1. Hide everything on the page */
+      body * {
+        visibility: hidden !important;
+      }
+
+      /* 2. Reset modal wrappers */
+      html,
+      body,
+      .modal-overlay,
+      .modal-box-fixed,
+      .modal-split,
+      .split-left-preview {
+        visibility: hidden !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        overflow: visible !important;
+      }
+
+      /* 3. Remove non-printable elements */
+      .split-right-info,
+      .modal-section-header,
+      .modal-actions-container,
+      .action-footer {
+        display: none !important;
+      }
+
+      /* 4. Make ONLY the certificate visible */
+      #printableCert,
+      #printableCert * {
+        visibility: visible !important;
+      }
+
+      /* 5. Force Square Dimensions & Center on Page */
+      #printableCert {
+        position: fixed !important;
+        left: 50% !important;
+        top: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        width: 185mm !important;
+        height: 185mm !important;
+        aspect-ratio: 1 / 1 !important;
+        box-sizing: border-box !important;
+        margin: 0 auto !important;
+        padding: 16px !important;
+        box-shadow: none !important;
+        page-break-inside: avoid !important;
+      }
+
+      /* 6. Distribute content evenly across the full height of the square */
+      #printableCert .ui-cert-inner {
+        height: 100% !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        padding: 24px 20px !important;
+      }
+
+      @page {
+        size: auto;
+        margin: 10mm;
+      }
     }
   </style>
 </head>
@@ -478,7 +1076,9 @@
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-section-label">Menu</div>
 
-      <a href="?view=overview" class="nav-item active" id="nav-overview"
+      <a href="?view=overview"
+        class="nav-item <?= !isset($_GET['view']) || $_GET['view'] === 'overview' ? 'active' : '' ?>"
+        id="nav-overview"
         onclick="showView('overview'); setActive(this); return false;">
         <i class="fa fa-gauge-high nav-icon"></i>
         <span>Overview</span>
@@ -486,31 +1086,41 @@
 
       <div class="sidebar-section-label">Manage</div>
 
-      <a href="?view=all-trainees" class="nav-item" id="nav-trainees"
+      <a href="?view=all-trainees"
+        class="nav-item <?= isset($_GET['view']) && $_GET['view'] === 'all-trainees' ? 'active' : '' ?>"
+        id="nav-trainees"
         onclick="showView('all-trainees'); setActive(this); return false;">
         <i class="fa fa-user-graduate nav-icon"></i>
         <span>Trainees</span>
       </a>
 
-      <a href="?view=all-trainers" class="nav-item" id="nav-trainers"
+      <a href="?view=all-trainers"
+        class="nav-item <?= isset($_GET['view']) && $_GET['view'] === 'all-trainers' ? 'active' : '' ?>"
+        id="nav-trainers"
         onclick="showView('all-trainers'); setActive(this); return false;">
         <i class="fa fa-chalkboard-user nav-icon"></i>
         <span>Trainers</span>
       </a>
 
-      <a href="?view=registrations" class="nav-item" id="nav-registrations"
+      <a href="?view=registrations"
+        class="nav-item <?= isset($_GET['view']) && $_GET['view'] === 'registrations' ? 'active' : '' ?>"
+        id="nav-registrations"
         onclick="showView('registrations'); setActive(this); return false;">
         <i class="fa fa-clipboard-list nav-icon"></i>
         <span>Registrations</span>
       </a>
 
-      <a href="?view=courses" class="nav-item" id="nav-courses"
+      <a href="?view=courses"
+        class="nav-item <?= isset($_GET['view']) && $_GET['view'] === 'courses' ? 'active' : '' ?>"
+        id="nav-courses"
         onclick="showView('courses'); setActive(this); return false;">
         <i class="fa fa-book nav-icon"></i>
         <span>Courses</span>
       </a>
 
-      <a href="?view=facilities" class="nav-item" id="nav-facilities"
+      <a href="?view=facilities"
+        class="nav-item <?= isset($_GET['view']) && $_GET['view'] === 'facilities' ? 'active' : '' ?>"
+        id="nav-facilities"
         onclick="showView('facilities'); setActive(this); return false;">
         <i class="fa fa-building nav-icon"></i>
         <span>Facilities</span>
@@ -518,25 +1128,33 @@
 
       <div class="sidebar-section-label">System</div>
 
-      <a href="?view=announcements" class="nav-item" id="nav-announcements"
+      <a href="?view=announcements"
+        class="nav-item <?= isset($_GET['view']) && $_GET['view'] === 'announcements' ? 'active' : '' ?>"
+        id="nav-announcements"
         onclick="showView('announcements'); setActive(this); return false;">
         <i class="fa fa-bell nav-icon"></i>
         <span>Announcements</span>
       </a>
 
-      <a href="?view=analytics" class="nav-item" id="nav-analytics"
+      <a href="?view=analytics"
+        class="nav-item <?= isset($_GET['view']) && $_GET['view'] === 'analytics' ? 'active' : '' ?>"
+        id="nav-analytics"
         onclick="showView('analytics'); setActive(this); return false;">
         <i class="fa fa-chart-line nav-icon"></i>
         <span>Reports</span>
       </a>
 
-      <a href="?view=settings" class="nav-item" id="nav-settings"
+      <a href="?view=settings"
+        class="nav-item <?= isset($_GET['view']) && $_GET['view'] === 'settings' ? 'active' : '' ?>"
+        id="nav-settings"
         onclick="showView('settings'); setActive(this); return false;">
         <i class="fa fa-gear nav-icon"></i>
         <span>Settings</span>
       </a>
 
-      <a href="?view=certificate" class="nav-item" id="nav-certificate"
+      <a href="?view=certificate"
+        class="nav-item <?= isset($_GET['view']) && $_GET['view'] === 'certificate' ? 'active' : '' ?>"
+        id="nav-certificate"
         onclick="showView('certificate'); setActive(this); return false;">
         <i class="fa fa-award nav-icon"></i>
         <span>Certificate</span>
@@ -1967,91 +2585,224 @@
           </div>
         </div>
       </div>
-
       <!-- 10. CERTIFICATE VIEW -->
-      <div id="view-certificate" style="display: none;">
-        <section class="stats-grid">
+      <div id="view-certificate" class="view-panel" style="display: none;">
+
+        <!-- 1. Statistics Cards -->
+        <section class="stats-grid" aria-label="Certificate Overview">
           <div class="stat-card">
-            <h3>67</h3>
-            <p>Certificates Issued</p>
+            <h3 class="stat-number">
+              {{ isset($certificates) ? str_pad($certificates->count(), 2, '0', STR_PAD_LEFT) : '00' }}
+            </h3>
+            <p class="stat-label">Certificates Issued</p>
           </div>
           <div class="stat-card">
-            <h3>07</h3>
-            <p>Pending Claim</p>
+            <h3 class="stat-number">
+              {{ isset($certificates) ? str_pad($certificates->where('status', 'Pending')->count(), 2, '0', STR_PAD_LEFT) : '00' }}
+            </h3>
+            <p class="stat-label">Pending Claim</p>
           </div>
           <div class="stat-card">
-            <h3>67</h3>
-            <p>Monthly Graduates</p>
+            <h3 class="stat-number">
+              {{ isset($certificates) ? str_pad($certificates->where('status', 'Claimed')->count(), 2, '0', STR_PAD_LEFT) : '00' }}
+            </h3>
+            <p class="stat-label">Monthly Graduates</p>
           </div>
           <div class="stat-card urgent">
-            <h3>67</h3>
-            <p>Archive Size</p>
+            <h3 class="stat-number">
+              {{ isset($certificates) ? str_pad($certificates->count(), 2, '0', STR_PAD_LEFT) : '00' }}
+            </h3>
+            <p class="stat-label">Archive Size</p>
           </div>
         </section>
 
+        <!-- 2. Search, Filters & Batch Selection -->
         <div class="filter-controls">
           <div class="dropdown-group">
-            <select class="filter-dropdown">
-              <option>Filter by: Course</option>
+            <!-- Live Search Bar -->
+            <div class="input-wrapper"
+              style="position: relative; min-width: 240px;">
+              <i class="fas fa-search"
+                style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #888; font-size: 12px;"
+                aria-hidden="true"></i>
+              <input type="text" id="certSearchInput"
+                placeholder="Search trainee or control no..."
+                onkeyup="filterCertTable()" class="filter-dropdown"
+                style="padding-left: 30px; width: 100%; box-sizing: border-box;">
+            </div>
+
+            <!-- Dropdown Filters -->
+            <label for="filterCourse" class="sr-only">Filter by Course</label>
+            <select id="filterCourse" class="filter-dropdown"
+              onchange="filterCertTable()" aria-label="Filter by Course">
+              <option value="">All Courses</option>
+              @if (isset($allCourses))
+                @foreach ($allCourses as $c)
+                  <option value="{{ strtolower($c->title) }}">
+                    {{ $c->title }}</option>
+                @endforeach
+              @endif
             </select>
-            <select class="filter-dropdown">
-              <option>Filter by: Month</option>
+
+            <label for="filterMonth" class="sr-only">Filter by Month</label>
+            <select id="filterMonth" class="filter-dropdown"
+              onchange="filterCertTable()" aria-label="Filter by Month">
+              <option value="">All Months</option>
+              <option value="january">January</option>
+              <option value="february">February</option>
+              <option value="march">March</option>
+              <option value="april">April</option>
+              <option value="may">May</option>
+              <option value="june">June</option>
+              <option value="july">July</option>
+              <option value="august">August</option>
+              <option value="september">September</option>
+              <option value="october">October</option>
+              <option value="november">November</option>
+              <option value="december">December</option>
             </select>
-            <select class="filter-dropdown">
-              <option>Filter by: Status</option>
+
+            <label for="filterStatus" class="sr-only">Filter by Status</label>
+            <select id="filterStatus" class="filter-dropdown"
+              onchange="filterCertTable()" aria-label="Filter by Status">
+              <option value="">All Statuses</option>
+              <option value="claimed">Claimed</option>
+              <option value="pending">Pending</option>
             </select>
           </div>
+
           <div class="selection-group">
-            <label class="custom-checkbox">
-              <input type="checkbox" id="toggleMultiple"> <span>Select
-                Multiple</span>
+            <label class="custom-checkbox" for="toggleMultiple">
+              <input type="checkbox" id="toggleMultiple"
+                onchange="toggleMultiSelectMode(this)">
+              <span>Select Multiple</span>
             </label>
-            <label class="custom-checkbox">
-              <input type="checkbox" id="selectAll"> <span>Select All</span>
+            <label class="custom-checkbox" for="selectAll">
+              <input type="checkbox" id="selectAll"
+                onchange="toggleSelectAllRows(this)">
+              <span>Select All</span>
             </label>
           </div>
         </div>
 
-        <div class="table-outline">
+        <!-- 3. Trainee Certificate Records Table -->
+        <div class="table-responsive table-outline">
           <table class="trainee-data-table" id="certTable">
             <thead>
               <tr>
-                <th class="select-col hidden"><i
-                    class="fas fa-check-square"></i>
+                <th class="select-col hidden" scope="col">
+                  <span class="sr-only">Batch Selection</span>
+                  <i class="fas fa-check-square" aria-hidden="true"></i>
                 </th>
-                <th>Fullname</th>
-                <th>Course</th>
-                <th>Date Issued</th>
-                <th>Status</th>
-                <th>Action</th>
+                <th scope="col">Full Name</th>
+                <th scope="col">Course</th>
+                <th scope="col">Date Issued</th>
+                <th scope="col">Status</th>
+                <th scope="col" class="text-center">Actions</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td class="select-col hidden"><input type="checkbox"
-                    class="row-checkbox"></td>
-                <td>Nelmida, Rheyan</td>
-                <td>Dressmaking</td>
-                <td>April 3, 2026</td>
-                <td>Claimed</td>
-                <td class="action-icons">
-                  <i class="fas fa-eye view-icon"
-                    onclick="openCertModal('Nelmida, Rheyan', 'Dressmaking', 'D-LED-TES-2026-081')"></i>
-                  <i class="fas fa-edit edit-icon"></i>
-                  <i class="fas fa-trash-alt delete-icon"
-                    onclick="deleteCert(this)"></i>
-                </td>
-              </tr>
+            <tbody id="certTableBody">
+              @forelse($certificates ?? [] as $cert)
+                @php
+                  $fullName = ucwords(
+                      strtolower(
+                          trim(
+                              ($cert->user->firstname ?? '') .
+                                  ' ' .
+                                  ($cert->user->lastname ?? ''),
+                          ),
+                      ),
+                  );
+                  if (empty($fullName)) {
+                      $fullName = 'Registered Trainee';
+                  }
+                  $courseTitle = $cert->course->title ?? 'General Program';
+                  $issueDate = \Carbon\Carbon::parse($cert->issue_date)->format(
+                      'F j, Y',
+                  );
+                  $isClaimed = strtolower($cert->status) === 'claimed';
+                @endphp
+                <tr data-cert-id="{{ $cert->id }}"
+                  data-cert-no="{{ $cert->certificate_no }}">
+                  <td class="select-col hidden">
+                    <input type="checkbox" class="row-checkbox"
+                      value="{{ $cert->id }}"
+                      aria-label="Select {{ $fullName }}">
+                  </td>
+                  <td class="font-medium">{{ $fullName }}</td>
+                  <td>{{ $courseTitle }}</td>
+                  <td>{{ $issueDate }}</td>
+                  <td>
+                    <span
+                      class="badge badge-toggle {{ $isClaimed ? 'badge-success' : 'badge-warning' }}"
+                      onclick="toggleCertStatus(this, {{ $cert->id }})"
+                      style="cursor: pointer;" title="Click to toggle status">
+                      <i
+                        class="fas {{ $isClaimed ? 'fa-check-circle' : 'fa-clock' }}"></i>
+                      <span
+                        class="status-label">{{ ucfirst($cert->status) }}</span>
+                    </span>
+                  </td>
+                  <td class="action-icons">
+                    <button type="button" class="btn-icon"
+                      title="View Certificate"
+                      onclick="openCertModal('{{ addslashes($fullName) }}', '{{ addslashes($courseTitle) }}', '{{ $cert->certificate_no }}', '{{ $issueDate }}', '{{ $cert->status }}', '{{ $cert->grade ?? '94%' }}', '{{ $cert->document_type ?? 'completion' }}')">
+                      <i class="fas fa-eye" aria-hidden="true"></i>
+                      <span class="sr-only">View Certificate</span>
+                    </button>
+                    <button type="button" class="btn-icon"
+                      title="Edit Record"
+                      onclick="openEditCertModal('{{ $cert->certificate_no }}')">
+                      <i class="fas fa-edit" aria-hidden="true"></i>
+                      <span class="sr-only">Edit Record</span>
+                    </button>
+                    <button type="button" class="btn-icon btn-danger"
+                      title="Delete Record"
+                      onclick="deleteCert(this, {{ $cert->id }})">
+                      <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                      <span class="sr-only">Delete Record</span>
+                    </button>
+                  </td>
+                </tr>
+              @empty
+                <tr id="emptyCertRow">
+                  <td colspan="6"
+                    style="text-align: center; color: #888; padding: 36px 16px; font-size: 13px;">
+                    <i class="fas fa-certificate"
+                      style="font-size: 26px; display: block; margin-bottom: 8px; color: #ccc;"
+                      aria-hidden="true"></i>
+                    No certificates issued yet. Click "Issue New Certificate" to
+                    create one.
+                  </td>
+                </tr>
+              @endforelse
             </tbody>
           </table>
+
+          <!-- Empty Results Fallback -->
+          <div id="noCertResults"
+            style="display: none; text-align: center; color: #888; padding: 32px 16px; font-size: 13px;">
+            <i class="fas fa-award"
+              style="font-size: 24px; display: block; margin-bottom: 8px; color: #ccc;"
+              aria-hidden="true"></i>
+            No matching certificate records found.
+          </div>
         </div>
 
-        <div class="action-footer">
-          <button class="text-btn-add" onclick="openAddModal()">
-            <i class="fas fa-plus-square"></i> Issue New Certificate
+        <!-- 4. Action Footer -->
+        <footer class="action-footer">
+          <button type="button" class="btn btn-primary"
+            onclick="openAddModal()">
+            <i class="fas fa-plus-square" aria-hidden="true"></i>
+            <span>Issue New Certificate</span>
           </button>
-          <button class="pill-btn-export">Export Certificate</button>
-        </div>
+          <button type="button" class="btn btn-secondary"
+            onclick="exportCertificates()">
+            <i class="fas fa-file-export" aria-hidden="true"></i>
+            <span>Export Certificates</span>
+          </button>
+        </footer>
+
       </div>
     </main>
   </div>
@@ -2060,33 +2811,45 @@
   <!-- MODALS SECTION                                             -->
   <!-- ========================================================== -->
 
-  <!-- Certificate View Modal -->
-  <div id="certificateModal" class="modal-overlay">
+  <!-- ==========================================
+     1. CERTIFICATE VIEW MODAL (DYNAMIC DATA)
+========================================== -->
+  <div id="certificateModal" class="modal-overlay" role="dialog"
+    aria-modal="true" aria-labelledby="viewModalTitle"
+    style="display: none;">
     <div class="modal-box-fixed">
       <div class="modal-split">
+
+        <!-- Left: Certificate Preview Frame -->
         <div class="split-left-preview">
           <h3 class="modal-section-header">Certificate Preview</h3>
+
           <div class="ui-cert-frame" id="printableCert">
             <div class="ui-cert-inner">
-              <div class="cert-logos-header">
-                <img src="/images/logo.png" alt="Logo"
+              <header class="cert-logos-header">
+                <img src="{{ asset('images/logo.png') }}"
+                  alt="City Government Logo" class="cert-logo-img">
+                <img src="{{ asset('images/tesda.png') }}" alt="TESDA Logo"
                   class="cert-logo-img">
-                <img src="/images/tesda.png" alt="TESDA"
-                  class="cert-logo-img">
-                <img src="/images/logo_ledipo.png" alt="LEDIPO"
-                  class="cert-logo-img">
-              </div>
+                <img src="{{ asset('images/logo_ledipo.png') }}"
+                  alt="LEDIPO Logo" class="cert-logo-img">
+              </header>
+
               <p class="cert-authority-text">
                 TECHNICAL EDUCATION AND SKILLS DEVELOPMENT AUTHORITY<br>
-                CITY GOVERNMENT OF DASMARIÑAS - LEDIPO
+                CITY GOVERNMENT OF DASMARIÑAS — LEDIPO
               </p>
-              <h1 class="cert-title-primary">CERTIFICATE OF COMPLETION</h1>
+
+              <h1 class="cert-title-primary" id="vDocTitle">CERTIFICATE OF
+                COMPLETION</h1>
               <p class="cert-certify-line">THIS CERTIFIES THAT</p>
-              <h2 id="vName" class="cert-recipient-name">Nelmida, Rheyan
+              <h2 id="vName" class="cert-recipient-name">[Recipient Name]
               </h2>
+
               <p class="cert-training-msg">HAS SUCCESSFULLY COMPLETED THE
                 TRAINING IN</p>
-              <h3 id="vCourse" class="cert-course-name">DRESSMAKING</h3>
+              <h3 id="vCourse" class="cert-course-name">[Course Name]</h3>
+
               <div class="cert-signatures">
                 <div class="sig-item">
                   <p class="sig-name">HON. JENNIFER A. BARZAGA</p>
@@ -2097,133 +2860,245 @@
                   <p class="sig-rank">LEDIPO Head</p>
                 </div>
               </div>
-              <div class="cert-serial-footer">
-                <span id="vID">CERT. NO.: D-LED-TES-2026-081</span>
-                <span>TRAINING ID: NCIIDRM-26-032</span>
-              </div>
+
+              <footer class="cert-serial-footer">
+                <span id="vID">CERT. NO.: [ID]</span>
+                <span id="vTrainingID">TRAINING ID: NCIIDRM-26-032</span>
+              </footer>
             </div>
           </div>
         </div>
 
+        <!-- Right: Certificate Details & Actions -->
         <div class="split-right-info">
-          <h2 class="modal-title">Certificate Details</h2>
+          <div
+            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h2 id="viewModalTitle" class="modal-title" style="margin: 0;">
+              Certificate Details</h2>
+            <span id="vStatusBadge" class="badge badge-success">Pending</span>
+          </div>
+
+          <div class="info-block">
+            <span class="info-label">Issue Date &amp; Record ID</span>
+            <p class="info-value"
+              style="font-size: 13px; margin: 0; color: #333;">
+              <i class="fa-regular fa-calendar-check"
+                style="color: #025628; margin-right: 4px;"></i>
+              <span id="vIssueDate">-</span> &bull; <strong
+                id="vControlNo">-</strong>
+            </p>
+          </div>
+
           <div class="info-block">
             <span class="info-label">Trainee Performance</span>
-            <p class="info-value grade-success">94% - Passed</p>
+            <p id="vGrade" class="info-value grade-success">94% — Passed
+            </p>
           </div>
+
           <div class="info-block">
             <span class="info-label">Official Signatories</span>
             <ul class="sig-list">
-              <li><i class="fas fa-check-circle"></i> Hon. Jennifer
-                Austria-Barzaga</li>
-              <li><i class="fas fa-check-circle"></i> Mr. Carlos H. Legaspi
-              </li>
+              <li><i class="fas fa-check-circle" aria-hidden="true"></i> Hon.
+                Jennifer Austria-Barzaga</li>
+              <li><i class="fas fa-check-circle" aria-hidden="true"></i> Mr.
+                Carlos H. Legaspi</li>
             </ul>
           </div>
-          <div class="modal-actions-container">
-            <button class="modal-action-btn btn-pdf"
-              onclick="handleDownload('printableCert')">Download PDF</button>
-            <button class="modal-action-btn btn-print"
-              onclick="handlePrint()">Re-Print</button>
-            <button class="modal-action-btn" onclick="closeCertModal()">Close
-              View</button>
+
+          <div class="modal-actions-container"
+            style="margin-top: auto; display: flex; flex-direction: column; gap: 8px;">
+            <button type="button" class="btn btn-primary"
+              onclick="handleDownload('printableCert')">
+              <i class="fas fa-file-pdf" aria-hidden="true"></i> Download PDF
+            </button>
+            <button type="button" class="btn btn-print"
+              onclick="handlePrint()">
+              <i class="fas fa-print" aria-hidden="true"></i> Print
+              Certificate
+            </button>
+            <button type="button" class="btn btn-secondary"
+              onclick="closeCertModal()">
+              Close View
+            </button>
           </div>
         </div>
+
       </div>
     </div>
   </div>
-
-  <!-- Add Trainee / Issue Certificate Modal -->
-  <div id="addTraineeModal" class="modal-overlay">
+  <!-- ==========================================
+     2. ISSUE NEW CERTIFICATE MODAL
+========================================== -->
+  <div id="addTraineeModal" class="modal-overlay" role="dialog"
+    aria-modal="true" aria-labelledby="issueModalTitle"
+    style="display: none;">
     <div class="modal-box-fixed">
       <div class="modal-split">
+
+        <!-- Left: Issue Form -->
         <div class="split-right-info border-right">
-          <h2 class="modal-title">Issue New Certificate</h2>
-          <form id="issueForm">
-            <div class="ui-form-group">
-              <label>1. Trainee Selection</label>
-              <select class="ui-select" id="traineeSelect"
-                onchange="updateLivePreview()">
-                <option value="" disabled selected>Search Trainee...
+          <h2 id="issueModalTitle" class="modal-title">Issue New Certificate
+          </h2>
+
+          <form id="issueForm" autocomplete="off"
+            onsubmit="event.preventDefault(); submitIssueCertificate();">
+
+            <!-- 1. Trainee Selection with Dynamic Database Course Filter -->
+            <fieldset class="ui-form-group">
+              <label class="form-label">1. Trainee Selection</label>
+
+              <!-- Dynamic Course Filter Select -->
+              <select class="form-control mb-2" id="modalCourseFilter"
+                onchange="filterModalTrainees(this.value)"
+                style="border-left: 3px solid #025628; background-color: #f8faf9;">
+                <option value="">-- All Courses (Show All Trainees) --
                 </option>
-                <option data-course="Dressmaking">Nelmida, Rheyan (94%)
+                @if (isset($allCourses) && count($allCourses) > 0)
+                  @foreach ($allCourses as $crs)
+                    <option value="{{ $crs->title }}">{{ $crs->title }}
+                    </option>
+                  @endforeach
+                @elseif (isset($courses) && count($courses) > 0)
+                  @foreach ($courses as $crs)
+                    <option value="{{ $crs->title }}">{{ $crs->title }}
+                    </option>
+                  @endforeach
+                @endif
+              </select>
+
+              <!-- Dynamic Trainees Dropdown -->
+              <select class="form-control" id="traineeSelect"
+                name="trainee_id" onchange="updateLivePreview()" required>
+                <option value="" disabled selected>Search / Select
+                  Trainee...</option>
+                @if (isset($eligibleTrainees) && count($eligibleTrainees) > 0)
+                  @foreach ($eligibleTrainees as $trainee)
+                    @php
+                      $traineeName = trim(
+                          ($trainee->firstname ?? '') .
+                              ' ' .
+                              ($trainee->lastname ?? ''),
+                      );
+                      $traineeCourse =
+                          $trainee->course_title ?? 'General Training';
+                    @endphp
+                    <option value="{{ $trainee->id }}"
+                      data-name="{{ $traineeName }}"
+                      data-course="{{ $traineeCourse }}">
+                      {{ $trainee->lastname ?? '' }},
+                      {{ $trainee->firstname ?? '' }} — {{ $traineeCourse }}
+                    </option>
+                  @endforeach
+                @else
+                  <option value="" disabled>No enrolled trainees found in
+                    database.</option>
+                @endif
+              </select>
+            </fieldset>
+
+            <!-- 2. Record Details -->
+            <fieldset class="ui-form-group">
+              <label for="certIDInput" class="form-label">2. Record
+                Details</label>
+              <input type="text" id="certIDInput" name="certificate_no"
+                class="form-control" autocomplete="off"
+                placeholder="Control Number (e.g. D-LED-TES-2026-082)"
+                oninput="updateLivePreview()" required>
+              <input type="date" id="issueDateInput" name="issue_date"
+                class="form-control mt-2" value="{{ date('Y-m-d') }}">
+            </fieldset>
+
+            <!-- 3. Document Options -->
+            <fieldset class="ui-form-group">
+              <label for="docTypeSelect" class="form-label">3. Document
+                Options</label>
+              <select class="form-control" id="docTypeSelect"
+                name="document_type" onchange="updateLivePreview()">
+                <option value="completion">Certificate of Completion</option>
+                <option value="participation">Certificate of Participation
                 </option>
-                <option data-course="Nail Care">Bong, Marcos (88%)</option>
               </select>
-            </div>
-            <div class="ui-form-group">
-              <label>2. Record Details</label>
-              <input type="text" id="certIDInput" class="ui-select"
-                placeholder="Control Number" oninput="updateLivePreview()">
-              <input type="date" class="ui-select" value="2026-03-31">
-            </div>
-            <div class="ui-form-group">
-              <label>3. Document Options</label>
-              <select class="ui-select">
-                <option>Certificate of Completion</option>
-              </select>
-              <textarea class="ui-select resizable-none" placeholder="Remarks"></textarea>
-            </div>
+              <textarea id="certRemarks" name="remarks"
+                class="form-control resize-none mt-2" rows="3"
+                placeholder="Optional Remarks..."></textarea>
+            </fieldset>
           </form>
         </div>
-        <div class="split-left-preview bg-white">
+
+        <!-- Right: Live Preview Panel -->
+        <div class="split-left-preview bg-preview">
           <h3 class="modal-section-header">Live Preview</h3>
-          <div class="ui-cert-frame scale-down" id="livePreviewCert">
+
+          <div class="ui-cert-frame" id="livePreviewCert">
             <div class="ui-cert-inner">
-              <div class="cert-logos-header">
-                <img src="/images/logo.png" alt="Logo"
-                  class="cert-logo-img">
-                <img src="/images/tesda.png" alt="TESDA"
-                  class="cert-logo-img">
-                <img src="/images/logo_ledipo.png" alt="LEDIPO"
-                  class="cert-logo-img">
-              </div>
+              <header class="cert-logos-header">
+                <img src="{{ asset('images/logo.png') }}"
+                  alt="City Government Logo" class="cert-logo-img">
+                <img src="{{ asset('images/tesda.png') }}"
+                  alt="TESDA Logo" class="cert-logo-img">
+                <img src="{{ asset('images/logo_ledipo.png') }}"
+                  alt="LEDIPO Logo" class="cert-logo-img">
+              </header>
+
               <p class="cert-authority-text">
                 TECHNICAL EDUCATION AND SKILLS DEVELOPMENT AUTHORITY<br>
-                CITY GOVERNMENT OF DASMARIÑAS - LEDIPO
+                CITY GOVERNMENT OF DASMARIÑAS — LEDIPO
               </p>
-              <h1 class="cert-title-primary" style="font-size: 18px;">
-                CERTIFICATE OF COMPLETION</h1>
+
+              <h1 class="cert-title-primary" id="pDocTitle">CERTIFICATE OF
+                COMPLETION</h1>
               <p class="cert-certify-line">THIS CERTIFIES THAT</p>
-              <h2 id="pName" class="cert-recipient-name"
-                style="font-size: 24px;">[NAME]</h2>
+              <h2 id="pName" class="cert-recipient-name">[Recipient
+                Name]</h2>
+
               <p class="cert-training-msg">HAS SUCCESSFULLY COMPLETED THE
                 TRAINING IN</p>
-              <h3 id="pCourse" class="cert-course-name"
-                style="font-size: 16px;">[COURSE]</h3>
+              <h3 id="pCourse" class="cert-course-name">[Course Name]</h3>
+
               <div class="cert-signatures">
-                <div class="sig-item" style="width: 120px;">
-                  <p class="sig-name" style="font-size: 8px;">HON. JENNIFER A.
-                    BARZAGA</p>
+                <div class="sig-item">
+                  <p class="sig-name">HON. JENNIFER A. BARZAGA</p>
+                  <p class="sig-rank">City Mayor</p>
                 </div>
-                <div class="sig-item" style="width: 120px;">
-                  <p class="sig-name" style="font-size: 8px;">MR. CARLOS H.
-                    LEGASPI</p>
+                <div class="sig-item">
+                  <p class="sig-name">MR. CARLOS H. LEGASPI</p>
+                  <p class="sig-rank">LEDIPO Head</p>
                 </div>
               </div>
-              <div class="cert-serial-footer">
-                <span id="pID" style="font-size: 7px;">CERT. NO.:
-                  [ID]</span>
-                <span style="font-size: 7px;">TRAINING ID:
-                  NCIIDRM-26-032</span>
-              </div>
+
+              <footer class="cert-serial-footer">
+                <span id="pID">CERT. NO.: [ID]</span>
+                <span>TRAINING ID: NCIIDRM-26-032</span>
+              </footer>
             </div>
           </div>
-          <div class="modal-actions-container margin-top-20">
-            <button class="modal-action-btn btn-print full-width"
-              onclick="alert('Saving...')">Save & Issue</button>
-            <button class="modal-action-btn btn-pdf full-width"
-              onclick="handleDownload('livePreviewCert')">Download PDF</button>
-            <button class="modal-action-btn full-width"
-              onclick="closeAddModal()">Cancel</button>
+
+          <div class="modal-actions-container mt-4"
+            style="display: flex; flex-direction: column; gap: 8px;">
+            <button type="button" class="btn btn-primary w-full"
+              onclick="submitIssueCertificate()">
+              <i class="fas fa-check" aria-hidden="true"></i> Save &amp;
+              Issue
+            </button>
+            <button type="button" class="btn btn-pdf w-full"
+              onclick="handleDownload('livePreviewCert')">
+              <i class="fas fa-file-pdf" aria-hidden="true"></i> Download
+              PDF
+            </button>
+            <button type="button" class="btn btn-secondary w-full"
+              onclick="closeAddModal()">
+              Cancel
+            </button>
           </div>
         </div>
+
       </div>
     </div>
   </div>
 
   <!-- Logout Modal Alternative Overlay -->
-  <div id="logoutModalOverlay" class="modal-overlay" style="display:none;">
+  <div id="logoutModalOverlay" class="modal-overlay"
+    style="display:none;">
     <div class="modal-box">
       <p>Are you sure you want to log out?</p>
       <div class="modal-actions-centered">
@@ -2289,7 +3164,8 @@
             <div class="input-wrapper input-with-suffix">
               <i class="fa-solid fa-calendar-day"></i>
               <input type="number" id="editDuration" name="duration"
-                min="1" max="365" placeholder="e.g. 5" required>
+                min="1" max="365" placeholder="e.g. 5"
+                required>
               <span class="input-suffix">Days</span>
             </div>
           </div>
@@ -2349,7 +3225,8 @@
           <div class="action-buttons">
             <button type="button" class="btn-cancel"
               onclick="closeModal()">Cancel</button>
-            <button type="submit" class="btn-save-main">Save Changes</button>
+            <button type="submit" class="btn-save-main">Save
+              Changes</button>
           </div>
         </div>
       </form>
@@ -3382,7 +4259,12 @@
       const urlParams = new URLSearchParams(window.location.search);
       const savedTab = localStorage.getItem('activeAdminTab');
 
-      if (urlParams.get('view') === 'facilities' || savedTab ===
+      if (urlParams.get('view') === 'certificate' || savedTab ===
+        'view-certificate') {
+        showView('certificate');
+        setActive(document.getElementById('nav-certificate'));
+        localStorage.removeItem('activeAdminTab');
+      } else if (urlParams.get('view') === 'facilities' || savedTab ===
         'view-facilities') {
         showView('facilities');
         setActive(document.getElementById('nav-facilities'));
@@ -3467,6 +4349,9 @@
       if (el) el.style.display = 'block';
       if (title) title.innerText = entry[1];
       if (breadcrumb) breadcrumb.innerHTML = entry[2];
+
+      // Save active tab state persistently
+      localStorage.setItem('activeAdminTab', 'view-' + viewName);
 
       const currentParams = new URLSearchParams(window.location.search);
       if (currentParams.get('view') !== viewName) {
@@ -4698,13 +5583,13 @@
 
       <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
         ${m.file_path ? `
-                                                                                                                                                                                                                                                                                            <a href="/admin/module/file/${m.id}/${encodeURIComponent(m.title)}.pdf" target="_blank" 
-                                                                                                                                                                                                                                                                                               style="font-size:11px; padding:6px 12px; border-radius:6px; background:#e8f5e9; color:#025628; text-decoration:none; font-weight:700; display:inline-flex; align-items:center; gap:5px; white-space:nowrap; transition: background 0.2s;">
-                                                                                                                                                                                                                                                                                              <i class="fa-solid fa-file-pdf"></i> View File
-                                                                                                                                                                                                                                                                                            </a>
-                                                                                                                                                                                                                                                                                          ` : `
-                                                                                                                                                                                                                                                                                            <span style="font-size:11px; color:#9ca3af; padding:4px 8px; font-style:italic;">No PDF</span>
-                                                                                                                                                                                                                                                                                          `}
+                                                                                                                                                                                                                                                                                                                                                                                                  <a href="/admin/module/file/${m.id}/${encodeURIComponent(m.title)}.pdf" target="_blank" 
+                                                                                                                                                                                                                                                                                                                                                                                                     style="font-size:11px; padding:6px 12px; border-radius:6px; background:#e8f5e9; color:#025628; text-decoration:none; font-weight:700; display:inline-flex; align-items:center; gap:5px; white-space:nowrap; transition: background 0.2s;">
+                                                                                                                                                                                                                                                                                                                                                                                                    <i class="fa-solid fa-file-pdf"></i> View File
+                                                                                                                                                                                                                                                                                                                                                                                                  </a>
+                                                                                                                                                                                                                                                                                                                                                                                                ` : `
+                                                                                                                                                                                                                                                                                                                                                                                                  <span style="font-size:11px; color:#9ca3af; padding:4px 8px; font-style:italic;">No PDF</span>
+                                                                                                                                                                                                                                                                                                                                                                                                `}
 
         <button type="button" onclick="deleteModule(${m.id})"
           style="font-size:11px; padding:6px 12px; border-radius:6px; background:#FCEBEB; color:#A32D2D; border:none; cursor:pointer; font-family:inherit; font-weight:700; white-space:nowrap; display:inline-flex; align-items:center; gap:4px;">
@@ -6490,6 +7375,511 @@
           closeExpandedChartModal();
         }
       });
+
+    // ==========================================
+    // 1. MODAL CONTROLLERS (OPEN / CLOSE)
+    // ==========================================
+    function openCertModal(name, course, certId, issueDate = 'April 3, 2026',
+      status = 'Pending', grade = '94%', docType = 'completion') {
+      const modal = document.getElementById('certificateModal');
+      if (!modal) return;
+
+      document.getElementById('vName').textContent = name;
+      document.getElementById('vCourse').textContent = course.toUpperCase();
+      document.getElementById('vID').textContent = `CERT. NO.: ${certId}`;
+
+      const docTitle = document.getElementById('vDocTitle');
+      if (docTitle) {
+        docTitle.textContent = docType === 'participation' ?
+          'CERTIFICATE OF PARTICIPATION' :
+          'CERTIFICATE OF COMPLETION';
+      }
+
+      const statusBadge = document.getElementById('vStatusBadge');
+      if (statusBadge) {
+        const isClaimed = status.toLowerCase() === 'claimed';
+        statusBadge.className =
+          `badge ${isClaimed ? 'badge-success' : 'badge-warning'}`;
+        statusBadge.textContent = status;
+      }
+
+      const issueDateEl = document.getElementById('vIssueDate');
+      if (issueDateEl) issueDateEl.textContent = issueDate;
+
+      const controlNoEl = document.getElementById('vControlNo');
+      if (controlNoEl) controlNoEl.textContent = certId;
+
+      const gradeEl = document.getElementById('vGrade');
+      if (gradeEl) gradeEl.textContent = `${grade} — Passed`;
+
+      modal.style.display = 'flex';
+    }
+
+    function closeCertModal() {
+      document.getElementById('certificateModal').style.display = 'none';
+    }
+
+    function openAddModal() {
+      const modal = document.getElementById('addTraineeModal');
+      const courseFilter = document.getElementById('modalCourseFilter');
+
+      if (courseFilter) {
+        courseFilter.value = '';
+        filterModalTrainees('');
+      }
+
+      if (modal) {
+        modal.style.display = 'flex';
+        updateLivePreview();
+      }
+    }
+
+    function closeAddModal() {
+      document.getElementById('addTraineeModal').style.display = 'none';
+    }
+
+    window.addEventListener('click', (e) => {
+      if (e.target.classList.contains('modal-overlay')) {
+        e.target.style.display = 'none';
+      }
+    });
+
+
+    // ==========================================
+    // 2. LIVE PREVIEW SYNCHRONIZATION
+    // ==========================================
+    function updateLivePreview() {
+      const traineeSelect = document.getElementById('traineeSelect');
+      const certInput = document.getElementById('certIDInput');
+
+      const pName = document.getElementById('pName');
+      const pCourse = document.getElementById('pCourse');
+      const pID = document.getElementById('pID');
+
+      // Helper for Standard Title Case (Capitalizes the first letter of each word)
+      function toTitleCase(str) {
+        if (!str) return '';
+        return str
+          .toLowerCase()
+          .split(' ')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ');
+      }
+
+      if (traineeSelect && traineeSelect.selectedIndex > 0) {
+        const selectedOption = traineeSelect.options[traineeSelect.selectedIndex];
+        let rawText = selectedOption.getAttribute('data-name') || selectedOption
+          .text.split(' (')[0].trim();
+        const course = selectedOption.getAttribute('data-course') ||
+          'TRAINING PROGRAM';
+
+        // Applies proper Title Case instead of lowercase
+        pName.textContent = toTitleCase(rawText);
+        pCourse.textContent = course.toUpperCase();
+      } else {
+        pName.textContent = '[Recipient Name]';
+        pCourse.textContent = '[COURSE NAME]';
+      }
+
+      if (certInput && certInput.value.trim() !== '') {
+        pID.textContent = `CERT. NO.: ${certInput.value.trim()}`;
+      } else {
+        pID.textContent = 'CERT. NO.: [ID]';
+      }
+    }
+
+    // ==========================================
+    // 3. TABLE ROW ACTIONS, INSERTION & FILTERS
+    // ==========================================
+    async function submitIssueCertificate() {
+      const traineeSelect = document.getElementById('traineeSelect');
+      const certInput = document.getElementById('certIDInput');
+      const dateInput = document.getElementById('issueDateInput');
+      const docTypeSelect = document.getElementById('docTypeSelect');
+      const remarksInput = document.getElementById('certRemarks');
+
+      if (!traineeSelect || traineeSelect.selectedIndex <= 0 || !traineeSelect
+        .value) {
+        alert('Please select a trainee from the dropdown.');
+        traineeSelect?.focus();
+        return;
+      }
+
+      const certNo = certInput?.value.trim();
+      if (!certNo) {
+        alert('Please enter a Control / Certificate Number.');
+        certInput?.focus();
+        return;
+      }
+
+      const selectedOption = traineeSelect.options[traineeSelect.selectedIndex];
+      const courseId = selectedOption.getAttribute('data-course-id') || null;
+
+      const payload = {
+        trainee_id: traineeSelect.value,
+        course_id: courseId,
+        certificate_no: certNo,
+        issue_date: dateInput?.value || new Date().toISOString().slice(0, 10),
+        document_type: docTypeSelect ? docTypeSelect.value : 'completion',
+        remarks: remarksInput ? remarksInput.value.trim() : null
+      };
+
+      const token = document.querySelector('meta[name="csrf-token"]')
+        ?.getAttribute('content') || '';
+
+      try {
+        const response = await fetch('/admin/certificate/store', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': token,
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          alert(data.message || 'Certificate saved successfully to database!');
+          closeAddModal();
+          localStorage.setItem('activeAdminTab', 'view-certificate');
+          window.location.href = window.location.pathname + '?view=certificate';
+        } else {
+          let errorMsg = data.message || 'Failed to save certificate.';
+          if (data.errors) {
+            errorMsg = Object.values(data.errors).flat().join('\n');
+          }
+          alert('Error Saving:\n' + errorMsg);
+        }
+      } catch (error) {
+        console.error('AJAX Error:', error);
+        alert('Network error. Check Console (F12) for server details.');
+      }
+    }
+
+    async function toggleCertStatus(badgeEl, certId) {
+      const token = document.querySelector('meta[name="csrf-token"]')
+        ?.getAttribute('content') || '';
+      try {
+        const response = await fetch(
+          `/admin/certificate/${certId}/toggle-status`, {
+            method: 'PATCH',
+            headers: {
+              'X-CSRF-TOKEN': token,
+              'Accept': 'application/json'
+            }
+          });
+
+        const data = await response.json();
+        if (response.ok && data.success) {
+          const isClaimed = data.new_status.toLowerCase() === 'claimed';
+          badgeEl.className =
+            `badge badge-toggle ${isClaimed ? 'badge-success' : 'badge-warning'}`;
+          badgeEl.innerHTML =
+            `<i class="fas ${isClaimed ? 'fa-check-circle' : 'fa-clock'}"></i> <span class="status-label">${data.new_status}</span>`;
+
+          localStorage.setItem('activeAdminTab', 'view-certificate');
+          window.location.href = window.location.pathname + '?view=certificate';
+        }
+      } catch (err) {
+        console.error('Toggle status error:', err);
+      }
+    }
+
+    async function deleteCert(buttonElement, certId) {
+      if (!confirm('Are you sure you want to delete this certificate record?'))
+        return;
+      const token = document.querySelector('meta[name="csrf-token"]')
+        ?.getAttribute('content') || '';
+
+      try {
+        const response = await fetch(`/admin/certificate/${certId}`, {
+          method: 'DELETE',
+          headers: {
+            'X-CSRF-TOKEN': token,
+            'Accept': 'application/json'
+          }
+        });
+
+        const data = await response.json();
+        if (response.ok && data.success) {
+          buttonElement.closest('tr').remove();
+          localStorage.setItem('activeAdminTab', 'view-certificate');
+          window.location.href = window.location.pathname + '?view=certificate';
+        } else {
+          alert(data.message || 'Could not delete record.');
+        }
+      } catch (err) {
+        console.error('Delete error:', err);
+      }
+    }
+
+    function openEditCertModal(certId) {
+      alert(`Editing record for Certificate No: ${certId}`);
+    }
+
+    function filterCertTable() {
+      const search = document.getElementById('certSearchInput')?.value
+        .toLowerCase().trim() || '';
+      const course = document.getElementById('filterCourse')?.value.toLowerCase()
+        .trim() || '';
+      const month = document.getElementById('filterMonth')?.value.toLowerCase()
+        .trim() || '';
+      const status = document.getElementById('filterStatus')?.value.toLowerCase()
+        .trim() || '';
+
+      const rows = document.querySelectorAll('#certTableBody tr');
+      let matchCount = 0;
+
+      rows.forEach(row => {
+        if (row.id === 'emptyCertRow') return;
+
+        const nameText = row.children[1]?.textContent.toLowerCase().trim() ||
+          '';
+        const courseText = row.children[2]?.textContent.toLowerCase()
+          .trim() || '';
+        const dateText = row.children[3]?.textContent.toLowerCase().trim() ||
+          '';
+        const statusText = row.children[4]?.textContent.toLowerCase()
+          .trim() || '';
+        const certIdText = row.getAttribute('data-cert-no')?.toLowerCase()
+          .trim() || '';
+
+        const matchSearch = !search || nameText.includes(search) || certIdText
+          .includes(search);
+        const matchCourse = !course || courseText.includes(course);
+        const matchMonth = !month || dateText.includes(month);
+        const matchStatus = !status || statusText.includes(status);
+
+        if (matchSearch && matchCourse && matchMonth && matchStatus) {
+          row.style.display = '';
+          matchCount++;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      const noResults = document.getElementById('noCertResults');
+      if (noResults) {
+        noResults.style.display = matchCount === 0 ? 'block' : 'none';
+      }
+    }
+
+
+    // ==========================================
+    // 4. BATCH CHECKBOX CONTROLS
+    // ==========================================
+    function toggleMultiSelectMode(checkbox) {
+      const selectCols = document.querySelectorAll('#certTable .select-col');
+      selectCols.forEach(col => col.classList.toggle('hidden', !checkbox
+        .checked));
+
+      if (!checkbox.checked) {
+        const selectAll = document.getElementById('selectAll');
+        if (selectAll) selectAll.checked = false;
+        document.querySelectorAll('#certTable .row-checkbox').forEach(cb => (cb
+          .checked = false));
+      }
+    }
+
+    function toggleSelectAllRows(masterCheckbox) {
+      document.querySelectorAll('#certTable .row-checkbox').forEach(cb => {
+        cb.checked = masterCheckbox.checked;
+      });
+    }
+
+    function exportCertificates() {
+      const selectedRows = document.querySelectorAll(
+        '#certTable .row-checkbox:checked');
+      if (selectedRows.length === 0) {
+        alert('Please select at least one certificate to export.');
+        return;
+      }
+      alert(`Exporting ${selectedRows.length} certificate(s)...`);
+    }
+
+
+    // ==========================================
+    // 5. PRINT & DIRECT 1-PAGE SQUARE PDF EXPORT
+    // ==========================================
+    function handlePrint() {
+      window.print();
+    }
+
+    async function handleDownload(targetElementId = 'printableCert') {
+      const original = document.getElementById(targetElementId);
+      if (!original) return;
+
+      let recipientName = 'Certificate';
+      const nameEl = targetElementId === 'printableCert' ?
+        document.getElementById('vName') :
+        document.getElementById('pName');
+
+      if (nameEl && nameEl.textContent.trim() && !nameEl.textContent.includes(
+          '[')) {
+        recipientName = nameEl.textContent.trim();
+      }
+
+      const cleanFileName =
+        `Certificate_${recipientName.replace(/[^a-zA-Z0-9_-]/g, '_')}.pdf`;
+
+      const tempWrapper = document.createElement('div');
+      Object.assign(tempWrapper.style, {
+        position: 'fixed',
+        top: '0',
+        left: '0',
+        width: '750px',
+        height: '750px',
+        zIndex: '999999',
+        background: '#ffffff',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden'
+      });
+
+      const clone = original.cloneNode(true);
+      Object.assign(clone.style, {
+        width: '750px',
+        height: '750px',
+        minWidth: '750px',
+        minHeight: '750px',
+        maxWidth: '750px',
+        maxHeight: '750px',
+        margin: '0',
+        padding: '20px',
+        border: '10px solid #025628',
+        boxSizing: 'border-box',
+        transform: 'none',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        background: '#ffffff'
+      });
+
+      const inner = clone.querySelector('.ui-cert-inner');
+      if (inner) {
+        Object.assign(inner.style, {
+          height: '100%',
+          boxSizing: 'border-box',
+          border: '1.5px dashed #025628',
+          padding: '22px 18px',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          textAlign: 'center',
+          background: 'radial-gradient(circle at center, #ffffff 60%, #fafcf9 100%)'
+        });
+      }
+
+      // Balanced Logo Dimensions for PDF Export
+      const logoHeader = clone.querySelector('.cert-logos-header');
+      if (logoHeader) {
+        Object.assign(logoHeader.style, {
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: '24px',
+          marginBottom: '8px',
+          width: '100%'
+        });
+
+        logoHeader.querySelectorAll('.cert-logo-img').forEach(img => {
+          Object.assign(img.style, {
+            height: '60px',
+            width: 'auto',
+            maxHeight: '60px',
+            maxWidth: '100px',
+            objectFit: 'contain',
+            display: 'inline-block'
+          });
+        });
+      }
+
+      // Harmonized Recipient Name Sizing for PDF Export
+      const recipName = clone.querySelector('.cert-recipient-name');
+      if (recipName) {
+        recipName.style.fontSize = '70px';
+        recipName.style.fontWeight = '700';
+        recipName.style.textDecoration = 'underline';
+        recipName.style.margin = '6px 0';
+        recipName.style.color = '#1a1a1a';
+        recipName.style.textTransform = 'capitalize';
+      }
+
+      tempWrapper.appendChild(clone);
+      document.body.appendChild(tempWrapper);
+
+      if (document.fonts) {
+        await document.fonts.ready;
+      }
+
+      try {
+        const canvas = await html2canvas(clone, {
+          scale: 3,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+          scrollX: 0,
+          scrollY: 0,
+          windowWidth: 750,
+          windowHeight: 750
+        });
+
+        document.body.removeChild(tempWrapper);
+
+        const jsPDFConstructor = window.jspdf ? window.jspdf.jsPDF : (window
+          .jsPDF || jsPDF);
+        const pdf = new jsPDFConstructor({
+          orientation: 'portrait',
+          unit: 'mm',
+          format: [200, 200]
+        });
+
+        const imgData = canvas.toDataURL('image/png', 1.0);
+        pdf.addImage(imgData, 'PNG', 0, 0, 200, 200);
+        pdf.save(cleanFileName);
+
+      } catch (err) {
+        console.error('PDF Generation Error:', err);
+        if (document.body.contains(tempWrapper)) {
+          document.body.removeChild(tempWrapper);
+        }
+        alert('An error occurred while generating the PDF.');
+      }
+    }
+
+    function filterModalTrainees(selectedCourse) {
+      const traineeSelect = document.getElementById('traineeSelect');
+      if (!traineeSelect) return;
+
+      const options = traineeSelect.querySelectorAll('option');
+      const targetCourse = selectedCourse.toLowerCase().trim();
+
+      options.forEach((opt, index) => {
+        if (index === 0) {
+          opt.style.display = '';
+          return;
+        }
+
+        const optCourse = (opt.getAttribute('data-course') || '')
+          .toLowerCase().trim();
+
+        if (!targetCourse || optCourse.includes(targetCourse) || targetCourse
+          .includes(optCourse)) {
+          opt.style.display = '';
+          opt.disabled = false;
+        } else {
+          opt.style.display = 'none';
+          opt.disabled = true;
+        }
+      });
+
+      traineeSelect.value = '';
+      updateLivePreview();
+    }
   </script>
 </body>
 

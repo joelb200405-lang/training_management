@@ -255,6 +255,23 @@ public function admin1(Request $request)
     $registrations = \App\Models\Registration::latest()->paginate(10, ['*'], 'reg_page');
     $facilities    = \App\Models\Facility::with('courses')->get();
 
+    // ── 1. FETCH CERTIFICATES FOR TABLE & STATS ──────────────────────────────
+    $certificates  = \App\Models\Certificate::with(['user', 'course'])->latest()->get();
+
+    // ── 2. FETCH ENROLLED TRAINEES FOR THE ISSUE MODAL DROPDOWN ─────────────
+    $eligibleTrainees = \DB::table('enrollment_tbls')
+        ->join('user_tbls', 'user_tbls.id', '=', 'enrollment_tbls.user_id')
+        ->join('course_tbls', 'course_tbls.id', '=', 'enrollment_tbls.course_id')
+        ->select(
+            'user_tbls.id',
+            'user_tbls.firstname',
+            'user_tbls.lastname',
+            'course_tbls.id as course_id',
+            'course_tbls.title as course_title'
+        )
+        ->orderBy('user_tbls.lastname', 'asc')
+        ->get();
+
     // --- CHART DATA AGGREGATIONS ---
 
     // 1. Courses grouped by Sector
@@ -320,6 +337,8 @@ public function admin1(Request $request)
         'announcements',
         'registrations',
         'facilities',
+        'certificates',     // <-- Added
+        'eligibleTrainees', // <-- Added
         'sectorLabels',
         'sectorCounts',
         'courseTitles',
@@ -331,6 +350,8 @@ public function admin1(Request $request)
         'overviewCourseDatasets'
     ));
 }
+
+
 
 public function updateUser(Request $request)
 {
