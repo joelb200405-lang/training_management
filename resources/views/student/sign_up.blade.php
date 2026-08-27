@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="{{ asset('stylesheet/sign_up.css') }}">
   <link rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Tab Icon -->
+ <link rel="icon" type="image/png" href="{{ asset('images/logo_ledipo.png') }}">
 </head>
 
 <body>

@@ -13,23 +13,24 @@ class User_tbl extends Authenticatable implements MustVerifyEmail
     protected $table = "user_tbls";
 
     protected $fillable = [
-            "firstname",
-            "lastname",
-            "email",
-            "username",
-            "password",
-            "role",
-            "must_reset_password",
-            "email_verified_at",
-            "status",
-            "remarks",
-            "contact",
-            "id_number",
-            "certificate_path",
-        ];
+        "firstname",
+        "lastname",
+        "email",
+        "username",
+        "password",
+        "role",
+        "must_reset_password",
+        "email_verified_at",
+        "status",
+        "remarks",
+        "contact",
+        "id_number",
+        "certificate_path",
+    ];
 
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'must_reset_password' => 'boolean',
         'password' => 'hashed',
     ];
 }
