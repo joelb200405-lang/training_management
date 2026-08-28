@@ -123,6 +123,8 @@ Route::middleware("trainer")->group(function () {
     Route::get("/trainer/profile", [UserController::class, "trainerProfile"])->name("trainer.profile");
     Route::post("/trainer/profile/update", [UserController::class, "trainerProfileUpdate"])->name("trainer.profile.update");
     Route::post("/trainer/profile/password", [UserController::class, "trainerProfilePassword"])->name("trainer.profile.password");
+    Route::get("/trainer/attendance", [UserController::class, "attendance"])->name("trainer.attendance");
+    Route::post("/trainer/attendance", [UserController::class, "storeAttendance"])->name("trainer.attendance.store");
 
     // Trainer course content
     Route::get("/trainer/course/{courseId}/content", [UserController::class, "getCourseContent"])->name("trainer.course.content");
