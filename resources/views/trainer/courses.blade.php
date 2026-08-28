@@ -400,19 +400,9 @@
           </div>
 
           <div class="mc-btn-row">
-            <button class="mc-btn primary"
-              onclick="openCourseDetails(
-                        '{{ addslashes($course->title) }}',
-                        '{{ addslashes($course->description ?? '') }}',
-                        '{{ addslashes($course->duration ?? '') }}',
-                        '{{ $totalStudents }}/{{ $course->slots }}',
-                        '{{ addslashes($course->schedule ?? '') }}',
-                        '{{ addslashes($course->location ?? '') }}',
-                        '{{ addslashes($course->sector ?? '') }}',
-                        '{{ ucfirst($course->status ?? '') }}'
-                    )">
+            <a href="{{ route('trainer.course.preview', $course->id) }}" class="mc-btn primary" style="text-decoration:none;">
               Course Details
-            </button>
+            </a>
             <button class="mc-btn outline"
               onclick="openContentModal({{ $course->id }}, '{{ addslashes($course->title) }}')">
               <i class="fa fa-layer-group"></i> Modules
@@ -446,15 +436,15 @@
             <div class="mc-detail-value" id="cd-title"></div>
           </div>
         </div>
-        <div class="mc-detail-row">
-          <div class="mc-detail-icon"><i class="fa fa-align-left"></i></div>
-          <div>
-            <div class="mc-detail-label">Description</div>
-            <div class="mc-detail-value" id="cd-description"
-              style="font-size:13px;color:#555;font-weight:400;line-height:1.6;">
+          <div class="mc-detail-row">
+            <div class="mc-detail-icon"><i class="fa fa-align-left"></i></div>
+            <div style="flex:1;">
+              <div class="mc-detail-label">Description</div>
+              <textarea id="cd-description-input" rows="3"
+                placeholder="Write a short description trainees will see"
+                style="width:100%;font-size:13px;color:#333;font-family:inherit;border:1px solid #ddd;border-radius:8px;padding:8px 10px;resize:vertical;margin-top:4px;"></textarea>
             </div>
           </div>
-        </div>
         <div class="mc-detail-row">
           <div class="mc-detail-icon"><i class="fa fa-tag"></i></div>
           <div>
@@ -500,6 +490,10 @@
       </div>
       <div class="mc-modal-footer">
         <button class="mc-btn-close" onclick="closeCourseDetails()">Close</button>
+        <button onclick="saveDescription()"
+          style="background:#025628;color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;margin-left:8px;">
+          Save
+        </button>
       </div>
     </div>
   </div>
@@ -632,11 +626,9 @@
     let _contentQuizzes = [];
 
     // ── COURSE DETAILS MODAL ───────────────────────────────────────────────────
-    function openCourseDetails(title, description, duration, slots, schedule,
-      location, sector, status) {
+    function openCourseDetails(id, title, description, duration, slots, schedule, location, sector, status) {
       document.getElementById('cd-title').textContent = title;
-      document.getElementById('cd-description').textContent = description ||
-        'No description available.';
+      document.getElementById('cd-description-input').value = description || '';
       document.getElementById('cd-sector').textContent = sector || '—';
       document.getElementById('cd-duration').textContent = duration || '—';
       document.getElementById('cd-schedule').textContent = schedule || '—';
@@ -644,6 +636,30 @@
       document.getElementById('cd-location').textContent = location || '—';
       document.getElementById('cd-status').textContent = status || '—';
       document.getElementById('courseDetailsModal').style.display = 'block';
+
+      window._currentDetailsCourseId = id;
+    }
+
+      function saveDescription() {
+      const newDescription = document.getElementById('cd-description-input').value;
+      const courseId = window._currentDetailsCourseId;
+
+      fetch(`/trainer/course/${courseId}/description`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken
+          },
+          body: JSON.stringify({ description: newDescription })
+        })
+        .then(r => r.json())
+        .then(data => {
+          if (data.success) {
+            alert('Description updated!');
+            closeCourseDetails();
+          }
+        })
+        .catch(() => alert('Something went wrong. Please try again.'));
     }
 
     function closeCourseDetails() {

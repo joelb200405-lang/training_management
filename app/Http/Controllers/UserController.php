@@ -630,7 +630,7 @@ public function deleteFacility(Request $request)
 }
 
 
-        public function updateCourse(Request $request, $id)
+    public function updateCourse(Request $request, $id)
 {
     $request->validate([
         'course_code' => 'required|string|max:50',
@@ -1911,6 +1911,64 @@ private function validateAnnouncement(Request $request): array
             'quizResults'
         ));
     }
+    public function updateCourseDescription(Request $request, $id)
+    {
+        $request->validate([
+            'description' => 'nullable|string',
+        ]);
+
+        $trainer = Auth::user();
+        $course = Course_tbl::where('id', $id)
+                    ->where('trainer_id', $trainer->id)
+                    ->firstOrFail();
+
+        $course->update([
+            'description' => $request->description,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Description updated successfully!'
+        ]);
+    }
+
+        public function trainerCoursePreview($id)
+    {
+        $trainer = Auth::user();
+
+        $course = Course_tbl::where('id', $id)
+                    ->where('trainer_id', $trainer->id)
+                    ->firstOrFail();
+
+        $modules = \App\Models\Module::where('course_id', $course->id)
+                        ->active()
+                        ->ordered()
+                        ->get();
+
+        return view('trainer.course_preview', compact('course', 'modules'));
+    }
+
+    public function updateCourseObjectives(Request $request, $id)
+    {
+        $request->validate([
+            'objectives' => 'nullable|string',
+        ]);
+
+        $trainer = Auth::user();
+        $course = Course_tbl::where('id', $id)
+                    ->where('trainer_id', $trainer->id)
+                    ->firstOrFail();
+
+        $course->update([
+            'objectives' => $request->objectives,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Objectives updated successfully!'
+        ]);
+    }
+    
     }
 
     

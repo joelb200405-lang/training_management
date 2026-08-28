@@ -109,7 +109,7 @@ Route::middleware("admin")->group(function () {
 });
 
 // ── TRAINER ROUTES ────────────────────────────────────────────────────────────
-Route::middleware("trainer")->group(function () {
+    Route::middleware("trainer")->group(function () {
     Route::get("/teacher", [UserController::class, "teacher"])->name("teacher");
     Route::get("/learner", [UserController::class, "learner"])->name("learner");
     Route::get("/trainer/courses", [UserController::class, "courses"])->name("trainer.courses");
@@ -125,6 +125,8 @@ Route::middleware("trainer")->group(function () {
     Route::post("/trainer/profile/password", [UserController::class, "trainerProfilePassword"])->name("trainer.profile.password");
     Route::get("/trainer/attendance", [UserController::class, "attendance"])->name("trainer.attendance");
     Route::post("/trainer/attendance", [UserController::class, "storeAttendance"])->name("trainer.attendance.store");
+    Route::get("/trainer/course/{id}/preview", [UserController::class, "trainerCoursePreview"])->name("trainer.course.preview");
+    Route::post("/trainer/course/{id}/objectives", [UserController::class, "updateCourseObjectives"])->name("trainer.course.objectives");
 
     // Trainer course content
     Route::get("/trainer/course/{courseId}/content", [UserController::class, "getCourseContent"])->name("trainer.course.content");
@@ -135,6 +137,7 @@ Route::middleware("trainer")->group(function () {
     Route::get("/trainer/quiz/{quizId}/questions", [UserController::class, "getQuizQuestions"])->name("trainer.quiz.questions");
     Route::post("/trainer/quiz-question", [UserController::class, "storeQuizQuestion"])->name("trainer.quiz.question.store");
     Route::match(['POST', 'DELETE'], "/trainer/quiz-question/{id}", [UserController::class, "destroyQuizQuestion"])->name("trainer.quiz.question.destroy");
+    Route::post("/trainer/course/{id}/description", [UserController::class, "updateCourseDescription"])->name("trainer.course.description");
 });
 
 // ── STUDENT ROUTES ────────────────────────────────────────────────────────────
