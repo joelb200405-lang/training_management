@@ -148,6 +148,12 @@
         <span>Students</span>
       </a>
 
+      <a href="{{ route('trainer.attendance') }}"
+        class="nav-item {{ request()->routeIs('trainer.attendance*') ? 'active' : '' }}">
+        <i class="fa fa-clipboard-list nav-icon"></i>
+        <span>Attendance</span>
+      </a>
+
       <a href="{{ route('trainer.schedule') }}"
         class="nav-item {{ request()->routeIs('trainer.schedule*') ? 'active' : '' }}">
         <i class="fa fa-calendar-alt nav-icon"></i>

@@ -123,6 +123,8 @@ Route::middleware("admin")->group(function () {
     Route::get("/trainer/profile", [UserController::class, "trainerProfile"])->name("trainer.profile");
     Route::post("/trainer/profile/update", [UserController::class, "trainerProfileUpdate"])->name("trainer.profile.update");
     Route::post("/trainer/profile/password", [UserController::class, "trainerProfilePassword"])->name("trainer.profile.password");
+    Route::get("/trainer/attendance", [UserController::class, "attendance"])->name("trainer.attendance");
+    Route::post("/trainer/attendance", [UserController::class, "storeAttendance"])->name("trainer.attendance.store");
     Route::get("/trainer/course/{id}/preview", [UserController::class, "trainerCoursePreview"])->name("trainer.course.preview");
     Route::post("/trainer/course/{id}/objectives", [UserController::class, "updateCourseObjectives"])->name("trainer.course.objectives");
 

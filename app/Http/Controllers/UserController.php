@@ -691,33 +691,47 @@ public function removeTrainer($courseId)
         $trainer = Auth::user();
         $course = Course_tbl::where('trainer_id', $trainer->id)->first();
 
+        // ── Attendance status for today ────────────────────────────────────────
+        $today = now()->toDateString();
+        $attendanceTakenToday = false;
+
+        if ($course) {
+            $activeEnrollmentIds = \App\Models\Enrollment_tbl::where('course_id', $course->id)
+                ->where('status', 'active')
+                ->pluck('id');
+
+            $attendanceTakenToday = \App\Models\Attendance::whereIn('enrollment_id', $activeEnrollmentIds)
+                ->where('date', $today)
+                ->exists();
+        }
+
         $totalTrainees = $course
         ? \App\Models\Enrollment_tbl::where('course_id', $course->id)
             ->where('status', 'active')
             ->count()
         : 0;
-    
+
         $monthlyEnrollment = $course
             ? \App\Models\Enrollment_tbl::where('course_id', $course->id)
                 ->whereMonth('enrolled_at', now()->month)
                 ->whereYear('enrolled_at', now()->year)
                 ->count()
             : 0;
-    
+
         $totalInCourse = $course ? \App\Models\Enrollment_tbl::where('course_id', $course->id)->count() : 0;
         $completedInCourse = $course ? \App\Models\Enrollment_tbl::where('course_id', $course->id)->where('status', 'completed')->count() : 0;
 
         $completionRate = $totalInCourse > 0
             ? round($completedInCourse / $totalInCourse * 100) . '%'
             : '0%';
-    
+
         $urgentAssessments = $course
             ? \App\Models\Deadline_tbl::where('course_id', $course->id)
                 ->where('due_date', '<=', now()->addDays(3))
                 ->where('due_date', '>=', now())
                 ->count()
             : 0;
-    
+
         // ── Low performing trainees ───────────────────────────────────────────
         $lowPerforming = $course
             ? \App\Models\Enrollment_tbl::with(['user', 'course'])
@@ -728,27 +742,27 @@ public function removeTrainer($courseId)
                 ->take(5)
                 ->get()
             : collect();
-    
-        // ── NEW: Progress distribution for donut chart ────────────────────────
-        // Counts students in each progress bracket across all enrollments
+
+        // ── Progress distribution for donut chart ────────────────────────
         $allEnrollments = $course
         ? \App\Models\Enrollment_tbl::where('course_id', $course->id)->get()
         : collect();
-    
+
         $progressDistribution = [
-            $allEnrollments->where('status', 'completed')->count(),                                          // Completed
-            $allEnrollments->where('status', '!=', 'completed')->where('progress', '>=', 50)->count(),      // 50–99%
-            $allEnrollments->where('status', '!=', 'completed')->where('progress', '>', 0)->where('progress', '<', 50)->count(), // Below 50%
-            $allEnrollments->where('progress', 0)->where('status', '!=', 'completed')->count(),              // Not started
+            $allEnrollments->where('status', 'completed')->count(),
+            $allEnrollments->where('status', '!=', 'completed')->where('progress', '>=', 50)->count(),
+            $allEnrollments->where('status', '!=', 'completed')->where('progress', '>', 0)->where('progress', '<', 50)->count(),
+            $allEnrollments->where('progress', 0)->where('status', '!=', 'completed')->count(),
         ];
-    
+
         return view("trainer.teacher", compact(
             'totalTrainees',
             'monthlyEnrollment',
             'completionRate',
             'urgentAssessments',
             'lowPerforming',
-            'progressDistribution'   // NEW
+            'progressDistribution',
+            'attendanceTakenToday'
         ));
     }
 
@@ -1475,6 +1489,76 @@ public function trainerStudents()
 
     return view('trainer.students', compact('course', 'students'));
     }
+
+    public function attendance()
+{
+    $trainer = Auth::user();
+    $course = Course_tbl::where('trainer_id', $trainer->id)->first();
+
+    if (!$course) {
+        return view('trainer.attendance', [
+            'course'   => null,
+            'students' => collect(),
+            'today'    => now()->format('l, F j, Y'),
+        ]);
+    }
+
+    $today = now()->toDateString();
+
+    // Everyone actively enrolled in the trainer's course
+    $students = User_tbl::join('enrollment_tbls', 'user_tbls.id', '=', 'enrollment_tbls.user_id')
+        ->where('enrollment_tbls.course_id', $course->id)
+        ->where('enrollment_tbls.status', 'active')
+        ->select(
+            'user_tbls.id as user_id',
+            'user_tbls.firstname',
+            'user_tbls.lastname',
+            'enrollment_tbls.id as enrollment_id'
+        )
+        ->orderBy('user_tbls.lastname')
+        ->get();
+
+    // Today's attendance, if the trainer already submitted (or auto-fill ran)
+    $existing = \App\Models\Attendance::where('date', $today)
+        ->whereIn('enrollment_id', $students->pluck('enrollment_id'))
+        ->pluck('status', 'enrollment_id');
+
+    return view('trainer.attendance', [
+        'course'   => $course,
+        'students' => $students,
+        'existing' => $existing,
+        'today'    => now()->format('l, F j, Y'),
+    ]);
+}
+
+public function storeAttendance(Request $request)
+{
+    $trainer = Auth::user();
+    $course = Course_tbl::where('trainer_id', $trainer->id)->firstOrFail();
+
+    $today = now()->toDateString();
+    $absentIds = collect($request->input('absent', []));
+
+    $enrollmentIds = \App\Models\Enrollment_tbl::where('course_id', $course->id)
+        ->where('status', 'active')
+        ->pluck('id', 'user_id');
+
+    foreach ($enrollmentIds as $userId => $enrollmentId) {
+        $status = $absentIds->contains($enrollmentId) ? 'absent' : 'present';
+
+        \App\Models\Attendance::updateOrCreate(
+            ['enrollment_id' => $enrollmentId, 'date' => $today],
+            [
+                'user_id'     => $userId,
+                'status'      => $status,
+                'marked_by'   => $trainer->id,
+                'auto_marked' => false,
+            ]
+        );
+    }
+
+    return redirect()->route('trainer.attendance')->with('success', 'Attendance submitted for ' . now()->format('F j, Y'));
+}
 
     public function trainerSchedule()
     {
