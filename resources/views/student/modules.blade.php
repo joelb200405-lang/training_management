@@ -467,13 +467,15 @@
                             {{ $quiz->time_limit }} mins &nbsp;·&nbsp; {{ $quiz->passing_score }}% to pass
                         </div>
                     </div>
-                    @if ($result)
-                        <span class="pretest-score" style="color: {{ $result->status === 'passed' ? '#276749' : '#c53030' }};">
-                            {{ ucfirst($result->status) }} · {{ $result->percentage }}%
-                        </span>
-                    @else
-                        <span class="pretest-score">Not taken yet</span>
-                    @endif
+                @if ($result)
+                    <span class="pretest-score" style="color: {{ $result->status === 'passed' ? '#276749' : '#c53030' }};">
+                        {{ ucfirst($result->status) }} · {{ $result->percentage }}%
+                    </span>
+                @else
+                    <button onclick="openQuiz({{ $quiz->id }}, '{{ addslashes($quiz->title) }}')" class="pretest-btn">
+                        Take Quiz
+                    </button>
+                @endif
                 </div>
             @empty
                 <div class="no-data" style="text-align:center;color:#a0aec0;padding:24px 0;">
@@ -481,25 +483,36 @@
                 </div>
             @endforelse
 
-            @forelse ($modules as $i => $module)
-                <div class="module-action-row">
-                    <div>
-                        <div class="module-action-title">{{ $i + 1 }}. {{ $module->title }}</div>
-                        @if ($module->description)
-                            <div style="font-size:12px;color:#718096;margin-top:2px;">{{ $module->description }}</div>
-                        @endif
-                    </div>
-                    <div class="module-buttons-group">
-                        @if ($module->file_path)
-                            <a href="{{ asset('storage/' . $module->file_path) }}" target="_blank" class="btn-module-view">
-                                View
-                            </a>
-                        @else
-                            <span style="font-size:12px;color:#a0aec0;">No file</span>
-                        @endif
-                    </div>
+        @forelse ($modules as $i => $module)
+            @php
+                $isDone = in_array($module->id, $completedModuleIds);
+            @endphp
+            <div class="module-action-row">
+                <div>
+                    <div class="module-action-title">{{ $i + 1 }}. {{ $module->title }}</div>
+                    @if ($module->description)
+                        <div style="font-size:12px;color:#718096;margin-top:2px;">{{ $module->description }}</div>
+                    @endif
                 </div>
-            @empty
+                <div class="module-buttons-group">
+                    @if ($module->file_path)
+                        <a href="{{ asset('storage/' . $module->file_path) }}" target="_blank" class="btn-module-view">
+                            View
+                        </a>
+                    @else
+                        <span style="font-size:12px;color:#a0aec0;">No file</span>
+                    @endif
+
+                    @if ($isDone)
+                        <span class="btn-module-done completed">✓ Done</span>
+                    @else
+                        <button onclick="markDone({{ $module->id }}, this)" class="btn-module-done">
+                            Mark as Done
+                        </button>
+                    @endif
+                </div>
+            </div>
+        @empty
                 <div class="no-data" style="text-align:center;color:#a0aec0;padding:24px 0;">
                     No modules available yet for this course.
                 </div>
@@ -551,6 +564,114 @@
         </div>
     @endif
 
+            <div id="quizModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;">
+            <div style="background:#fff;width:90%;max-width:600px;max-height:85vh;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;">
+                <div style="background:#025628;color:#fff;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;">
+                    <div id="quizModalTitle" style="font-size:16px;font-weight:800;"></div>
+                    <button onclick="closeQuiz()" style="background:rgba(255,255,255,0.2);border:none;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;">✕</button>
+                </div>
+                <div id="quizModalBody" style="padding:24px;overflow-y:auto;flex:1;"></div>
+                <div style="padding:16px 24px;border-top:1px solid #e2e8f0;display:flex;justify-content:flex-end;">
+                    <button onclick="submitQuizAnswers()" style="background:#025628;color:#fff;border:none;border-radius:8px;padding:10px 24px;font-weight:700;cursor:pointer;">
+                        Submit Quiz
+                    </button>
+                </div>
+            </div>
+        </div>
+
 </div>
 @endsection
+
+    @section('scripts')
+    <script>
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        let _currentQuizId = null;
+
+        function openQuiz(quizId, quizTitle) {
+            _currentQuizId = quizId;
+            document.getElementById('quizModalTitle').textContent = quizTitle;
+            document.getElementById('quizModalBody').innerHTML = '<p>Loading questions...</p>';
+            document.getElementById('quizModal').style.display = 'flex';
+
+            fetch(`/student/quiz/${quizId}`, {
+                headers: { 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.taken) {
+                    document.getElementById('quizModalBody').innerHTML = '<p>You have already taken this quiz.</p>';
+                    return;
+                }
+                renderQuizQuestions(data.quiz.questions);
+            })
+            .catch(() => {
+                document.getElementById('quizModalBody').innerHTML = '<p>Failed to load quiz. Please try again.</p>';
+            });
+        }
+
+        function renderQuizQuestions(questions) {
+            const body = document.getElementById('quizModalBody');
+            body.innerHTML = questions.map(q => `
+                <div style="margin-bottom:20px;">
+                    <div style="font-weight:700;font-size:14px;margin-bottom:8px;">${q.question}</div>
+                    <label style="display:block;margin-bottom:4px;font-size:13px;"><input type="radio" name="q${q.id}" value="a"> A. ${q.choice_a}</label>
+                    <label style="display:block;margin-bottom:4px;font-size:13px;"><input type="radio" name="q${q.id}" value="b"> B. ${q.choice_b}</label>
+                    <label style="display:block;margin-bottom:4px;font-size:13px;"><input type="radio" name="q${q.id}" value="c"> C. ${q.choice_c}</label>
+                    <label style="display:block;margin-bottom:4px;font-size:13px;"><input type="radio" name="q${q.id}" value="d"> D. ${q.choice_d}</label>
+                </div>
+            `).join('');
+        }
+
+        function closeQuiz() {
+            document.getElementById('quizModal').style.display = 'none';
+            _currentQuizId = null;
+        }
+
+        function submitQuizAnswers() {
+            const inputs = document.querySelectorAll('#quizModalBody input[type=radio]:checked');
+            const answers = {};
+            inputs.forEach(input => {
+                const qId = input.name.replace('q', '');
+                answers[qId] = input.value;
+            });
+
+            fetch('/student/quiz/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                body: JSON.stringify({ quiz_id: _currentQuizId, answers: answers })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`Score: ${data.score}/${data.total} (${data.percentage}%) - ${data.status.toUpperCase()}`);
+                    closeQuiz();
+                    location.reload();
+                } else {
+                    alert(data.message || 'Something went wrong.');
+                }
+            })
+            .catch(() => alert('Something went wrong. Please try again.'));
+        }
+
+        function markDone(moduleId, btn) {
+            fetch(`/student/module/${moduleId}/complete`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    btn.outerHTML = '<span class="btn-module-done completed">✓ Done</span>';
+                }
+            })
+            .catch(() => alert('Something went wrong. Please try again.'));
+        }
+        </script>
+    @endsection
 

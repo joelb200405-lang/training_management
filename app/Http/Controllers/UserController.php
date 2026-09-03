@@ -1787,7 +1787,7 @@ private function validateAnnouncement(Request $request): array
     ]);
 }
 
-            public function studentModules(Request $request)
+    public function studentModules(Request $request)
     {
         $userId = Auth::id();
     
@@ -1803,26 +1803,33 @@ private function validateAnnouncement(Request $request): array
             : $enrollments->where('status', 'active')->first() ?? $enrollments->first();
     
         if ($enrollment) {
-            $modules = \App\Models\Module::where('course_id', $enrollment->course_id)
-                        ->active()
-                        ->ordered()
+        $modules = \App\Models\Module::where('course_id', $enrollment->course_id)
+                    ->active()
+                    ->ordered()
+                    ->get();
+
+        $completedModuleIds = \App\Models\ModuleCompletion::where('user_id', $userId)
+                                ->whereIn('module_id', $modules->pluck('id'))
+                                ->pluck('module_id')
+                                ->toArray();
+
+        $quizzes = \App\Models\Quiz::where('course_id', $enrollment->course_id)->get();
+
+        $quizResults = \App\Models\QuizResult::where('user_id', $userId)
+                        ->whereIn('quiz_id', $quizzes->pluck('id'))
                         ->get();
-    
-            $quizzes = \App\Models\Quiz::where('course_id', $enrollment->course_id)->get();
-    
-            $quizResults = \App\Models\QuizResult::where('user_id', $userId)
-                            ->whereIn('quiz_id', $quizzes->pluck('id'))
-                            ->get();
         } else {
-            $modules     = collect();
-            $quizzes     = collect();
-            $quizResults = collect();
+            $modules             = collect();
+            $completedModuleIds  = [];
+            $quizzes             = collect();
+            $quizResults         = collect();
         }
     
         return view('student.modules', compact(
             'enrollments',
             'enrollment',
             'modules',
+            'completedModuleIds',
             'quizzes',
             'quizResults'
         ));
@@ -1884,6 +1891,23 @@ private function validateAnnouncement(Request $request): array
             'message' => 'Objectives updated successfully!'
         ]);
     }
+
+    public function markModuleDone(Request $request, $id)
+    {
+        $userId = Auth::id();
+
+        \App\Models\ModuleCompletion::firstOrCreate([
+            'user_id'   => $userId,
+            'module_id' => $id,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Module marked as done!'
+        ]);
+    }
+
+    
     
     }
 
