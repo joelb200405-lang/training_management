@@ -8,8 +8,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // 1. Temporarily turn off foreign key checks
-        Schema::disableForeignKeyConstraints();
+        Schema::create('quizzes', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('course_id')->constrained('course_tbls')->onDelete('cascade');
+            $table->foreignId('module_id')->nullable()->constrained('modules')->onDelete('set null');
+            $table->string('title');
+            $table->integer('passing_score');
+            $table->integer('time_limit');
+            $table->timestamps();
+        });
 
         Schema::create('quiz_questions', function (Blueprint $table) {
             $table->id();
@@ -23,13 +30,11 @@ return new class extends Migration
             $table->integer('order')->default(0);
             $table->timestamps();
         });
-
-        // 2. Turn foreign key checks back on
-        Schema::enableForeignKeyConstraints();
     }
 
     public function down(): void
     {
         Schema::dropIfExists('quiz_questions');
+        Schema::dropIfExists('quizzes');
     }
 };
