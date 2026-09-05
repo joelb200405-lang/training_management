@@ -1192,41 +1192,43 @@ public function dashboard()
     ]);
 }
 
-    public function storeModule(Request $request)
-    {
-        $request->validate([
-            'course_id'   => 'required|exists:course_tbls,id',
-            'title'       => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'file'        => 'nullable|file|mimes:pdf,doc,docx|max:10240',
-        ]);
+   public function storeModule(Request $request)
+{
+    $request->validate([
+        'course_id'   => 'required|exists:course_tbls,id',
+        'title'       => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'unit_number' => 'nullable|integer|min:1',
+        'file' => 'required|file|mimes:pdf,doc,docx|max:10240',
+    ]);
 
-        $order = \App\Models\Module::where('course_id', $request->course_id)->max('order') + 1;
+    $order = \App\Models\Module::where('course_id', $request->course_id)->max('order') + 1;
 
-        $filePath = null;
-        $fileType = null;
-        $fileSize = null;
+    $filePath = null;
+    $fileType = null;
+    $fileSize = null;
 
-        if ($request->hasFile('file')) {
-            $file     = $request->file('file');
-            $filePath = $file->store('modules', 'public');
-            $fileType = $file->getClientOriginalExtension();
-            $fileSize = $file->getSize();
-        }
-
-        $module = \App\Models\Module::create([
-            'course_id'   => $request->course_id,
-            'title'       => $request->title,
-            'description' => $request->description,
-            'order'       => $order,
-            'is_active'   => true,
-            'file_path'   => $filePath,
-            'file_type'   => $fileType,
-            'file_size'   => $fileSize,
-        ]);
-
-        return response()->json(['success' => true, 'module' => $module]);
+    if ($request->hasFile('file')) {
+        $file     = $request->file('file');
+        $filePath = $file->store('modules', 'public');
+        $fileType = $file->getClientOriginalExtension();
+        $fileSize = $file->getSize();
     }
+
+    $module = \App\Models\Module::create([
+        'course_id'   => $request->course_id,
+        'title'       => $request->title,
+        'description' => $request->description,
+        'order'       => $order,
+        'unit_number' => $request->unit_number ?? 1,
+        'is_active'   => true,
+        'file_path'   => $filePath,
+        'file_type'   => $fileType,
+        'file_size'   => $fileSize,
+    ]);
+
+    return response()->json(['success' => true, 'module' => $module]);
+}
 
     public function destroyModule($id)
 {

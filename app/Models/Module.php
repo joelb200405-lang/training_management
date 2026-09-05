@@ -10,14 +10,15 @@ class Module extends Model
     use HasFactory;
 
     protected $fillable = [
-        'course_id',
-        'title',
-        'description',
-        'file_path',
-        'file_type',
-        'file_size',
-        'order',
-        'is_active',
+    'course_id',
+    'title',
+    'description',
+    'file_path',
+    'file_type',
+    'file_size',
+    'order',
+    'unit_number',
+    'is_active',
     ];
 
     protected $casts = [
