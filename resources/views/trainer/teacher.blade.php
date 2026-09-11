@@ -468,18 +468,9 @@
   </script>
   <script>
     // ── Student Avg Progress Line Chart ───────────────────────────────────
-    // Placeholder: uses current avg completion rate across the week.
-    // Replace with real day-by-day data once attendance tracking is built.
-    const avgRate = {{ str_replace('%', '', $completionRate) }};
-    const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    const dayOrder = [1, 2, 3, 4, 5, 6, 0];
-    const todayPos = dayOrder.indexOf(new Date().getDay());
-
-    const progressData = weekDays.map((_, i) => {
-      if (i > todayPos) return null;
-      if (avgRate === 0) return 0;
-      return Math.round((avgRate / (todayPos + 1)) * (i + 1));
-    });
+    // Real data from daily_progress, averaged across the trainer's active students.
+    const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+    const progressData = @json($weeklyProgressData);
 
     new Chart(document.getElementById('weeklyProgressChart'), {
       type: 'line',
