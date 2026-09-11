@@ -1534,6 +1534,7 @@ public function trainerStudents()
             'today'    => now()->format('l, F j, Y'),
         ]);
     }
+    $inSessionToday = app(\App\Services\CourseScheduleService::class)->isInSessionToday($course);
 
     $today = now()->toDateString();
 
@@ -1560,6 +1561,7 @@ public function trainerStudents()
         'students' => $students,
         'existing' => $existing,
         'today'    => now()->format('l, F j, Y'),
+        'inSessionToday' => $inSessionToday,
     ]);
 }
 
@@ -1567,6 +1569,9 @@ public function storeAttendance(Request $request)
 {
     $trainer = Auth::user();
     $course = Course_tbl::where('trainer_id', $trainer->id)->firstOrFail();
+    if (!app(\App\Services\CourseScheduleService::class)->isInSessionToday($course)) {
+    return back()->with('error', 'This course is not scheduled to meet today.');
+    }
 
     $today = now()->toDateString();
     $absentIds = collect($request->input('absent', []));

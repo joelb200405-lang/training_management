@@ -6,7 +6,7 @@ use App\Models\Attendance;
 use App\Models\Course_tbl;
 use App\Models\Enrollment_tbl;
 use Illuminate\Console\Command;
-
+use App\Services\CourseScheduleService;
 class AutoFillAttendance extends Command
 {
     protected $signature = 'attendance:auto-fill';
@@ -16,10 +16,14 @@ class AutoFillAttendance extends Command
     public function handle(): void
     {
         $today = now()->toDateString();
+        $scheduleService = app(CourseScheduleService::class);
 
         $courses = Course_tbl::whereNotNull('trainer_id')->get();
 
         foreach ($courses as $course) {
+            if (!$scheduleService->isInSessionToday($course)) {
+                continue;
+            }
             $enrollments = Enrollment_tbl::where('course_id', $course->id)
                 ->where('status', 'active')
                 ->get();
