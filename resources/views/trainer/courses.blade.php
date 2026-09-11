@@ -533,6 +533,9 @@
               <input type="text" id="newModuleDesc"
                 placeholder="Description (optional)"
                 style="flex:2;border:1px solid #ddd;border-radius:8px;padding:8px 12px;font-size:13px;font-family:inherit;">
+              <input type="number" id="newModuleUnit"
+                placeholder="Unit #" min="1" value="1"
+                style="width:80px;border:1px solid #ddd;border-radius:8px;padding:8px 12px;font-size:13px;font-family:inherit;">
             </div>
             <div style="display:flex;gap:8px;align-items:center;">
               <label style="font-size:12px;color:#666;white-space:nowrap;">📎 PDF
@@ -720,12 +723,12 @@
       const container = document.getElementById('moduleListContainer');
       const empty = document.getElementById('modulesEmptyState');
       if (!_contentModules.length) {
-        empty.style.display = 'block';
+        if (empty) empty.style.display = 'block';
         container.innerHTML = '';
-        container.appendChild(empty);
+        if (empty) container.appendChild(empty);
         return;
       }
-      empty.style.display = 'none';
+      if (empty) empty.style.display = 'none';
       container.innerHTML = _contentModules.map((m, i) => `
         <div style="display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #eee;border-radius:10px;padding:10px 14px;">
             <div style="width:28px;height:28px;border-radius:50%;background:#e8f5e9;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#025628;flex-shrink:0;">
@@ -809,19 +812,25 @@
     }
 
     // ── ADD MODULE ─────────────────────────────────────────────────────────────
-    function addModule() {
-      const title = document.getElementById('newModuleTitle').value.trim();
-      const desc = document.getElementById('newModuleDesc').value.trim();
-      const file = document.getElementById('newModuleFile').files[0];
-      if (!title) {
-        alert('Lagyan ng title ang module.');
-        return;
-      }
-      const formData = new FormData();
-      formData.append('course_id', _contentCourseId);
-      formData.append('title', title);
-      formData.append('description', desc);
-      if (file) formData.append('file', file);
+      function addModule() {
+        const title = document.getElementById('newModuleTitle').value.trim();
+        const desc = document.getElementById('newModuleDesc').value.trim();
+        const unit = document.getElementById('newModuleUnit').value || 1;
+        const file = document.getElementById('newModuleFile').files[0];
+        if (!title) {
+          alert('Lagyan ng title ang module.');
+          return;
+        }
+        if (!file) {
+          alert('Kailangan mag-upload ng PDF file.');
+          return;
+        }
+        const formData = new FormData();
+        formData.append('course_id', _contentCourseId);
+        formData.append('title', title);
+        formData.append('description', desc);
+        formData.append('unit_number', unit);
+        if (file) formData.append('file', file);
       fetch('/trainer/module', {
           method: 'POST',
           headers: {
@@ -840,7 +849,10 @@
             populateQuizModuleDropdown();
           }
         })
-        .catch(() => alert('May error. Subukan ulit.'));
+        .catch(err => {
+          console.error('Add module error:', err);
+          alert('May error. Subukan ulit.');
+        });
     }
 
     // ── DELETE MODULE ──────────────────────────────────────────────────────────
