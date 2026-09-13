@@ -1055,6 +1055,48 @@
     </div>
   </nav>
 
+  <!-- Custom Alert Modal (replaces native alert()) -->
+<div id="mcAlertModal" class="modal" style="display:none;">
+  <div class="modal-content" style="max-width:380px;">
+    <div class="modal-header">
+      <h3><i class="fa-solid fa-circle-info"></i> Notice</h3>
+      <span class="close-modal" onclick="closeAlertModal()">&times;</span>
+    </div>
+    <div style="padding:24px; text-align:center;">
+      <p id="mcAlertMessage" style="font-size:14px; color:#333; margin:0;"></p>
+    </div>
+    <div class="modal-actions-centered" style="text-align:center; padding-bottom:16px;">
+      <button onclick="closeAlertModal()"
+        style="background:#025628;color:#fff;border:none;border-radius:8px;padding:9px 24px;font-size:13px;font-weight:700;cursor:pointer;">
+        OK
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Custom Confirm Modal (replaces native confirm()) -->
+<div id="mcConfirmModal" class="modal" style="display:none;">
+  <div class="modal-content" style="max-width:380px;">
+    <div class="modal-header">
+      <h3><i class="fa-solid fa-triangle-exclamation"></i> Confirm</h3>
+      <span class="close-modal" onclick="closeConfirmModal()">&times;</span>
+    </div>
+    <div style="padding:24px; text-align:center;">
+      <p id="mcConfirmMessage" style="font-size:14px; color:#333; margin:0;"></p>
+    </div>
+    <div class="modal-actions-centered" style="text-align:center; padding-bottom:16px; display:flex; justify-content:center; gap:10px;">
+      <button onclick="closeConfirmModal()"
+        style="background:#fff;color:#777;border:1px solid #ddd;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;">
+        Cancel
+      </button>
+      <button onclick="_confirmYes()"
+        style="background:#A32D2D;color:#fff;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;">
+        Yes, Remove
+      </button>
+    </div>
+  </div>
+</div>
+
   <!-- Logout Confirmation Modal -->
   <div id="logoutModal" class="modal" style="display:none;">
     <div class="modal-content">
@@ -3897,6 +3939,35 @@
   <script src="js/logout.js"></script>
   <script>
     const urlParams = new URLSearchParams(window.location.search);
+
+    function showAlert(message) {
+  document.getElementById('mcAlertMessage').textContent = message;
+  document.getElementById('mcAlertModal').style.display = 'block';
+}
+
+function closeAlertModal() {
+  document.getElementById('mcAlertModal').style.display = 'none';
+}
+
+let _confirmCallback = null;
+
+function showConfirm(message, onYes) {
+  document.getElementById('mcConfirmMessage').textContent = message;
+  _confirmCallback = onYes;
+  document.getElementById('mcConfirmModal').style.display = 'block';
+}
+
+function closeConfirmModal() {
+  document.getElementById('mcConfirmModal').style.display = 'none';
+  _confirmCallback = null;
+}
+
+function _confirmYes() {
+  const cb = _confirmCallback;
+  closeConfirmModal();
+  if (cb) cb();
+}
+
     const csrfToken = document.querySelector('meta[name="csrf-token"]')
       .getAttribute('content');
 
@@ -4762,55 +4833,51 @@
       }
     }
 
-    function deleteFacility() {
-      const id = document.getElementById('editFacId')?.value?.trim();
+function deleteFacility() {
+  const id = document.getElementById('editFacId')?.value?.trim();
 
-      if (!id) {
-        alert('Cannot delete: Invalid or missing Facility ID.');
-        return;
-      }
+  if (!id) {
+    showAlert('Cannot delete: Invalid or missing Facility ID.');
+    return;
+  }
 
-      if (!confirm(
-          'Are you sure you want to delete this facility? Any assigned courses will be unlinked.'
-        )) {
-        return;
-      }
+  showConfirm('Are you sure you want to delete this facility? Any assigned courses will be unlinked.', function() {
+    const csrfToken = typeof getCsrfToken === 'function' ?
+      getCsrfToken() :
+      document.querySelector('meta[name="csrf-token"]')?.getAttribute(
+        'content');
 
-      const csrfToken = typeof getCsrfToken === 'function' ?
-        getCsrfToken() :
-        document.querySelector('meta[name="csrf-token"]')?.getAttribute(
-          'content');
-
-      fetch('/admin/facility/delete', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken,
-            'Accept': 'application/json'
-          },
-          body: JSON.stringify({
-            id: id
-          })
+    fetch('/admin/facility/delete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': csrfToken,
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          id: id
         })
-        .then(async response => {
-          const data = await response.json().catch(() => null);
+      })
+      .then(async response => {
+        const data = await response.json().catch(() => null);
 
-          if (response.ok && data && data.success) {
-            alert(data.message || 'Facility deleted successfully!');
-            closeFacilityModal();
+        if (response.ok && data && data.success) {
+          showAlert(data.message || 'Facility deleted successfully!');
+          closeFacilityModal();
 
-            localStorage.setItem('activeAdminTab', 'view-facilities');
-            location.reload();
-          } else {
-            alert((data && data.message) ? data.message :
-              'Failed to delete facility.');
-          }
-        })
-        .catch(error => {
-          console.error('Delete facility error:', error);
-          alert('An error occurred while deleting the facility.');
-        });
-    }
+          localStorage.setItem('activeAdminTab', 'view-facilities');
+          location.reload();
+        } else {
+          showAlert((data && data.message) ? data.message :
+            'Failed to delete facility.');
+        }
+      })
+      .catch(error => {
+        console.error('Delete facility error:', error);
+        showAlert('An error occurred while deleting the facility.');
+      });
+  });
+}
 
     function closeFacilityModal() {
       const modal = document.getElementById('facilityModal');
@@ -4968,67 +5035,67 @@
         });
     };
 
-    document.getElementById('facilityForm').onsubmit = function(e) {
-      e.preventDefault();
+document.getElementById('facilityForm').onsubmit = function(e) {
+  e.preventDefault();
 
-      const idVal = document.getElementById('editFacId')?.value?.trim();
-      const id = idVal ? idVal : null;
+  const idVal = document.getElementById('editFacId')?.value?.trim();
+  const id = idVal ? idVal : null;
 
-      const name = document.getElementById('editFacName').value.trim();
-      const address = document.getElementById('editFacAddress').value.trim();
+  const name = document.getElementById('editFacName').value.trim();
+  const address = document.getElementById('editFacAddress').value.trim();
 
-      const selectedCourseIds = Array.from(
-        document.querySelectorAll('.facility-course-cb:checked')
-      ).map(cb => cb.value);
+  const selectedCourseIds = Array.from(
+    document.querySelectorAll('.facility-course-cb:checked')
+  ).map(cb => cb.value);
 
-      if (!name || !address) {
-        alert('Please enter a facility name and address.');
-        return;
+  if (!name || !address) {
+    showAlert('Please enter a facility name and address.');
+    return;
+  }
+
+  const csrfToken = typeof getCsrfToken === 'function' ?
+    getCsrfToken() :
+    document.querySelector('meta[name="csrf-token"]')?.getAttribute(
+      'content');
+
+  fetch('/admin/facility/save', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': csrfToken,
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        id: id,
+        name: name,
+        address: address,
+        course_ids: selectedCourseIds
+      })
+    })
+    .then(async response => {
+      const data = await response.json().catch(() => null);
+
+      if (response.ok && data && data.success) {
+        showAlert(data.message || 'Facility details saved successfully!');
+        closeFacilityModal();
+
+        localStorage.setItem('activeAdminTab', 'view-facilities');
+        location.reload();
+      } else {
+        let errorMsg = 'Failed to save facility details.';
+        if (data && data.errors) {
+          errorMsg = Object.values(data.errors).flat().join('\n');
+        } else if (data && data.message) {
+          errorMsg = data.message;
+        }
+        showAlert(errorMsg);
       }
-
-      const csrfToken = typeof getCsrfToken === 'function' ?
-        getCsrfToken() :
-        document.querySelector('meta[name="csrf-token"]')?.getAttribute(
-          'content');
-
-      fetch('/admin/facility/save', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken,
-            'Accept': 'application/json'
-          },
-          body: JSON.stringify({
-            id: id,
-            name: name,
-            address: address,
-            course_ids: selectedCourseIds
-          })
-        })
-        .then(async response => {
-          const data = await response.json().catch(() => null);
-
-          if (response.ok && data && data.success) {
-            alert(data.message || 'Facility details saved successfully!');
-            closeFacilityModal();
-
-            localStorage.setItem('activeAdminTab', 'view-facilities');
-            location.reload();
-          } else {
-            let errorMsg = 'Failed to save facility details.';
-            if (data && data.errors) {
-              errorMsg = Object.values(data.errors).flat().join('\n');
-            } else if (data && data.message) {
-              errorMsg = data.message;
-            }
-            alert(errorMsg);
-          }
-        })
-        .catch(error => {
-          console.error('Facility save error:', error);
-          alert('An error occurred while saving the facility.');
-        });
-    };
+    })
+    .catch(error => {
+      console.error('Facility save error:', error);
+      showAlert('An error occurred while saving the facility.');
+    });
+};
 
     /* ========================================================== */
     /* ANNOUNCEMENT MODAL & ACTIONS HANDLERS                      */
