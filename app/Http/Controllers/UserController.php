@@ -157,17 +157,28 @@ class UserController extends Controller
             // ── Modules / Quizzes / Results ───────────────────────────────────────────
             if ($enrollment) {
                 $modules = \App\Models\Module::where('course_id', $enrollment->course_id)
-                            ->active()->ordered()->get();
-        
+                            ->active()
+                            ->ordered()
+                            ->get();
+
+                $unitNumbers = $modules->pluck('unit_number')->unique()->sort()->values();
+
+                $completedModuleIds = \App\Models\ModuleCompletion::where('user_id', $userId)
+                                        ->whereIn('module_id', $modules->pluck('id'))
+                                        ->pluck('module_id')
+                                        ->toArray();
+
                 $quizzes = \App\Models\Quiz::where('course_id', $enrollment->course_id)->get();
-        
+
                 $quizResults = \App\Models\QuizResult::where('user_id', $userId)
                                 ->whereIn('quiz_id', $quizzes->pluck('id'))
                                 ->get();
             } else {
-                $modules     = collect();
-                $quizzes     = collect();
-                $quizResults = collect();
+                $modules             = collect();
+                $unitNumbers         = collect();
+                $completedModuleIds  = [];
+                $quizzes             = collect();
+                $quizResults         = collect();
             }
         
             // ── Personal Analytics ────────────────────────────────────────────────────
@@ -188,19 +199,16 @@ class UserController extends Controller
                                 ->where('status', 'passed')
                                 ->count();
         
-            // 2. Weekly progress — quiz results per day this week (Mon–Sun)
-            $weeklyProgress = \App\Models\QuizResult::where('user_id', $userId)
-                                ->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])
-                                ->selectRaw('DAYOFWEEK(created_at) as dow, COUNT(*) as count')
-                                ->groupBy('dow')
-                                ->pluck('count', 'dow');
-        
-            // Build a Mon(2)–Sun(1) array, remap to index 0–6
+            // 2. Weekly progress — real daily progress percentages this week (Mon–Sun)
+            $dailyProgressThisWeek = \App\Models\DailyProgress::where('user_id', $userId)
+                ->whereBetween('date', [now()->startOfWeek()->toDateString(), now()->endOfWeek()->toDateString()])
+                ->pluck('progress_percent', 'date');
+
             $weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-            $dowMap   = [2, 3, 4, 5, 6, 7, 1]; // MySQL DAYOFWEEK: 1=Sun, 2=Mon...
             $weeklyData = [];
-            foreach ($dowMap as $dow) {
-                $weeklyData[] = $weeklyProgress[$dow] ?? 0;
+            foreach (range(0, 6) as $i) {
+                $date = now()->startOfWeek()->addDays($i)->toDateString();
+                $weeklyData[] = $dailyProgressThisWeek[$date] ?? 0;
             }
         
             // 3. Donut chart — completion breakdown across all enrollments
@@ -1888,33 +1896,37 @@ private function validateAnnouncement(Request $request): array
             ? $enrollments->firstWhere('course_id', $selectedId)
             : $enrollments->where('status', 'active')->first() ?? $enrollments->first();
     
-        if ($enrollment) {
-        $modules = \App\Models\Module::where('course_id', $enrollment->course_id)
-                    ->active()
-                    ->ordered()
-                    ->get();
-
-        $completedModuleIds = \App\Models\ModuleCompletion::where('user_id', $userId)
-                                ->whereIn('module_id', $modules->pluck('id'))
-                                ->pluck('module_id')
-                                ->toArray();
-
-        $quizzes = \App\Models\Quiz::where('course_id', $enrollment->course_id)->get();
-
-        $quizResults = \App\Models\QuizResult::where('user_id', $userId)
-                        ->whereIn('quiz_id', $quizzes->pluck('id'))
+            if ($enrollment) {
+            $modules = \App\Models\Module::where('course_id', $enrollment->course_id)
+                        ->active()
+                        ->ordered()
                         ->get();
-        } else {
-            $modules             = collect();
-            $completedModuleIds  = [];
-            $quizzes             = collect();
-            $quizResults         = collect();
-        }
+
+            $unitNumbers = $modules->pluck('unit_number')->unique()->sort()->values();
+
+            $completedModuleIds = \App\Models\ModuleCompletion::where('user_id', $userId)
+                                    ->whereIn('module_id', $modules->pluck('id'))
+                                    ->pluck('module_id')
+                                    ->toArray();
+
+            $quizzes = \App\Models\Quiz::where('course_id', $enrollment->course_id)->get();
+
+            $quizResults = \App\Models\QuizResult::where('user_id', $userId)
+                            ->whereIn('quiz_id', $quizzes->pluck('id'))
+                            ->get();
+            } else {
+                $modules             = collect();
+                $unitNumbers         = collect();
+                $completedModuleIds  = [];
+                $quizzes             = collect();
+                $quizResults         = collect();
+            }
     
         return view('student.modules', compact(
             'enrollments',
             'enrollment',
             'modules',
+            'unitNumbers',
             'completedModuleIds',
             'quizzes',
             'quizResults'

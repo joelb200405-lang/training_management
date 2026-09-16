@@ -669,18 +669,8 @@
   </script>
   <script>
     // ── Daily Progress Line Chart ─────────────────────────────────────────
-    // Placeholder: simulates daily progress ramp until attendance system is built.
-    // Once attendance is live, replace progressData with real server-side array.
-    const currentProgress = {{ $avgProgress }};
-    const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    const dayOrder = [1, 2, 3, 4, 5, 6, 0]; // Mon=1 ... Sun=0 (JS getDay)
-    const todayPos = dayOrder.indexOf(new Date().getDay());
-
-    const progressData = weekDays.map((_, i) => {
-      if (i > todayPos) return null;
-      if (currentProgress === 0) return 0;
-      return Math.round((currentProgress / (todayPos + 1)) * (i + 1));
-    });
+      const weekDays = @json($weekDays);
+      const progressData = @json($weeklyData);
 
     new Chart(document.getElementById('progressChart'), {
       type: 'line',

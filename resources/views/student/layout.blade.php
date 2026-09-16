@@ -375,49 +375,36 @@
             </a>
 
             {{-- ── INDEX DROPDOWN MENU ── --}}
-            <div id="sidebarIndexMenu" style="display: none;">
+            @if (isset($unitNumbers) && $unitNumbers->isNotEmpty())
+            <div id="sidebarIndexMenu">
                 <div class="sidebar-index-title">INDEX</div>
 
                 {{-- Introduction --}}
-                <div class="index-item" onclick="toggleSubMenu('introSub')">
+                <div class="index-item" onclick="toggleSubMenu('introSub'); if(typeof showIntroScreen === 'function') showIntroScreen();">
                     <span>Introduction</span>
                     <i class="fa fa-chevron-down" style="font-size:10px;"></i>
                 </div>
                 <div class="index-sub-menu show" id="introSub">
                     <span onclick="if(typeof showIntroScreen === 'function') showIntroScreen()" class="index-sub-link active">• Welcome & Course Overview</span>
-                    <span onclick="openPretestSidebarModal()" class="index-sub-link">• Pre-test</span>
                 </div>
 
-                {{-- Unit 1 --}}
-                <div class="index-item" onclick="toggleSubMenu('unit1Sub'); if(typeof showUnit1Screen === 'function') showUnit1Screen();">
-                    <span>Unit 1</span>
-                    <i class="fa fa-chevron-down" style="font-size:10px;"></i>
-                </div>
-                <div class="index-sub-menu" id="unit1Sub">
-                    <span onclick="if(typeof triggerDocView === 'function') triggerDocView('Module 1', 1);" class="index-sub-link">• Module 1</span>
-                    <span onclick="if(typeof triggerDocView === 'function') triggerDocView('Module 2', 1);" class="index-sub-link">• Module 2</span>
-                </div>
-
-                {{-- Unit 2 (FIXED CLICK EVENT TO SHOW UNIT 2 PAGE) --}}
-                <div class="index-item" onclick="toggleSubMenu('unit2Sub'); if(typeof showUnit2Screen === 'function') showUnit2Screen();">
-                    <span>Unit 2</span>
-                    <i class="fa fa-chevron-down" style="font-size:10px;"></i>
-                </div>
-                <div class="index-sub-menu" id="unit2Sub">
-                    <span onclick="if(typeof triggerDocView === 'function') triggerDocView('Module 1', 2);" class="index-sub-link">• Module 1</span>
-                    <span onclick="if(typeof triggerDocView === 'function') triggerDocView('Module 2', 2);" class="index-sub-link">• Module 2</span>
-                </div>
+                {{-- Real Units --}}
+                @foreach ($unitNumbers as $unitNum)
+                    <div class="index-item" onclick="toggleSubMenu('unit{{ $unitNum }}Sub'); if(typeof showUnitScreen === 'function') showUnitScreen({{ $unitNum }});">
+                        <span>Unit {{ $unitNum }}</span>
+                        <i class="fa fa-chevron-down" style="font-size:10px;"></i>
+                    </div>
+                    <div class="index-sub-menu" id="unit{{ $unitNum }}Sub"></div>
+                @endforeach
 
                 {{-- Completion --}}
                 <div class="index-item" onclick="toggleSubMenu('completionSub'); if(typeof showCompletionScreen === 'function') showCompletionScreen();">
                     <span>Completion</span>
                     <i class="fa fa-chevron-down" style="font-size:10px;"></i>
                 </div>
-                <div class="index-sub-menu" id="completionSub">
-                    <span onclick="openPosttestSidebarModal()" class="index-sub-link">• Post-test</span>
-                    <span onclick="openCertificateModal()" class="index-sub-link">• Certificate</span>
-                </div>
+                <div class="index-sub-menu" id="completionSub"></div>
             </div>
+            @endif
 
             <a href="{{ Route::has('student.announcements') ? route('student.announcements') : '/student/announcements' }}"
                 class="nav-item {{ request()->routeIs('student.announcements') ? 'active' : '' }}">
