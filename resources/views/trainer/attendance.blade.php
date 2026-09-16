@@ -88,11 +88,19 @@
     @endif
 
     <div class="tbl-card">
-      @if (!$course)
-        <div class="no-data">No course is assigned to you yet.</div>
-      @elseif ($students->isEmpty())
-        <div class="no-data">No active students enrolled in this course.</div>
-      @else
+        @if (!$course)
+          <div class="att-card">
+            <div class="no-data">No course is assigned to your account yet.</div>
+          </div>
+        @elseif (!$inSessionToday)
+          <div class="att-card">
+            <div class="no-data">This course isn't scheduled to meet today ({{ $course->schedule ?? 'no schedule set' }}). Attendance can't be taken today.</div>
+          </div>
+        @elseif ($enrollments->isEmpty())
+          <div class="att-card">
+            <div class="no-data">No active students enrolled in this course.</div>
+          </div>
+        @else
         <form method="POST" action="{{ route('trainer.attendance.store') }}">
           @csrf
           <table>

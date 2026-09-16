@@ -713,6 +713,35 @@ public function removeTrainer($courseId)
                 ->exists();
         }
 
+        // ── Weekly average progress (real data) ──────────────────────────────
+        $startOfWeek = now()->startOfWeek(\Carbon\Carbon::MONDAY);
+        $endOfWeek = now()->endOfWeek(\Carbon\Carbon::SUNDAY);
+
+        $weeklyProgressData = [];
+
+        if ($course) {
+            $enrollmentIds = \App\Models\Enrollment_tbl::where('course_id', $course->id)
+                ->where('status', 'active')
+                ->pluck('id');
+
+            for ($day = $startOfWeek->copy(); $day->lte($endOfWeek); $day->addDay()) {
+                $dateStr = $day->toDateString();
+
+                if ($day->gt(now())) {
+                    $weeklyProgressData[] = null;
+                    continue;
+                }
+
+                $avg = \App\Models\DailyProgress::whereIn('enrollment_id', $enrollmentIds)
+                    ->where('date', $dateStr)
+                    ->avg('progress_percent');
+
+                $weeklyProgressData[] = $avg !== null ? round($avg) : 0;
+            }
+        } else {
+            $weeklyProgressData = array_fill(0, 7, null);
+        }
+
         $totalTrainees = $course
         ? \App\Models\Enrollment_tbl::where('course_id', $course->id)
             ->where('status', 'active')
@@ -770,7 +799,8 @@ public function removeTrainer($courseId)
             'urgentAssessments',
             'lowPerforming',
             'progressDistribution',
-            'attendanceTakenToday'
+            'attendanceTakenToday',
+            'weeklyProgressData'
         ));
     }
 
@@ -1512,6 +1542,7 @@ public function trainerStudents()
             'today'    => now()->format('l, F j, Y'),
         ]);
     }
+    $inSessionToday = app(\App\Services\CourseScheduleService::class)->isInSessionToday($course);
 
     $today = now()->toDateString();
 
@@ -1538,6 +1569,7 @@ public function trainerStudents()
         'students' => $students,
         'existing' => $existing,
         'today'    => now()->format('l, F j, Y'),
+        'inSessionToday' => $inSessionToday,
     ]);
 }
 
@@ -1545,6 +1577,9 @@ public function storeAttendance(Request $request)
 {
     $trainer = Auth::user();
     $course = Course_tbl::where('trainer_id', $trainer->id)->firstOrFail();
+    if (!app(\App\Services\CourseScheduleService::class)->isInSessionToday($course)) {
+    return back()->with('error', 'This course is not scheduled to meet today.');
+    }
 
     $today = now()->toDateString();
     $absentIds = collect($request->input('absent', []));

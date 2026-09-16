@@ -616,6 +616,52 @@
     </div>
   </div>
 
+  {{-- ============================================================
+     MODAL: Custom Confirm Card (replaces native confirm())
+     ============================================================ --}}
+  <div id="mcConfirmModal" class="mc-modal">
+    <div class="mc-modal-content" style="max-width:380px;">
+      <div class="mc-modal-header">
+        <h3><i class="fa fa-triangle-exclamation"></i> Confirm</h3>
+        <span class="mc-close" onclick="closeConfirmModal()">&times;</span>
+      </div>
+      <div class="mc-modal-body" style="text-align:center; padding:24px;">
+        <p id="mcConfirmMessage" style="font-size:14px; color:#333; margin:0;"></p>
+      </div>
+      <div class="mc-modal-footer" style="justify-content:center; gap:10px;">
+        <button onclick="closeConfirmModal()"
+          style="background:#fff;color:#777;border:1px solid #ddd;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;">
+          Cancel
+        </button>
+        <button onclick="_confirmYes()"
+          style="background:#A32D2D;color:#fff;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;">
+          Yes, Remove
+        </button>
+      </div>
+    </div>
+  </div>
+
+  {{-- ============================================================
+     MODAL: Custom Alert Card (replaces native alert())
+     ============================================================ --}}
+<div id="mcAlertModal" class="mc-modal">
+  <div class="mc-modal-content" style="max-width:380px;">
+    <div class="mc-modal-header">
+      <h3><i class="fa fa-circle-info"></i> Notice</h3>
+      <span class="mc-close" onclick="closeAlertModal()">&times;</span>
+    </div>
+    <div class="mc-modal-body" style="text-align:center; padding:24px;">
+      <p id="mcAlertMessage" style="font-size:14px; color:#333; margin:0;"></p>
+    </div>
+    <div class="mc-modal-footer" style="justify-content:center;">
+      <button onclick="closeAlertModal()"
+        style="background:#025628;color:#fff;border:none;border-radius:8px;padding:9px 24px;font-size:13px;font-weight:700;cursor:pointer;">
+        OK
+      </button>
+    </div>
+  </div>
+</div>
+
 @endsection
 
 @section('scripts')
@@ -657,12 +703,12 @@
         })
         .then(r => r.json())
         .then(data => {
-          if (data.success) {
-            alert('Description updated!');
-            closeCourseDetails();
-          }
+      if (data.success) {
+        showAlert('Description updated!');
+        closeCourseDetails();
+      }
         })
-        .catch(() => alert('Something went wrong. Please try again.'));
+        .catch(() => showAlert('Something went wrong. Please try again.'));
     }
 
     function closeCourseDetails() {
@@ -677,6 +723,34 @@
       document.getElementById('contentModal').style.display = 'block';
       switchContentTab('modules');
       fetchCourseContent(courseId);
+    }
+
+    function showAlert(message) {
+      document.getElementById('mcAlertMessage').textContent = message;
+      document.getElementById('mcAlertModal').style.display = 'block';
+    }
+
+    let _confirmCallback = null;
+
+    function showConfirm(message, onYes) {
+      document.getElementById('mcConfirmMessage').textContent = message;
+      _confirmCallback = onYes;
+      document.getElementById('mcConfirmModal').style.display = 'block';
+    }
+
+    function closeConfirmModal() {
+      document.getElementById('mcConfirmModal').style.display = 'none';
+      _confirmCallback = null;
+    }
+
+    function _confirmYes() {
+      const cb = _confirmCallback;
+      closeConfirmModal();
+      if (cb) cb();
+    }
+
+    function closeAlertModal() {
+      document.getElementById('mcAlertModal').style.display = 'none';
     }
 
     function closeContentModal() {
@@ -715,7 +789,7 @@
           renderModules();
           renderQuizzes();
         })
-        .catch(() => alert('Hindi ma-load ang content. Subukan ulit.'));
+        .catch(() => showAlert('Hindi ma-load ang content. Subukan ulit.'));
     }
 
     // ── RENDER MODULES ─────────────────────────────────────────────────────────
@@ -818,11 +892,11 @@
         const unit = document.getElementById('newModuleUnit').value || 1;
         const file = document.getElementById('newModuleFile').files[0];
         if (!title) {
-          alert('Lagyan ng title ang module.');
+          showAlert('Lagyan ng title ang module.');
           return;
         }
         if (!file) {
-          alert('Kailangan mag-upload ng PDF file.');
+          showAlert('Kailangan mag-upload ng PDF file.');
           return;
         }
         const formData = new FormData();
@@ -851,32 +925,33 @@
         })
         .catch(err => {
           console.error('Add module error:', err);
-          alert('May error. Subukan ulit.');
+         showAlert('May error. Subukan ulit.');
         });
     }
 
     // ── DELETE MODULE ──────────────────────────────────────────────────────────
     function deleteModule(id) {
-      if (!confirm('I-remove ang module na ito?')) return;
-      fetch(`/trainer/module/${id}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken
-          },
-          body: JSON.stringify({
-            _method: 'DELETE'
+      showConfirm('I-remove ang module na ito?', function() {
+        fetch(`/trainer/module/${id}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-TOKEN': csrfToken
+            },
+            body: JSON.stringify({
+              _method: 'DELETE'
+            })
           })
-        })
-        .then(r => r.json())
-        .then(data => {
-          if (data.success) {
-            _contentModules = _contentModules.filter(m => m.id !== id);
-            renderModules();
-            populateQuizModuleDropdown();
-          }
-        })
-        .catch(() => alert('May error. Subukan ulit.'));
+          .then(r => r.json())
+          .then(data => {
+            if (data.success) {
+              _contentModules = _contentModules.filter(m => m.id !== id);
+              renderModules();
+              populateQuizModuleDropdown();
+            }
+          })
+          .catch(() => showAlert('May error. Subukan ulit.'));
+      });
     }
 
     // ── ADD QUIZ ───────────────────────────────────────────────────────────────
@@ -886,7 +961,7 @@
       const passing = parseInt(document.getElementById('newQuizPass').value);
       const time = parseInt(document.getElementById('newQuizTime').value);
       if (!title) {
-        alert('Lagyan ng title ang quiz.');
+        showAlert('Lagyan ng title ang quiz.');
         return;
       }
       fetch('/trainer/quiz', {
@@ -911,30 +986,31 @@
             renderQuizzes();
           }
         })
-        .catch(() => alert('May error. Subukan ulit.'));
+        .catch(() => showAlert('May error. Subukan ulit.'));
     }
 
     // ── DELETE QUIZ ────────────────────────────────────────────────────────────
     function deleteQuiz(id) {
-      if (!confirm('I-remove ang quiz na ito?')) return;
-      fetch(`/trainer/quiz/${id}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken
-          },
-          body: JSON.stringify({
-            _method: 'DELETE'
+      showConfirm('I-remove ang quiz na ito?', function() {
+        fetch(`/trainer/quiz/${id}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-TOKEN': csrfToken
+            },
+            body: JSON.stringify({
+              _method: 'DELETE'
+            })
           })
-        })
-        .then(r => r.json())
-        .then(data => {
-          if (data.success) {
-            _contentQuizzes = _contentQuizzes.filter(q => q.id !== id);
-            renderQuizzes();
-          }
-        })
-        .catch(() => alert('May error. Subukan ulit.'));
+          .then(r => r.json())
+          .then(data => {
+            if (data.success) {
+              _contentQuizzes = _contentQuizzes.filter(q => q.id !== id);
+              renderQuizzes();
+            }
+          })
+          .catch(() => showAlert('May error. Subukan ulit.'));
+      });
     }
 
     // ── QUIZ QUESTIONS ─────────────────────────────────────────────────────────
@@ -954,7 +1030,7 @@
         })
         .then(r => r.json())
         .then(data => renderQuizQuestions(quizId, data.questions || []))
-        .catch(() => alert('Hindi ma-load ang questions.'));
+        .catch(() => showAlert('Hindi ma-load ang questions.'));
     }
 
     function renderQuizQuestions(quizId, questions) {
@@ -990,7 +1066,7 @@
       const d = document.getElementById(`qd-${quizId}`).value.trim();
       const ans = document.getElementById(`qans-${quizId}`).value;
       if (!question || !a || !b || !c || !d) {
-        alert('Punan ang lahat ng fields.');
+        showAlert('Punan ang lahat ng fields.');
         return;
       }
       fetch('/trainer/quiz-question', {
@@ -1017,26 +1093,27 @@
             loadQuizQuestions(quizId);
           }
         })
-        .catch(() => alert('May error. Subukan ulit.'));
+        .catch(() => showAlert('May error. Subukan ulit.'));
     }
 
     function deleteQuestion(id, quizId) {
-      if (!confirm('I-remove ang question na ito?')) return;
-      fetch(`/trainer/quiz-question/${id}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken
-          },
-          body: JSON.stringify({
-            _method: 'DELETE'
+      showConfirm('I-remove ang question na ito?', function() {
+        fetch(`/trainer/quiz-question/${id}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-TOKEN': csrfToken
+            },
+            body: JSON.stringify({
+              _method: 'DELETE'
+            })
           })
-        })
-        .then(r => r.json())
-        .then(data => {
-          if (data.success) loadQuizQuestions(quizId);
-        })
-        .catch(() => alert('May error. Subukan ulit.'));
+          .then(r => r.json())
+          .then(data => {
+            if (data.success) loadQuizQuestions(quizId);
+          })
+          .catch(() => showAlert('May error. Subukan ulit.'));
+      });
     }
 
     // ── HELPERS ────────────────────────────────────────────────────────────────
