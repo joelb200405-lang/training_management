@@ -25,6 +25,12 @@
     src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
   </script>
   <style>
+
+    @keyframes mcToastIn {
+  from { transform: translateX(30px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+  }
+
     /* ========================================================== */
     /* GENERAL & COMPONENT STYLES                                 */
     /* ========================================================== */
@@ -1074,6 +1080,9 @@
   </div>
 </div>
 
+<!-- Toast Notification Container -->
+<div id="toastContainer" style="position:fixed; top:20px; right:20px; z-index:5000; display:flex; flex-direction:column; gap:10px; max-width:360px;"></div>
+
 <!-- Custom Confirm Modal (replaces native confirm()) -->
 <div id="mcConfirmModal" class="modal" style="display:none;">
   <div class="modal-content" style="max-width:380px;">
@@ -1176,6 +1185,11 @@
         onclick="showView('announcements'); setActive(this); return false;">
         <i class="fa fa-bell nav-icon"></i>
         <span>Announcements</span>
+      </a>
+
+      <a href="/admin/landingpage" class="nav-item">
+        <i class="fa fa-layer-group nav-icon"></i>
+        <span>Landing Page</span>
       </a>
 
       <a href="?view=analytics"
@@ -3960,6 +3974,37 @@ function showConfirm(message, onYes) {
 function closeConfirmModal() {
   document.getElementById('mcConfirmModal').style.display = 'none';
   _confirmCallback = null;
+}
+
+function showToast(message, type = 'info') {
+  const styles = {
+    success: { bg: '#e8f5e9', border: '#025628', color: '#025628', icon: 'fa-circle-check' },
+    error:   { bg: '#FCEBEB', border: '#A32D2D', color: '#A32D2D', icon: 'fa-circle-xmark' },
+    warning: { bg: '#FFF8E1', border: '#854F0B', color: '#854F0B', icon: 'fa-triangle-exclamation' },
+    info:    { bg: '#E3F2FD', border: '#0d47a1', color: '#0d47a1', icon: 'fa-circle-info' }
+  };
+  const s = styles[type] || styles.info;
+
+  const toast = document.createElement('div');
+  toast.style.cssText = `
+    background:${s.bg}; border:1px solid ${s.border}; color:${s.color};
+    padding:12px 16px; border-radius:8px; font-size:13px; font-weight:600;
+    display:flex; align-items:center; gap:10px; box-shadow:0 4px 12px rgba(0,0,0,0.1);
+    animation: mcToastIn 0.25s ease;
+  `;
+  toast.innerHTML = `
+    <i class="fa-solid ${s.icon}"></i>
+    <span style="flex:1;">${message}</span>
+    <span onclick="this.parentElement.remove()" style="cursor:pointer; font-weight:700; opacity:0.6;">&times;</span>
+  `;
+
+  document.getElementById('toastContainer').appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.transition = 'opacity 0.3s ease';
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
 }
 
 function _confirmYes() {
@@ -6756,26 +6801,26 @@ document.getElementById('facilityForm').onsubmit = function(e) {
         )`);
             }
 
-            alert(data.message || 'User profile updated successfully!');
-            if (typeof closeUserModal === 'function') closeUserModal();
-          } else {
-            alert(data?.message || 'An error occurred while updating.');
-          }
-        })
-        .catch(err => {
-          console.error("Update error:", err);
-          alert(err.message ||
-            'An error occurred while updating. Please try again.');
-        })
-        .finally(() => {
-          if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.style.opacity = '1';
-            submitBtn.style.cursor = 'pointer';
-            submitBtn.innerHTML = originalSubmitHtml;
-          }
-        });
-    };
+        showToast(data.message || 'User profile updated successfully!', 'success');
+                if (typeof closeUserModal === 'function') closeUserModal();
+              } else {
+                showToast(data?.message || 'An error occurred while updating.', 'error');
+              }
+            })
+            .catch(err => {
+              console.error("Update error:", err);
+              showToast(err.message ||
+                'An error occurred while updating. Please try again.', 'error');
+            })
+            .finally(() => {
+              if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
+                submitBtn.style.cursor = 'pointer';
+                submitBtn.innerHTML = originalSubmitHtml;
+              }
+            });
+        };
 
     // 2. DELETE USER FUNCTION
     function deleteUser() {
