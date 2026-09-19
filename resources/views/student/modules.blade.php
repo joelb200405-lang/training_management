@@ -496,6 +496,37 @@
                     No modules available yet for this course.
                 </div>
             @endforelse
+
+            <hr class="content-hr">
+
+            <div class="section-label">Quizzes</div>
+
+            @forelse ($quizzes as $quiz)
+                @php
+                    $result = $quizResults->firstWhere('quiz_id', $quiz->id);
+                @endphp
+                <div class="pretest-action-bar">
+                    <div>
+                        <div style="font-weight:700;font-size:14px;color:#2d3748;">{{ $quiz->title }}</div>
+                        <div style="font-size:12px;color:#718096;margin-top:2px;">
+                            {{ $quiz->time_limit }} mins &nbsp;·&nbsp; {{ $quiz->passing_score }}% to pass
+                        </div>
+                    </div>
+                    @if ($result)
+                        <span class="pretest-score" style="color: {{ $result->status === 'passed' ? '#276749' : '#c53030' }};">
+                            {{ ucfirst($result->status) }} · {{ $result->percentage }}%
+                        </span>
+                    @else
+                        <button onclick="openQuiz({{ $quiz->id }}, '{{ addslashes($quiz->title) }}')" class="pretest-btn">
+                            Take Quiz
+                        </button>
+                    @endif
+                </div>
+            @empty
+                <div class="no-data" style="text-align:center;color:#a0aec0;padding:24px 0;">
+                    No quizzes available yet for this course.
+                </div>
+            @endforelse
         </div>
 
     @else
