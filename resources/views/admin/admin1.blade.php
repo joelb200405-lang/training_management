@@ -411,6 +411,105 @@
     }
 
     /* ========================================================== */
+    /* ANNOUNCEMENT MODAL - RESPONSIVE HEIGHT & VISIBLE FOOTER   */
+    /* ========================================================== */
+
+    #announcementModal {
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 16px !important;
+      box-sizing: border-box !important;
+      overflow-y: auto !important;
+      z-index: 1000 !important;
+    }
+
+    #announcementModal .modal-content.card {
+      max-width: 520px !important;
+      width: 95% !important;
+      max-height: 90vh !important;
+
+      display: flex !important;
+      flex-direction: column !important;
+
+      margin: auto !important;
+      overflow: hidden !important;
+      box-sizing: border-box !important;
+    }
+
+    /* Form becomes the scrollable area */
+    #announcementModal #announcementForm {
+      display: flex !important;
+      flex-direction: column !important;
+
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+
+      max-height: calc(90vh - 80px) !important;
+      min-height: 0 !important;
+
+      padding: 20px !important;
+      box-sizing: border-box !important;
+    }
+
+    /* Keep action buttons visible while scrolling */
+    #announcementModal #announcementForm .modal-footer {
+      position: sticky !important;
+      bottom: 0 !important;
+
+      background: #ffffff !important;
+      z-index: 5 !important;
+
+      flex-shrink: 0 !important;
+
+      margin-top: 8px !important;
+      padding: 14px 0 4px 0 !important;
+
+      border-top: 1px solid #eee !important;
+    }
+
+    /* Make sure buttons remain visible */
+    #announcementModal .modal-footer .btn-cancel,
+    #announcementModal .modal-footer .btn-save-main {
+      flex-shrink: 0 !important;
+    }
+
+    /* Smaller screens */
+    @media (max-height: 700px) {
+      #announcementModal .modal-content.card {
+        max-height: 94vh !important;
+      }
+
+      #announcementModal #announcementForm {
+        max-height: calc(94vh - 70px) !important;
+      }
+    }
+
+    /* Very small screens */
+    @media (max-width: 600px) {
+      #announcementModal {
+        padding: 10px !important;
+      }
+
+      #announcementModal .modal-content.card {
+        width: 100% !important;
+        max-height: 94vh !important;
+      }
+
+      #announcementModal #announcementForm {
+        padding: 16px !important;
+      }
+
+      #announcementModal .form-row {
+        flex-direction: column !important;
+        align-items: stretch !important;
+      }
+
+      #announcementModal .status-group {
+        width: 100% !important;
+      }
+    }
+
+    /* ========================================================== */
     /* CERTIFICATES VIEW & TABLE STYLES                           */
     /* ========================================================== */
     .stats-grid {
