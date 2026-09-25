@@ -1114,6 +1114,14 @@
         margin: 10mm;
       }
     }
+
+  .notification-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+  }
+
   </style>
 </head>
 
@@ -1136,9 +1144,129 @@
       </a>
     </div>
 
-    <div class="topbar-right">
-      <button class="avatar-btn" id="avatarBtn"
-        aria-label="Open profile menu">AD</button>
+<div class="topbar-right">
+
+  <!-- Notification Bell -->
+  <div class="notification-wrapper" id="notificationWrapper">
+
+    <button
+      type="button"
+      class="notification-btn"
+      id="notificationBtn"
+      aria-label="Open notifications"
+      aria-expanded="false">
+
+      <i class="fa-solid fa-bell"></i>
+
+      @php
+        $notificationAnnouncements = $announcements->getCollection()
+          ->where('is_active', 1)
+          ->take(5);
+
+        $notificationCount = $notificationAnnouncements->count();
+      @endphp
+
+      @if($notificationCount > 0)
+        <span class="notification-badge">
+          {{ $notificationCount > 9 ? '9+' : $notificationCount }}
+        </span>
+      @endif
+
+    </button>
+
+    <!-- Notification Dropdown -->
+    <div class="notification-dropdown" id="notificationDropdown">
+
+      <div class="notification-header">
+        <div>
+          <h3>Notifications</h3>
+          <span>
+            {{ $notificationCount }} active announcement{{ $notificationCount != 1 ? 's' : '' }}
+          </span>
+        </div>
+
+        <i class="fa-solid fa-bell notification-header-icon"></i>
+      </div>
+
+      <div class="notification-divider"></div>
+
+      <div class="notification-list">
+
+        @forelse($notificationAnnouncements as $announcement)
+
+          <div class="notification-item">
+
+            <div class="notification-item-icon
+              notification-type-{{ strtolower($announcement->type) }}">
+
+              @if(strtolower($announcement->type) === 'urgent')
+                <i class="fa-solid fa-triangle-exclamation"></i>
+              @elseif(strtolower($announcement->type) === 'reminder')
+                <i class="fa-solid fa-clock"></i>
+              @else
+                <i class="fa-solid fa-bell"></i>
+              @endif
+
+            </div>
+
+            <div class="notification-item-content">
+
+              <div class="notification-item-title">
+                {{ $announcement->title }}
+              </div>
+
+              <div class="notification-item-message">
+                {{ \Illuminate\Support\Str::limit($announcement->message, 75) }}
+              </div>
+
+              <div class="notification-item-meta">
+                <span>
+                  {{ ucfirst($announcement->type) }}
+                </span>
+
+                <span>•</span>
+
+                <span>
+                  {{ $announcement->created_at?->diffForHumans() }}
+                </span>
+              </div>
+
+            </div>
+
+          </div>
+
+        @empty
+
+          <div class="notification-empty">
+            <div class="notification-empty-icon">
+              <i class="fa-regular fa-bell-slash"></i>
+            </div>
+
+            <strong>No notifications</strong>
+
+            <span>
+              You're all caught up.
+            </span>
+          </div>
+
+        @endforelse
+
+      </div>
+
+      <div class="notification-footer">
+        <a href="{{ route('admin1') }}?view=announcements">
+          View All Announcements
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Admin Profile -->
+  <button class="avatar-btn" id="avatarBtn"
+    aria-label="Open profile menu">AD</button>
 
       <div class="dropdown" id="dropdown">
         <div class="dropdown-header">
@@ -3519,6 +3647,347 @@
       #addTrainerModal .input-field {
         margin-bottom: 12px !important;
       }
+
+      /* ==========================================================
+   ADMIN NOTIFICATION BELL
+   ========================================================== */
+
+.notification-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.notification-btn {
+  position: relative;
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  background: transparent;
+
+  color: #ffffff;
+  font-size: 19px;
+
+  border-radius: 50%;
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.notification-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
+}
+
+.notification-btn:active {
+  transform: scale(0.96);
+}
+
+/* Notification count */
+.notification-badge {
+  position: absolute;
+
+  top: 1px;
+  right: 0px;
+
+  min-width: 17px;
+  height: 17px;
+
+  padding: 0 4px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 20px;
+
+  background: #f4d900;
+  color: #025628;
+
+  border: 2px solid #025628;
+
+  font-size: 9px;
+  font-weight: 800;
+
+  line-height: 1;
+}
+
+/* ==========================================================
+   NOTIFICATION DROPDOWN
+   ========================================================== */
+
+.notification-dropdown {
+  position: absolute;
+
+  top: calc(100% + 12px);
+  right: 0;
+
+  width: 360px;
+  max-width: calc(100vw - 24px);
+
+  background: #ffffff;
+
+  border-radius: 14px;
+
+  box-shadow:
+    0 14px 35px rgba(0, 0, 0, 0.18),
+    0 3px 10px rgba(0, 0, 0, 0.08);
+
+  border: 1px solid #e7e7e7;
+
+  overflow: hidden;
+
+  opacity: 0;
+  visibility: hidden;
+
+  transform: translateY(-8px);
+
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    visibility 0.2s ease;
+
+  z-index: 2000;
+}
+
+.notification-dropdown.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* Header */
+
+.notification-header {
+  padding: 17px 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.notification-header h3 {
+  margin: 0;
+
+  font-size: 16px;
+  font-weight: 800;
+
+  color: #025628;
+}
+
+.notification-header span {
+  display: block;
+
+  margin-top: 3px;
+
+  font-size: 11px;
+  color: #777;
+}
+
+.notification-header-icon {
+  font-size: 18px;
+  color: #025628;
+}
+
+.notification-divider {
+  height: 1px;
+  background: #eeeeee;
+}
+
+/* ==========================================================
+   NOTIFICATION ITEMS
+   ========================================================== */
+
+.notification-list {
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+.notification-item {
+  display: flex;
+  gap: 12px;
+
+  padding: 14px 16px;
+
+  border-bottom: 1px solid #f0f0f0;
+
+  transition: background 0.2s ease;
+}
+
+.notification-item:hover {
+  background: #f8faf8;
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+}
+
+.notification-item-icon {
+  flex: 0 0 36px;
+
+  width: 36px;
+  height: 36px;
+
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #e9f6ee;
+  color: #025628;
+
+  font-size: 14px;
+}
+
+.notification-type-urgent {
+  background: #fff0f0;
+  color: #c62828;
+}
+
+.notification-type-reminder {
+  background: #fff8df;
+  color: #8a6d00;
+}
+
+.notification-item-content {
+  min-width: 0;
+  flex: 1;
+}
+
+.notification-item-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #222;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.notification-item-message {
+  margin-top: 3px;
+
+  font-size: 12px;
+  line-height: 1.45;
+
+  color: #666;
+}
+
+.notification-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  margin-top: 7px;
+
+  font-size: 10px;
+  color: #8a8a8a;
+}
+
+/* ==========================================================
+   EMPTY STATE
+   ========================================================== */
+
+.notification-empty {
+  padding: 35px 20px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  text-align: center;
+}
+
+.notification-empty-icon {
+  width: 48px;
+  height: 48px;
+
+  margin-bottom: 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #f1f5f2;
+  color: #777;
+
+  font-size: 18px;
+}
+
+.notification-empty strong {
+  font-size: 13px;
+  color: #333;
+}
+
+.notification-empty span {
+  margin-top: 4px;
+
+  font-size: 11px;
+  color: #888;
+}
+
+/* ==========================================================
+   FOOTER
+   ========================================================== */
+
+.notification-footer {
+  padding: 12px 16px;
+
+  border-top: 1px solid #eeeeee;
+
+  background: #fafafa;
+
+  text-align: center;
+}
+
+.notification-footer a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  color: #025628;
+
+  font-size: 12px;
+  font-weight: 800;
+
+  text-decoration: none;
+}
+
+.notification-footer a:hover {
+  text-decoration: underline;
+}
+
+.notification-footer i {
+  font-size: 10px;
+}
+
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
+
+@media (max-width: 600px) {
+
+  .notification-dropdown {
+    position: fixed;
+
+    top: 70px;
+    right: 10px;
+    left: 10px;
+
+    width: auto;
+    max-width: none;
+  }
+
+}
+
     </style>
 
     <div class="modal-content card">
@@ -4124,6 +4593,8 @@ function _confirmYes() {
     const overlay = document.getElementById('overlay');
     const avatarBtn = document.getElementById('avatarBtn');
     const dropdown = document.getElementById('dropdown');
+    const notificationBtn = document.getElementById('notificationBtn');
+    const notificationDropdown = document.getElementById('notificationDropdown');
 
     hamburger.addEventListener('click', function() {
       sidebar.classList.toggle('sidebar-open');
@@ -4137,13 +4608,37 @@ function _confirmYes() {
 
     avatarBtn.addEventListener('click', function(e) {
       e.stopPropagation();
+
       dropdown.classList.toggle('open');
+
+      // Close notification dropdown if it is open
+      notificationDropdown.classList.remove('open');
+      notificationBtn.setAttribute('aria-expanded', 'false');
     });
 
     document.addEventListener('click', function(e) {
+
       if (!e.target.closest('.topbar-right')) {
         dropdown.classList.remove('open');
+        notificationDropdown.classList.remove('open');
+
+        notificationBtn.setAttribute('aria-expanded', 'false');
       }
+
+    });
+
+    notificationBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+
+      notificationDropdown.classList.toggle('open');
+
+      notificationBtn.setAttribute(
+        'aria-expanded',
+        notificationDropdown.classList.contains('open') ? 'true' : 'false'
+      );
+
+      // Close profile dropdown if it is open
+      dropdown.classList.remove('open');
     });
 
     window.traineeCourseLabels = @json($traineeCourseLabels);
