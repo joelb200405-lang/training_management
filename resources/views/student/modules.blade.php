@@ -439,94 +439,96 @@
                 </div>
             </div>
 
-            @if ($enrollment->course->description)
-                <p class="welcome-desc">{{ $enrollment->course->description }}</p>
-            @endif
+            <div id="intro-section">
+                @if ($enrollment->course->description)
+                    <p class="welcome-desc">{{ $enrollment->course->description }}</p>
+                @endif
 
-            @if ($enrollment->course->objectives)
-                <div class="section-label">Objectives</div>
-                <p class="welcome-desc">{{ $enrollment->course->objectives }}</p>
-            @endif
-
-            <hr class="content-hr">
-
-            <div class="section-label">Modules</div>
+                @if ($enrollment->course->objectives)
+                    <div class="section-label">Objectives</div>
+                    <p class="welcome-desc">{{ $enrollment->course->objectives }}</p>
+                @endif
+            </div>
 
             @php
                 $groupedModules = $modules->groupBy('unit_number');
             @endphp
 
-            @forelse ($groupedModules as $unitNum => $unitModules)
-                <div style="font-weight:700;font-size:15px;color:#025628;margin:16px 0 8px;">
-                    Unit {{ $unitNum }}
-                </div>
-
-                @foreach ($unitModules as $i => $module)
-                    @php
-                        $isDone = in_array($module->id, $completedModuleIds);
-                    @endphp
-                    <div class="module-action-row">
-                        <div>
-                            <div class="module-action-title">{{ $i + 1 }}. {{ $module->title }}</div>
-                            @if ($module->description)
-                                <div style="font-size:12px;color:#718096;margin-top:2px;">{{ $module->description }}</div>
-                            @endif
-                        </div>
-                        <div class="module-buttons-group">
-                            @if ($module->file_path)
-                                <a href="{{ asset('storage/' . $module->file_path) }}" target="_blank" class="btn-module-view">
-                                    View
-                                </a>
-                            @else
-                                <span style="font-size:12px;color:#a0aec0;">No file</span>
-                            @endif
-
-                            @if ($isDone)
-                                <span class="btn-module-done completed">✓ Done</span>
-                            @else
-                                <button onclick="markDone({{ $module->id }}, this)" class="btn-module-done">
-                                    Mark as Done
-                                </button>
-                            @endif
-                        </div>
+            @foreach ($groupedModules as $unitNum => $unitModules)
+                <div id="unit-{{ $unitNum }}-section" style="display:none;">
+                    <div style="font-weight:700;font-size:15px;color:#025628;margin:16px 0 8px;">
+                        Unit {{ $unitNum }}
                     </div>
-                @endforeach
-            @empty
+
+                    @foreach ($unitModules as $i => $module)
+                        @php
+                            $isDone = in_array($module->id, $completedModuleIds);
+                        @endphp
+                        <div class="module-action-row">
+                            <div>
+                                <div class="module-action-title">{{ $i + 1 }}. {{ $module->title }}</div>
+                                @if ($module->description)
+                                    <div style="font-size:12px;color:#718096;margin-top:2px;">{{ $module->description }}</div>
+                                @endif
+                            </div>
+                            <div class="module-buttons-group">
+                                @if ($module->file_path)
+                                    <a href="{{ asset('storage/' . $module->file_path) }}" target="_blank" class="btn-module-view">
+                                        View
+                                    </a>
+                                @else
+                                    <span style="font-size:12px;color:#a0aec0;">No file</span>
+                                @endif
+
+                                @if ($isDone)
+                                    <span class="btn-module-done completed">✓ Done</span>
+                                @else
+                                    <button onclick="markDone({{ $module->id }}, this)" class="btn-module-done">
+                                        Mark as Done
+                                    </button>
+                                @endif
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @endforeach
+
+            @if ($modules->isEmpty())
                 <div class="no-data" style="text-align:center;color:#a0aec0;padding:24px 0;">
                     No modules available yet for this course.
                 </div>
-            @endforelse
+            @endif
 
-            <hr class="content-hr">
+            <div id="completion-section" style="display:none;">
+                <div class="section-label">Quizzes</div>
 
-            <div class="section-label">Quizzes</div>
-
-            @forelse ($quizzes as $quiz)
-                @php
-                    $result = $quizResults->firstWhere('quiz_id', $quiz->id);
-                @endphp
-                <div class="pretest-action-bar">
-                    <div>
-                        <div style="font-weight:700;font-size:14px;color:#2d3748;">{{ $quiz->title }}</div>
-                        <div style="font-size:12px;color:#718096;margin-top:2px;">
-                            {{ $quiz->time_limit }} mins &nbsp;·&nbsp; {{ $quiz->passing_score }}% to pass
+                @forelse ($quizzes as $quiz)
+                    @php
+                        $result = $quizResults->firstWhere('quiz_id', $quiz->id);
+                    @endphp
+                    <div class="pretest-action-bar">
+                        <div>
+                            <div style="font-weight:700;font-size:14px;color:#2d3748;">{{ $quiz->title }}</div>
+                            <div style="font-size:12px;color:#718096;margin-top:2px;">
+                                {{ $quiz->time_limit }} mins &nbsp;·&nbsp; {{ $quiz->passing_score }}% to pass
+                            </div>
                         </div>
+                        @if ($result)
+                            <span class="pretest-score" style="color: {{ $result->status === 'passed' ? '#276749' : '#c53030' }};">
+                                {{ ucfirst($result->status) }} · {{ $result->percentage }}%
+                            </span>
+                        @else
+                            <button onclick="openQuiz({{ $quiz->id }}, '{{ addslashes($quiz->title) }}')" class="pretest-btn">
+                                Take Quiz
+                            </button>
+                        @endif
                     </div>
-                    @if ($result)
-                        <span class="pretest-score" style="color: {{ $result->status === 'passed' ? '#276749' : '#c53030' }};">
-                            {{ ucfirst($result->status) }} · {{ $result->percentage }}%
-                        </span>
-                    @else
-                        <button onclick="openQuiz({{ $quiz->id }}, '{{ addslashes($quiz->title) }}')" class="pretest-btn">
-                            Take Quiz
-                        </button>
-                    @endif
-                </div>
-            @empty
-                <div class="no-data" style="text-align:center;color:#a0aec0;padding:24px 0;">
-                    No quizzes available yet for this course.
-                </div>
-            @endforelse
+                @empty
+                    <div class="no-data" style="text-align:center;color:#a0aec0;padding:24px 0;">
+                        No quizzes available yet for this course.
+                    </div>
+                @endforelse
+            </div>
         </div>
 
     @else
@@ -594,6 +596,28 @@
 
     @section('scripts')
     <script>
+
+        function showIntroScreen() {
+    document.getElementById('intro-section').style.display = 'block';
+    document.querySelectorAll('[id^="unit-"][id$="-section"]').forEach(el => el.style.display = 'none');
+    document.getElementById('completion-section').style.display = 'none';
+    }
+
+    function showUnitScreen(unitNum) {
+        document.getElementById('intro-section').style.display = 'none';
+        document.querySelectorAll('[id^="unit-"][id$="-section"]').forEach(el => el.style.display = 'none');
+        document.getElementById('completion-section').style.display = 'none';
+
+        const target = document.getElementById(`unit-${unitNum}-section`);
+        if (target) target.style.display = 'block';
+    }
+
+    function showCompletionScreen() {
+        document.getElementById('intro-section').style.display = 'none';
+        document.querySelectorAll('[id^="unit-"][id$="-section"]').forEach(el => el.style.display = 'none');
+        document.getElementById('completion-section').style.display = 'block';
+    }
+
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
         let _currentQuizId = null;
 
