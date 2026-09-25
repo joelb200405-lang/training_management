@@ -59,10 +59,16 @@
         <i class="fas fa-award"></i>
         Dasmariñas City Livelihood Program
       </div>
-      <h1>Start Your <span>Training</span> Journey</h1>
-      <p>Access free government-accredited livelihood training programs. Build
-        your skills, grow your income, and transform your future with Dasmariñas
-        City.</p>
+
+      @php
+        $heroTitle = $heroSection->title ?? 'Start Your Training Journey';
+        $heroWords = explode(' ', $heroTitle);
+        $heroLastWord = array_pop($heroWords);
+        $heroRest = implode(' ', $heroWords);
+      @endphp
+      <h1>{{ $heroRest }} <span>{{ $heroLastWord }}</span></h1>
+      <p>{{ $heroSection->body ?? '' }}</p>
+
       <div class="hero-actions">
         <a href="{{ route('SignupPage') }}" class="btn-primary">
           Get Started <i class="fas fa-arrow-right"></i>
@@ -94,32 +100,16 @@
   <section id="about" class="about-section">
     {{-- Our Story --}}
     <div class="about-story">
+
       <div>
-        <h2>Our Story</h2>
-        <p>
-          Our livelihood training platform was created by a group of passionate
-          students who wanted to make a difference in our community. We
-          recognized that many residents were unaware of the programs available
-          to them or faced challenges in enrolling, so we designed a system that
-          makes these opportunities more accessible. Through a public catalog of
-          courses, streamlined online registration, secure access to modular
-          learning materials, and digital certificates upon completion, we aim
-          to empower individuals to learn new skills and improve their
-          livelihood.
-        </p>
-        <p>
-          At the same time, the platform provides local government staff with
-          centralized reporting tools to monitor enrollment, interest, and
-          completion rates across barangays. This initiative reflects our
-          commitment to using technology for community growth, ensuring that
-          every resident has the chance to discover, enroll, and succeed in
-          programs that can transform their future.
-        </p>
+        <h2>{{ $aboutSection->title ?? 'Our Story' }}</h2>
+        <p>{!! nl2br(e($aboutSection->body ?? '')) !!}</p>
       </div>
 
       <div>
-        <img src="{{ asset('images/ledipostory.png') }}" alt="About Us">
+        <img src="{{ $aboutSection->image_path ? asset($aboutSection->image_path) : asset('images/ledipostory.png') }}" alt="About Us">
       </div>
+
     </div>
 
     {{-- CAROUSEL --}}
@@ -128,66 +118,34 @@
 
       {{-- INDICATORS --}}
       <div class="carousel-indicators">
-        <button type="button" data-bs-target="#communityCarousel"
-          data-bs-slide-to="0" class="active"></button>
-        <button type="button" data-bs-target="#communityCarousel"
-          data-bs-slide-to="1"></button>
-        <button type="button" data-bs-target="#communityCarousel"
-          data-bs-slide-to="2"></button>
-        <button type="button" data-bs-target="#communityCarousel"
-          data-bs-slide-to="3"></button>
-        <button type="button" data-bs-target="#communityCarousel"
-          data-bs-slide-to="4"></button>
+        @foreach ($carouselSlides as $index => $slide)
+          <button type="button" data-bs-target="#communityCarousel"
+            data-bs-slide-to="{{ $index }}"
+            class="{{ $index === 0 ? 'active' : '' }}"></button>
+        @endforeach
       </div>
 
       {{-- SLIDES --}}
       <div class="carousel-inner"
         style="border-radius: 12px; overflow: hidden;">
-        <div class="carousel-item active">
-          <img src="{{ asset('images/1.jpg') }}" class="d-block w-100"
-            alt="Community Photo 1" style="height: 450px; object-fit: cover;">
-          <div class="carousel-caption d-none d-md-block"
-            style="background: rgba(0,0,0,0.4); border-radius: 8px; padding: 10px 20px;">
-            <h5>Community Event 1</h5>
-            <p>Dasmariñas City Training Center</p>
+        @forelse ($carouselSlides as $index => $slide)
+          <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
+            <img src="{{ asset($slide->image_path) }}" class="d-block w-100"
+              alt="{{ $slide->title ?: 'Community Photo' }}"
+              style="height: 450px; object-fit: cover;">
+            <div class="carousel-caption d-none d-md-block"
+              style="background: rgba(0,0,0,0.4); border-radius: 8px; padding: 10px 20px;">
+              <h5>{{ $slide->title }}</h5>
+              <p>{{ $slide->caption }}</p>
+            </div>
           </div>
-        </div>
-        <div class="carousel-item">
-          <img src="{{ asset('images/2.jpg') }}" class="d-block w-100"
-            alt="Community Photo 2" style="height: 450px; object-fit: cover;">
-          <div class="carousel-caption d-none d-md-block"
-            style="background: rgba(0,0,0,0.4); border-radius: 8px; padding: 10px 20px;">
-            <h5>Community Event 2</h5>
-            <p>Dasmariñas City Training Center</p>
+        @empty
+          <div class="carousel-item active">
+            <div style="height: 450px; display:flex; align-items:center; justify-content:center; background:#eee; color:#999;">
+              No carousel slides yet.
+            </div>
           </div>
-        </div>
-        <div class="carousel-item">
-          <img src="{{ asset('images/3.jpg') }}" class="d-block w-100"
-            alt="Community Photo 3" style="height: 450px; object-fit: cover;">
-          <div class="carousel-caption d-none d-md-block"
-            style="background: rgba(0,0,0,0.4); border-radius: 8px; padding: 10px 20px;">
-            <h5>Community Event 3</h5>
-            <p>Dasmariñas City Training Center</p>
-          </div>
-        </div>
-        <div class="carousel-item">
-          <img src="{{ asset('images/4.jpg') }}" class="d-block w-100"
-            alt="Community Photo 4" style="height: 450px; object-fit: cover;">
-          <div class="carousel-caption d-none d-md-block"
-            style="background: rgba(0,0,0,0.4); border-radius: 8px; padding: 10px 20px;">
-            <h5>Community Event 4</h5>
-            <p>Dasmariñas City Training Center</p>
-          </div>
-        </div>
-        <div class="carousel-item">
-          <img src="{{ asset('images/5.jpg') }}" class="d-block w-100"
-            alt="Community Photo 5" style="height: 450px; object-fit: cover;">
-          <div class="carousel-caption d-none d-md-block"
-            style="background: rgba(0,0,0,0.4); border-radius: 8px; padding: 10px 20px;">
-            <h5>Community Event 5</h5>
-            <p>Dasmariñas City Training Center</p>
-          </div>
-        </div>
+        @endforelse
       </div>
 
       {{-- CONTROLS --}}
@@ -207,27 +165,14 @@
   <section id="about" class="about-section">
     {{-- Our Story --}}
     <div class="about-story">
+
       <div>
-        <h2>CONGRATULATIONS</h2>
-        <p>
-          to all our Dasmariñas City Training Center - Main Trainers for
-          legitimately passing the Trainers Methodology 1 (TM1) Assessment! The
-          City Government of Dasmariñas through the LEDIPO / Livelihood &
-          Microenterprise Development Office is truly blessed to have competent,
-          committed and hardworking trainers such as yourselves. Through all the
-          struggles, hardships and ridicule from those who tried to put you
-          down, you can finally say "We did it!" We would like to thank the
-          Provincial Technical Education & Skills Development Center Taytay,
-          Rizal for warmly accomodating our DCTC - Main Trainers, their Center
-          Administrator Ms. Catherine Joy Custodio and Admin Support Staff Ms.
-          Sophia Cheryl Moldon thank you very much. To their assessors Ms. Daisy
-          Barilea, Mr. Raymond Catahimican and Mr. Kriz Bernardino, thank you
-          for imparting your knowledge and sound advice. We are very proud of
-          all of you!</p>
+        <h2>{{ $announcementSection->title ?? 'CONGRATULATIONS' }}</h2>
+        <p>{!! nl2br(e($announcementSection->body ?? '')) !!}</p>
       </div>
 
       <div>
-        <img src="{{ asset('images/8.jpg') }}" alt="About Us">
+        <img src="{{ $announcementSection->image_path ? asset($announcementSection->image_path) : asset('images/8.jpg') }}" alt="Announcement">
       </div>
     </div>
     </div>

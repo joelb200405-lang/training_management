@@ -102,6 +102,13 @@ Route::middleware("admin")->group(function () {
     Route::delete("/admin/announcement/{id}", [UserController::class, "destroyAnnouncement"])->name("admin.announcement.destroy");
     Route::post("/admin/announcement/{id}/toggle", [UserController::class, "toggleAnnouncement"])->name("admin.announcement.toggle");
 
+    // Landing Page
+    Route::get('/admin/landingpage', [UserController::class, 'landingPage'])->name('admin.landingpage');
+    Route::put('/admin/landingpage/section/{key}', [UserController::class, 'updateLandingSection'])->name('admin.landingpage.section.update');
+    Route::post('/admin/landingpage/carousel', [UserController::class, 'storeCarouselSlide'])->name('admin.landingpage.carousel.store');
+    Route::put('/admin/landingpage/carousel/{id}', [UserController::class, 'updateCarouselSlide'])->name('admin.landingpage.carousel.update');
+    Route::delete('/admin/landingpage/carousel/{id}', [UserController::class, 'destroyCarouselSlide'])->name('admin.landingpage.carousel.destroy');
+
     // Certificates (Moved inside admin group with correct /admin prefix)
     Route::post('/admin/certificate/store', [CertificateController::class, 'store'])->name('admin.certificate.store');
     Route::delete('/admin/certificate/{id}', [CertificateController::class, 'destroy'])->name('admin.certificate.destroy');

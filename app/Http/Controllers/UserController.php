@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage; // <-- Added for PDF file deletion
 use App\Mail\ResetPasswordMail;
 use App\Models\Facility;
+use App\Models\LandingSection;
+use App\Models\CarouselSlide;
 
 class UserController extends Controller
 {
@@ -243,6 +245,125 @@ class UserController extends Controller
                 'recentActivity'
             ));
         }
+
+public function landingPage()
+{
+    return view('admin.landingpage', [
+        'hero' => LandingSection::where('section_key', 'hero')->first(),
+        'about' => LandingSection::where('section_key', 'about')->first(),
+        'announcement' => LandingSection::where('section_key', 'announcement')->first(),
+        'slides' => CarouselSlide::orderBy('sort_order')->get(),
+    ]);
+}
+
+public function updateLandingSection(Request $request, $key)
+{
+    $section = LandingSection::where('section_key', $key)->firstOrFail();
+
+    $validated = $request->validate([
+        'title' => 'nullable|string|max:255',
+        'body'  => 'nullable|string',
+        'image' => 'nullable|image|max:4096',
+    ]);
+
+    $data = [
+        'title' => $validated['title'] ?? $section->title,
+        'body'  => $validated['body'] ?? $section->body,
+    ];
+
+    if ($request->hasFile('image')) {
+        $file = $request->file('image');
+        $filename = $key . '_' . time() . '.' . $file->getClientOriginalExtension();
+        $file->move(public_path('images'), $filename);
+        $data['image_path'] = 'images/' . $filename;
+    }
+
+    $section->update($data);
+
+    return response()->json([
+        'success' => true,
+        'message' => ucfirst($key) . ' section updated successfully!',
+        'section' => $section,
+    ]);
+}
+
+public function storeCarouselSlide(Request $request)
+{
+    $validated = $request->validate([
+        'title'   => 'nullable|string|max:255',
+        'caption' => 'nullable|string|max:255',
+        'image'   => 'required|image|max:4096',
+    ]);
+
+    $file = $request->file('image');
+    $filename = 'slide_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+    $file->move(public_path('images'), $filename);
+
+    $maxOrder = CarouselSlide::max('sort_order') ?? 0;
+
+    $slide = CarouselSlide::create([
+        'title'      => $validated['title'] ?? null,
+        'caption'    => $validated['caption'] ?? null,
+        'image_path' => 'images/' . $filename,
+        'sort_order' => $maxOrder + 1,
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Slide added successfully!',
+        'slide'   => $slide,
+    ]);
+}
+
+public function updateCarouselSlide(Request $request, $id)
+{
+    $slide = CarouselSlide::findOrFail($id);
+
+    $validated = $request->validate([
+        'title'   => 'nullable|string|max:255',
+        'caption' => 'nullable|string|max:255',
+        'image'   => 'nullable|image|max:4096',
+    ]);
+
+    $data = [
+        'title'   => $validated['title'] ?? $slide->title,
+        'caption' => $validated['caption'] ?? $slide->caption,
+    ];
+
+    if ($request->hasFile('image')) {
+        $file = $request->file('image');
+        $filename = 'slide_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+        $file->move(public_path('images'), $filename);
+        $data['image_path'] = 'images/' . $filename;
+    }
+
+    $slide->update($data);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Slide updated successfully!',
+        'slide'   => $slide,
+    ]);
+}
+
+public function destroyCarouselSlide($id)
+{
+    $slide = CarouselSlide::find($id);
+
+    if (!$slide) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Slide not found.',
+        ], 404);
+    }
+
+    $slide->delete();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Slide deleted successfully!',
+    ]);
+}
 
 public function admin1(Request $request)
 {
@@ -1117,16 +1238,26 @@ public function contact(){
     ));
     }
     //about
-        public function index(){
+    public function index(){
         $courses = \App\Models\Course_tbl::where('status', 'active')->get();
         $totalStudents = \App\Models\User_tbl::where('role', 'student')->count();
         $totalCourses  = \App\Models\Course_tbl::where('status', 'active')->count();
         $totalTrainers = \App\Models\User_tbl::where('role', 'trainer')->count();
+
+        $heroSection         = LandingSection::where('section_key', 'hero')->first();
+        $aboutSection        = LandingSection::where('section_key', 'about')->first();
+        $announcementSection = LandingSection::where('section_key', 'announcement')->first();
+        $carouselSlides      = CarouselSlide::orderBy('sort_order')->get();
+
         return view("index", compact(
             'courses',
             'totalStudents',
             'totalCourses',
-            'totalTrainers'
+            'totalTrainers',
+            'heroSection',
+            'aboutSection',
+            'announcementSection',
+            'carouselSlides'
             ));
     }
 
