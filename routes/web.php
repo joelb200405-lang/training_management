@@ -53,6 +53,8 @@ Route::get('/registration/step2', [RegistrationController::class, 'showStep2'])-
 Route::get('/registration/step-2', [RegistrationController::class, 'showStep2']);
 Route::post('/registration/submit', [RegistrationController::class, 'store'])->name('registration.submit');
 
+Route::post('/notifications/announcements/{id}/read', [UserController::class, 'markAnnouncementRead'])->middleware('auth')->name('notifications.announcement.read');
+
 // ── ADMIN ROUTES ──────────────────────────────────────────────────────────────
 Route::middleware("admin")->group(function () {
     // Registrations
@@ -163,6 +165,6 @@ Route::middleware("student")->group(function () {
     Route::post("/student/profile/update", [UserController::class, "studentProfileUpdate"])->name("student.profile.update");
     Route::post("/student/profile/password", [UserController::class, "studentProfilePassword"])->name("student.profile.password");
     Route::get("/student/modules", [UserController::class, "studentModules"])->name("student.modules");
-    Route::get('/student/announcements', function () { return view('student.announcements'); })->name('student.announcements');
+    Route::get('/student/announcements', [UserController::class, 'studentAnnouncements'])->name('student.announcements');
     Route::post("/student/module/{id}/complete", [UserController::class, "markModuleDone"])->name("student.module.complete");
 });

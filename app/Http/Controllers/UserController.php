@@ -1194,6 +1194,24 @@ public function ResetPassword(Request $request)
         return back()->with('success', 'Successfully enrolled in ' . $course->title . '!');
     }
 
+    public function studentAnnouncements()
+    {
+        $announcements = \App\Models\Announcement::where('is_active', 1)
+            ->where(function ($query) {
+                $query->whereNull('publish_at')
+                    ->orWhere('publish_at', '<=', now());
+            })
+            ->where(function ($query) {
+                $query->whereNull('expires_at')
+                    ->orWhere('expires_at', '>=', now());
+            })
+            ->whereIn('audience', ['general', 'student'])
+            ->latest()
+            ->get();
+
+        return view('student.announcements', compact('announcements'));
+    }
+
 //contact
 public function contact(){
     return view("student.contact");
@@ -2170,6 +2188,35 @@ private function validateAnnouncement(Request $request): array
             'message' => 'Module marked as done!'
         ]);
     }
+
+public function markAnnouncementRead($id)
+{
+    $announcement = \App\Models\Announcement::findOrFail($id);
+    $user = \Auth::user();
+
+    // Admin/Super Admin can read all announcements.
+    // Keep the same audience rules used by the notification dropdowns.
+    $canRead = match ($user->role) {
+        'admin', 'super_admin' => true,
+        'trainer' => in_array($announcement->audience, ['general', 'trainer'], true),
+        'student' => in_array($announcement->audience, ['general', 'student'], true),
+        default => false,
+    };
+
+    if (!$canRead) {
+        abort(403);
+    }
+
+    \DB::table('announcement_reads')->insertOrIgnore([
+        'announcement_id' => $announcement->id,
+        'user_id' => $user->id,
+        'read_at' => now(),
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    return response()->json(['success' => true]);
+}
 
     
     

@@ -278,109 +278,142 @@
     </div>
 
     {{-- Announcement Stream --}}
-    <div class="announcements-feed" id="announcementFeed">
+<div class="announcements-feed" id="announcementFeed">
 
-        {{-- PINNED ANNOUNCEMENT --}}
-        <div class="announcement-card pinned" data-category="schedule">
-            <div class="pin-badge">
-                <i class="fa fa-thumbtack"></i> Pinned
-            </div>
+    @forelse ($announcements as $announcement)
 
-            <span class="category-badge badge-schedule">Schedule Notice</span>
+        @php
+            $type = strtolower($announcement->type ?? 'notice');
 
+            // Map Admin announcement types to the Student page categories
+            if ($type === 'urgent') {
+                $category = 'urgent';
+                $categoryLabel = 'Urgent Reminder';
+                $badgeClass = 'badge-urgent';
+            } elseif ($type === 'reminder') {
+                $category = 'schedule';
+                $categoryLabel = 'Schedule Notice';
+                $badgeClass = 'badge-schedule';
+            } else {
+                $category = 'general';
+                $categoryLabel = 'General';
+                $badgeClass = 'badge-general';
+            }
+
+            $audienceLabel = match ($announcement->audience ?? 'general') {
+                'student' => 'Students',
+                'trainer' => 'Trainers',
+                default => 'All Users',
+            };
+        @endphp
+
+        <div class="announcement-card" data-category="{{ $category }}">
+
+            {{-- Category --}}
+            <span class="category-badge {{ $badgeClass }}">
+                {{ $categoryLabel }}
+            </span>
+
+            {{-- Author --}}
             <div class="author-meta-row">
-                <div class="author-avatar">LD</div>
-                <div class="author-info">
-                    <div class="name">LEDIPO Main Office</div>
-                    <div class="role-time">Administrator • Posted Aug 5, 2026</div>
+
+                <div class="author-avatar">
+                    LD
                 </div>
+
+                <div class="author-info">
+
+                    <div class="name">
+                        LEDIPO Main Office
+                    </div>
+
+                    <div class="role-time">
+                        Administrator • Posted
+                        {{ $announcement->created_at?->format('M j, Y') }}
+                    </div>
+
+                </div>
+
             </div>
 
-            <h2 class="announcement-title">In-Person Practical Assessment Schedule for Barangay Labs</h2>
+            {{-- Title --}}
+            <h2 class="announcement-title">
+                {{ $announcement->title }}
+            </h2>
 
+            {{-- Message --}}
             <p class="announcement-body">
-                Please be guided on the upcoming practical hands-on evaluation sessions for both Computer Literacy and Street Food Preparation courses. Ensure you have marked all online modules as done prior to attending your assigned venue slot.
+                {{ $announcement->message }}
             </p>
 
-            <div class="event-info-box">
-                <div class="event-info-item">
-                    <i class="fa fa-calendar-alt"></i> August 12 – 14, 2026
+            {{-- Footer --}}
+            <div class="announcement-footer">
+
+                <span>
+                    Target Group: {{ $audienceLabel }}
+                </span>
+
+                <div class="footer-actions">
+
+                    <button
+                        class="action-btn"
+                        type="button"
+                        onclick="shareAnnouncement(this)"
+                    >
+                        <i class="fa fa-share"></i>
+                        Share
+                    </button>
+
                 </div>
-                <div class="event-info-item">
-                    <i class="fa fa-clock"></i> 9:00 AM – 3:00 PM
-                </div>
-                <div class="event-info-item">
-                    <i class="fa fa-map-marker-alt"></i> Assigned Barangay Hall / LEDIPO Main Lab
-                </div>
+
             </div>
 
-            <div class="announcement-footer">
-                <span>Target Group: All Enrolled Students</span>
-                <div class="footer-actions">
-                    <button class="action-btn" onclick="alert('Link copied to clipboard!')">
-                        <i class="fa fa-share"></i> Share
-                    </button>
-                </div>
-            </div>
         </div>
 
-        {{-- URGENT ANNOUNCEMENT --}}
-        <div class="announcement-card" data-category="urgent">
-            <span class="category-badge badge-urgent">Urgent Reminder</span>
+    @empty
 
-            <div class="author-meta-row">
-                <div class="author-avatar" style="background: #2B6CB0;">TR</div>
-                <div class="author-info">
-                    <div class="name">Trainer Carlos Legaspi</div>
-                    <div class="role-time">Lead Instructor • Posted Aug 2, 2026</div>
-                </div>
-            </div>
+        <div
+            style="
+                text-align: center;
+                padding: 60px 20px;
+                background: #ffffff;
+                border: 1px solid #E2E8F0;
+                border-radius: 16px;
+                color: #718096;
+            "
+        >
+            <i
+                class="fa-solid fa-bell-slash"
+                style="
+                    font-size: 32px;
+                    color: #CBD5E0;
+                    margin-bottom: 12px;
+                "
+            ></i>
 
-            <h2 class="announcement-title">System Maintenance Notice & Quiz Unlocking</h2>
+            <h3
+                style="
+                    margin: 0 0 6px;
+                    color: #2D3748;
+                    font-size: 16px;
+                "
+            >
+                No announcements yet
+            </h3>
 
-            <p class="announcement-body">
-                The online student portal will undergo routine database maintenance on August 8, 2026 from 12:00 AM to 4:00 AM. Please submit your Pre-Test and complete your module readings before the maintenance window to prevent any progress loss.
+            <p
+                style="
+                    margin: 0;
+                    font-size: 13px;
+                "
+            >
+                There are currently no active announcements available.
             </p>
-
-            <div class="announcement-footer">
-                <span>Target Group: Livelihood Program Trainees</span>
-                <div class="footer-actions">
-                    <button class="action-btn" onclick="alert('Marking announcement as read.')">
-                        <i class="fa fa-check-circle"></i> Mark as Read
-                    </button>
-                </div>
-            </div>
         </div>
 
-        {{-- GENERAL ANNOUNCEMENT --}}
-        <div class="announcement-card" data-category="general">
-            <span class="category-badge badge-general">General</span>
+    @endforelse
 
-            <div class="author-meta-row">
-                <div class="author-avatar" style="background: #D4D120; color:#1A1A1A;">JB</div>
-                <div class="author-info">
-                    <div class="name">Office of Mayor Jenny Barzaga</div>
-                    <div class="role-time">City Government • Posted Jul 28, 2026</div>
-                </div>
-            </div>
-
-            <h2 class="announcement-title">Welcome Trainees to the 2026 City Livelihood Training Program!</h2>
-
-            <p class="announcement-body">
-                We are thrilled to welcome all newly enrolled students to Dasmariñas LEDIPO's digital skill-building platform. Take full advantage of the self-paced materials and hands-on laboratory sessions provided at your barangay venues.
-            </p>
-
-            <div class="announcement-footer">
-                <span>Target Group: All Students</span>
-                <div class="footer-actions">
-                    <button class="action-btn" onclick="alert('Link copied!')">
-                        <i class="fa fa-share"></i> Share
-                    </button>
-                </div>
-            </div>
-        </div>
-
-    </div>
+</div>
 </div>
 @endsection
 

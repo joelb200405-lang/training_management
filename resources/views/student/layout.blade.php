@@ -458,6 +458,33 @@
     background: #f8faf8;
 }
 
+/* ==========================================================
+   READ / UNREAD VISUAL STATE
+   ========================================================== */
+
+.notification-item.notification-unread {
+    background: #f3faf6;
+    box-shadow: inset 4px 0 0 #025628;
+}
+
+.notification-item.notification-unread .notification-item-title {
+    font-weight: 900;
+    color: #025628;
+}
+
+.notification-item:not(.notification-unread) .notification-item-title {
+    font-weight: 500;
+    color: #555;
+}
+
+.notification-item:not(.notification-unread) .notification-item-message {
+    color: #888;
+}
+
+.notification-item:not(.notification-unread) .notification-item-icon {
+    opacity: 0.65;
+}
+
 .notification-item:last-child {
     border-bottom: none;
 }
@@ -497,7 +524,7 @@
 
 .notification-item-title {
     font-size: 13px;
-    font-weight: 800;
+    font-weight: 500;
     color: #222;
 
     white-space: nowrap;
@@ -650,6 +677,14 @@
         max-width: none;
     }
 
+    .notification-item.notification-unread {
+    background: #f7fbf8;
+    }
+
+    .notification-item.notification-unread .notification-item-title {
+        font-weight: 800;
+    }
+
 }
 
     </style>
@@ -685,18 +720,46 @@
 
             <i class="fa-solid fa-bell"></i>
 
-            @php
-                $notificationAnnouncements = \App\Models\Announcement::where('is_active', 1)
-                    ->latest()
-                    ->take(5)
-                    ->get();
+          @php
+    // Student receives General and Student announcements.
+    $notificationAllAnnouncements = \App\Models\Announcement::where('is_active', 1)
+        ->whereIn('audience', ['general', 'student'])
+        ->latest()
+        ->get();
 
-                $notificationCount = $notificationAnnouncements->count();
-            @endphp
+    // Read announcements for the currently logged-in Student.
+    $notificationReadIds = \DB::table('announcement_reads')
+        ->where('user_id', \Auth::id())
+        ->whereIn('announcement_id', $notificationAllAnnouncements->pluck('id'))
+        ->pluck('announcement_id')
+        ->toArray();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Student Notification Dropdown
+    |--------------------------------------------------------------------------
+    | Show the latest 5 announcements PLUS any older unread
+    | announcements so unread notifications are never hidden.
+    |--------------------------------------------------------------------------
+    */
+
+    $notificationLatest = $notificationAllAnnouncements->take(5);
+
+    $notificationUnread = $notificationAllAnnouncements
+        ->whereNotIn('id', $notificationReadIds);
+
+    $notificationAnnouncements = $notificationLatest
+        ->concat($notificationUnread)
+        ->unique('id')
+        ->sortByDesc('created_at')
+        ->values();
+
+    $notificationCount = $notificationUnread->count();
+@endphp
 
             @if($notificationCount > 0)
                 <span class="notification-badge">
-                    {{ $notificationCount > 9 ? '9+' : $notificationCount }}
+                    {{ $notificationCount > 99 ? '99+' : $notificationCount }}
                 </span>
             @endif
 
@@ -710,8 +773,7 @@
                     <h3>Notifications</h3>
 
                     <span>
-                        {{ $notificationCount }}
-                        active announcement{{ $notificationCount != 1 ? 's' : '' }}
+                        {{ $notificationCount }} unread notification{{ $notificationCount != 1 ? 's' : '' }}
                     </span>
                 </div>
 
@@ -724,7 +786,12 @@
 
                 @forelse($notificationAnnouncements as $announcement)
 
-                    <div class="notification-item">
+                    <div
+                    class="notification-item {{ in_array($announcement->id, $notificationReadIds, true) ? '' : 'notification-unread' }}"
+                    data-announcement-id="{{ $announcement->id }}"
+                    role="button"
+                    tabindex="0"
+                     >
 
                         <div class="notification-item-icon
                             notification-type-{{ strtolower($announcement->type) }}">
@@ -1135,6 +1202,129 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const notificationDropdown =
+        document.getElementById('notificationDropdown');
+
+    if (!notificationDropdown) return;
+
+    function markNotificationRead(item) {
+
+        if (!item) return;
+
+        if (item.dataset.read === '1') return;
+
+        const announcementId = item.dataset.announcementId;
+
+        if (!announcementId) {
+            console.error(
+                'Student notification is missing data-announcement-id.'
+            );
+            return;
+        }
+
+        fetch(`{{ url('/notifications/announcements') }}/${announcementId}/read`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({})
+        })
+        .then(response => {
+
+            if (!response.ok) {
+                throw new Error(
+                    `Notification read request failed: ${response.status}`
+                );
+            }
+
+            return response.json();
+        })
+        .then(data => {
+
+            if (!data || !data.success) {
+                throw new Error(
+                    'Server did not confirm the notification as read.'
+                );
+            }
+
+            item.dataset.read = '1';
+            item.classList.remove('notification-unread');
+
+            const notificationBadge =
+                document.querySelector('.notification-badge');
+
+            if (notificationBadge) {
+
+                const currentCount = parseInt(
+                    notificationBadge.textContent
+                        .replace('+', '')
+                        .trim(),
+                    10
+                ) || 0;
+
+                const nextCount = Math.max(currentCount - 1, 0);
+
+                if (nextCount === 0) {
+                    notificationBadge.remove();
+                } else {
+                    notificationBadge.textContent =
+                        nextCount > 99 ? '99+' : String(nextCount);
+                }
+            }
+
+            const unreadItems =
+                notificationDropdown.querySelectorAll(
+                    '.notification-item.notification-unread'
+                ).length;
+
+            const headerUnread =
+                document.querySelector(
+                    '.notification-header > div > span'
+                );
+
+            if (headerUnread) {
+                headerUnread.textContent =
+                    `${unreadItems} unread notification${unreadItems !== 1 ? 's' : ''}`;
+            }
+
+        })
+        .catch(error => {
+            console.error(
+                'Student notification read error:',
+                error
+            );
+        });
+    }
+
+    notificationDropdown
+        .querySelectorAll(
+            '.notification-item[data-announcement-id]'
+        )
+        .forEach(item => {
+
+            item.addEventListener('click', function () {
+                markNotificationRead(this);
+            });
+
+            item.addEventListener('keydown', function (event) {
+
+                if (event.key === 'Enter' || event.key === ' ') {
+
+                    event.preventDefault();
+
+                    markNotificationRead(this);
+                }
+            });
+        });
+
+});
+</script>
     <script>
         const hamburger = document.getElementById('hamburger');
         const sidebar   = document.getElementById('sidebar');

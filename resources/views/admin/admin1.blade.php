@@ -404,10 +404,18 @@
     #announcementModal .modal-footer {
       display: flex !important;
       justify-content: flex-end !important;
+      align-items: center !important;
       gap: 10px !important;
-      margin-top: 8px !important;
-      padding-top: 14px !important;
+
+      flex-shrink: 0 !important;
+
+      margin-top: 0 !important;
+      padding: 14px 20px !important;
+
+      background: #ffffff !important;
       border-top: 1px solid #eee !important;
+
+      box-sizing: border-box !important;
     }
 
     /* ========================================================== */
@@ -441,11 +449,13 @@
       display: flex !important;
       flex-direction: column !important;
 
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+
       overflow-y: auto !important;
       overflow-x: hidden !important;
 
-      max-height: calc(90vh - 80px) !important;
-      min-height: 0 !important;
+      max-height: none !important;
 
       padding: 20px !important;
       box-sizing: border-box !important;
@@ -453,11 +463,8 @@
 
     /* Keep action buttons visible while scrolling */
     #announcementModal #announcementForm .modal-footer {
-      position: sticky !important;
-      bottom: 0 !important;
 
       background: #ffffff !important;
-      z-index: 5 !important;
 
       flex-shrink: 0 !important;
 
@@ -1043,6 +1050,14 @@
       border: 0;
     }
 
+    .notification-item.notification-unread {
+    background: #f7fbf8;
+    }
+
+    .notification-item.notification-unread .notification-item-title {
+        font-weight: 800;
+    }
+
     /* Print View */
     @media print {
 
@@ -1159,17 +1174,49 @@
       <i class="fa-solid fa-bell"></i>
 
       @php
-        $notificationAnnouncements = $announcements->getCollection()
-          ->where('is_active', 1)
-          ->take(5);
+          // Admin can see all active announcements.
+          $notificationAllAnnouncements = \App\Models\Announcement::where('is_active', 1)
+              ->latest()
+              ->get();
 
-        $notificationCount = $notificationAnnouncements->count();
+          $notificationReadIds = \DB::table('announcement_reads')
+              ->where('user_id', \Auth::id())
+              ->whereIn('announcement_id', $notificationAllAnnouncements->pluck('id'))
+              ->pluck('announcement_id')
+              ->toArray();
+
+          /*
+          |--------------------------------------------------------------------------
+          | Notification Dropdown
+          |--------------------------------------------------------------------------
+          | Show:
+          | 1. The latest 5 announcements
+          | 2. PLUS any unread announcements that are older than those 5
+          |
+          | This ensures unread notifications represented by the badge
+          | are still visible inside the notification dropdown.
+          |--------------------------------------------------------------------------
+          */
+
+          $notificationLatest = $notificationAllAnnouncements->take(5);
+
+          $notificationUnread = $notificationAllAnnouncements
+              ->whereNotIn('id', $notificationReadIds);
+
+          $notificationAnnouncements = $notificationLatest
+              ->concat($notificationUnread)
+              ->unique('id')
+              ->sortByDesc('created_at')
+              ->values();
+
+          $notificationCount = $notificationUnread->count();
+
       @endphp
 
       @if($notificationCount > 0)
-        <span class="notification-badge">
-          {{ $notificationCount > 9 ? '9+' : $notificationCount }}
-        </span>
+          <span class="notification-badge">
+              {{ $notificationCount > 99 ? '99+' : $notificationCount }}
+          </span>
       @endif
 
     </button>
@@ -1180,9 +1227,9 @@
       <div class="notification-header">
         <div>
           <h3>Notifications</h3>
-          <span>
-            {{ $notificationCount }} active announcement{{ $notificationCount != 1 ? 's' : '' }}
-          </span>
+        <span>
+            {{ $notificationCount }} unread notification{{ $notificationCount != 1 ? 's' : '' }}
+        </span>
         </div>
 
         <i class="fa-solid fa-bell notification-header-icon"></i>
@@ -1194,7 +1241,12 @@
 
         @forelse($notificationAnnouncements as $announcement)
 
-          <div class="notification-item">
+          <div
+          class="notification-item {{ in_array($announcement->id, $notificationReadIds, true) ? '' : 'notification-unread' }}"
+          data-announcement-id="{{ $announcement->id }}"
+          role="button"
+          tabindex="0"
+          >
 
             <div class="notification-item-icon
               notification-type-{{ strtolower($announcement->type) }}">
@@ -2775,6 +2827,7 @@
                   data-title="{{ $ann->title }}"
                   data-message="{{ $ann->message }}"
                   data-type="{{ $ann->type }}"
+                  data-audience="{{ $ann->audience }}"
                   data-active="{{ $ann->is_active ? '1' : '0' }}"
                   data-publish-at="{{ $ann->publish_at ? $ann->publish_at->format('Y-m-d H:i:s') : '' }}"
                   data-expires-at="{{ $ann->expires_at ? $ann->expires_at->format('Y-m-d H:i:s') : '' }}"
@@ -3557,29 +3610,51 @@
           </div>
         </div>
 
-        <!-- Row 1: Type & Status (Kill Switch) -->
-        <div class="form-row">
-          <div class="form-group flex-1">
-            <label for="annType">Type <span
-                class="required">*</span></label>
-            <div class="input-container">
-              <i class="fa-solid fa-tag input-icon"></i>
-              <select id="annType" class="modal-input-select">
-                <option value="reminder">Reminder</option>
-                <option value="notice">Notice</option>
-                <option value="urgent">Urgent</option>
-              </select>
-            </div>
-          </div>
+<!-- Row 1: Type & Status (Kill Switch) -->
+<div class="form-row">
+  <div class="form-group flex-1">
+    <label for="annType">Type <span class="required">*</span></label>
 
-          <div class="form-group status-group">
-            <label>Status Switch</label>
-            <label class="checkbox-card">
-              <input type="checkbox" id="annIsActive" checked>
-              <span class="checkbox-text" id="statusLabel">Active</span>
-            </label>
-          </div>
-        </div>
+    <div class="input-container">
+      <i class="fa-solid fa-tag input-icon"></i>
+
+      <select id="annType" class="modal-input-select">
+        <option value="reminder">Reminder</option>
+        <option value="notice">Notice</option>
+        <option value="urgent">Urgent</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-group status-group">
+    <label>Status Switch</label>
+
+    <label class="checkbox-card">
+      <input type="checkbox" id="annIsActive" checked>
+      <span class="checkbox-text" id="statusLabel">Active</span>
+    </label>
+  </div>
+</div>
+
+<!-- Row 2: Audience -->
+<div class="form-row">
+  <div class="form-group flex-1">
+    <label for="annAudience">
+      Audience <span class="required">*</span>
+    </label>
+
+    <div class="input-container">
+      <i class="fa-solid fa-users input-icon"></i>
+
+      <select id="annAudience" class="modal-input-select">
+        <option value="general">General — Everyone</option>
+        <option value="student">Students</option>
+        <option value="trainer">Trainers</option>
+      </select>
+    </div>
+  </div>
+</div>
+
 
         <!-- Row 2: Schedule & Expiration Timestamps -->
         <div class="form-row">
@@ -3606,14 +3681,20 @@
           </div>
         </div>
 
-        <!-- Modal Footer -->
-        <div class="modal-footer">
-          <button type="button" class="btn-cancel"
-            onclick="closeAnnouncementModal()">Cancel</button>
-          <button type="submit" id="btnSubmitAnn"
-            class="btn-save-main">Save</button>
-        </div>
       </form>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel"
+          onclick="closeAnnouncementModal()">Cancel</button>
+
+        <button type="submit"
+          id="btnSubmitAnn"
+          class="btn-save-main"
+          form="announcementForm">
+          Save
+        </button>
+      </div>
     </div>
   </div>
 
@@ -3823,6 +3904,36 @@
   background: #f8faf8;
 }
 
+/* ==========================================================
+   READ / UNREAD VISUAL STATE
+   ========================================================== */
+
+/* Unread notification */
+.notification-item.notification-unread {
+  background: #f3faf6;
+  box-shadow: inset 4px 0 0 #025628;
+}
+
+/* Make unread title clearly stronger */
+.notification-item.notification-unread .notification-item-title {
+  font-weight: 900;
+  color: #025628;
+}
+
+/* Read notification */
+.notification-item:not(.notification-unread) .notification-item-title {
+  font-weight: 500;
+  color: #555;
+}
+
+.notification-item:not(.notification-unread) .notification-item-message {
+  color: #888;
+}
+
+.notification-item:not(.notification-unread) .notification-item-icon {
+  opacity: 0.65;
+}
+
 .notification-item:last-child {
   border-bottom: none;
 }
@@ -3862,7 +3973,7 @@
 
 .notification-item-title {
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 500;
   color: #222;
 
   white-space: nowrap;
@@ -4640,6 +4751,94 @@ function _confirmYes() {
       // Close profile dropdown if it is open
       dropdown.classList.remove('open');
     });
+
+    // ==========================================================
+    // ADMIN NOTIFICATION READ STATE
+    // ==========================================================
+    function markNotificationRead(item) {
+        if (!item || item.dataset.read === '1') return;
+        if (!item.classList.contains('notification-unread')) return;
+
+        const announcementId = item.dataset.announcementId;
+        if (!announcementId) return;
+
+        fetch(`{{ url('/notifications/announcements') }}/${announcementId}/read`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({})
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Unable to mark notification as read.');
+            }
+
+            return response.json();
+        })
+        .then(data => {
+            if (!data || !data.success) return;
+
+            item.dataset.read = '1';
+            item.classList.remove('notification-unread');
+
+            const notificationBadge = document.querySelector('.notification-badge');
+
+            if (notificationBadge) {
+                const currentCount = parseInt(
+                    notificationBadge.textContent.replace('+', '').trim(),
+                    10
+                ) || 0;
+
+                const nextCount = Math.max(currentCount - 1, 0);
+
+                if (nextCount === 0) {
+                    notificationBadge.remove();
+                } else {
+                    notificationBadge.textContent =
+                        nextCount > 99 ? '99+' : String(nextCount);
+                }
+            }
+
+            const unreadItems = notificationDropdown
+                ? notificationDropdown.querySelectorAll(
+                    '.notification-item.notification-unread'
+                  ).length
+                : 0;
+
+            const headerUnread =
+                document.querySelector('.notification-header > div > span');
+
+            if (headerUnread) {
+                headerUnread.textContent =
+                    `${unreadItems} unread notification${unreadItems !== 1 ? 's' : ''}`;
+            }
+        })
+        .catch(error => {
+            console.error('Mark notification read error:', error);
+        });
+    }
+
+    if (notificationDropdown) {
+        notificationDropdown
+            .querySelectorAll('.notification-item[data-announcement-id]')
+            .forEach(item => {
+
+                item.addEventListener('click', function() {
+                    markNotificationRead(this);
+                });
+
+                item.addEventListener('keydown', function(event) {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        markNotificationRead(this);
+                    }
+                });
+
+            });
+    }
 
     window.traineeCourseLabels = @json($traineeCourseLabels);
     window.traineeCourseCounts = @json($traineeCourseCounts);
@@ -5762,6 +5961,7 @@ document.getElementById('facilityForm').onsubmit = function(e) {
       document.getElementById('annTitle').value = '';
       document.getElementById('annMessage').value = '';
       document.getElementById('annType').value = 'reminder';
+      document.getElementById('annAudience').value = 'general';
 
       const isActiveCb = document.getElementById('annIsActive');
       if (isActiveCb) isActiveCb.checked = true;
@@ -5786,6 +5986,7 @@ document.getElementById('facilityForm').onsubmit = function(e) {
       const title = button.getAttribute('data-title') || '';
       const message = button.getAttribute('data-message') || '';
       const type = button.getAttribute('data-type') || 'reminder';
+      const audience = button.getAttribute('data-audience') || 'general';
       const active = button.getAttribute('data-active') === '1';
       const publishAt = button.getAttribute('data-publish-at') || '';
       const expiresAt = button.getAttribute('data-expires-at') || '';
@@ -5794,6 +5995,7 @@ document.getElementById('facilityForm').onsubmit = function(e) {
       document.getElementById('annTitle').value = title;
       document.getElementById('annMessage').value = message;
       document.getElementById('annType').value = type;
+      document.getElementById('annAudience').value = audience;
 
       const isActiveCb = document.getElementById('annIsActive');
       if (isActiveCb) isActiveCb.checked = active;
@@ -6073,6 +6275,8 @@ document.getElementById('facilityForm').onsubmit = function(e) {
             'reminder';
           const isActive = document.getElementById('annIsActive')
             ?.checked ? 1 : 0;
+          const audience = document.getElementById('annAudience')?.value ||
+            'general';
 
           const rawPublish = document.getElementById('annPublishAt')
             ?.value || '';
@@ -6102,6 +6306,7 @@ document.getElementById('facilityForm').onsubmit = function(e) {
             title: title,
             message: message,
             type: type,
+            audience: audience,
             is_active: isActive,
             publish_at: typeof cleanDateTimeInput === 'function' ?
               cleanDateTimeInput(rawPublish) : (rawPublish || null),
