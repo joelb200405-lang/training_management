@@ -3470,6 +3470,14 @@
             </div>
           </div>
 
+          <div>
+        <label>Training ID</label>
+        <input
+        type="text"
+        name="training_id"
+        placeholder="e.g. NCIIDRM-26-032">
+        </div>  
+
           <div class="input-field">
             <label for="editStatus">Course Status</label>
             <div class="input-wrapper">

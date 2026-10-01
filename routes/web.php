@@ -128,6 +128,7 @@ Route::middleware("admin")->group(function () {
     Route::get("/reports", [UserController::class, "reports"])->name("reports");
     Route::get("/settings", [UserController::class, "settings"])->name("settings");
     Route::get("/trainer/students", [UserController::class, "trainerStudents"])->name("trainer.students");
+    Route::post("/trainer/hands-on-evaluation", [UserController::class, "storeHandsOnEvaluation"])->name("trainer.hands-on.store");
     Route::get("/trainer/schedule", [UserController::class, "trainerSchedule"])->name("trainer.schedule");
     Route::get("/trainer/profile", [UserController::class, "trainerProfile"])->name("trainer.profile");
     Route::post("/trainer/profile/update", [UserController::class, "trainerProfileUpdate"])->name("trainer.profile.update");

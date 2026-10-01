@@ -15,6 +15,7 @@ class Quiz extends Model
         'course_id',
         'module_id',
         'title',
+        'quiz_type',
         'passing_score',
         'time_limit',
     ];

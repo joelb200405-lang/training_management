@@ -569,6 +569,11 @@
             <div style="display:flex;gap:8px;flex-wrap:wrap;">
               <input type="text" id="newQuizTitle" placeholder="Quiz title"
                 style="flex:2;min-width:140px;border:1px solid #ddd;border-radius:8px;padding:8px 12px;font-size:13px;font-family:inherit;">
+                <select id="newQuizType"
+              style="flex:1;min-width:130px;border:1px solid #ddd;border-radius:8px;padding:8px 12px;font-size:13px;font-family:inherit;background:#fff;">
+                <option value="regular">Regular Quiz</option>
+                <option value="post_test">Post-Test</option>
+              </select>
               <select id="newQuizModule"
                 style="flex:1.5;min-width:130px;border:1px solid #ddd;border-radius:8px;padding:8px 12px;font-size:13px;font-family:inherit;background:#fff;">
                 <option value="">— Link to module (optional) —</option>
@@ -957,6 +962,7 @@
     // ── ADD QUIZ ───────────────────────────────────────────────────────────────
     function addQuiz() {
       const title = document.getElementById('newQuizTitle').value.trim();
+      const quizType = document.getElementById('newQuizType').value;
       const moduleId = document.getElementById('newQuizModule').value || null;
       const passing = parseInt(document.getElementById('newQuizPass').value);
       const time = parseInt(document.getElementById('newQuizTime').value);
@@ -974,6 +980,7 @@
             course_id: _contentCourseId,
             module_id: moduleId,
             title,
+            quiz_type: quizType,
             passing_score: passing,
             time_limit: time
           })
