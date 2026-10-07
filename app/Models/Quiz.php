@@ -15,8 +15,14 @@ class Quiz extends Model
         'course_id',
         'module_id',
         'title',
+        'instructions',
         'passing_score',
         'time_limit',
+    ];
+
+    protected $casts = [
+        'passing_score' => 'integer',
+        'time_limit' => 'integer',
     ];
 
     public function course()
@@ -31,11 +37,11 @@ class Quiz extends Model
 
     public function questions()
     {
-    return $this->hasMany(QuizQuestion::class)->orderBy('order');
+        return $this->hasMany(QuizQuestion::class)->orderBy('order');
     }
 
-public function results()
-{
-    return $this->hasMany(QuizResult::class);
-}
+    public function results()
+    {
+        return $this->hasMany(QuizResult::class);
+    }
 }
