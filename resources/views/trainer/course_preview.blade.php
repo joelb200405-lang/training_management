@@ -446,6 +446,282 @@
     <div id="tabContentClasswork"
       style="display: none; flex-direction: column; gap: 24px; width: 100%;">
 
+      {{-- SECTION 0: COURSE SYLLABUS --}}
+      <div
+        style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+
+        {{-- Section Header --}}
+        <div
+          style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 14px;">
+          <div>
+            <h3
+              style="margin: 0; font-size: 17px; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-book-bookmark"
+                style="color: #025628; font-size: 16px;"></i>
+              Course Syllabus
+            </h3>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span
+              style="background: #f0fdf4; color: #025628; border: 1px solid #bbf7d0; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700;">
+              {{ !empty($course->syllabus_path) || !empty($course->syllabus_content) ? 'Uploaded' : 'No Syllabus' }}
+            </span>
+
+            <button type="button" onclick="openSyllabusModal()"
+              style="display: inline-flex; align-items: center; gap: 8px; background: #025628; color: #ffffff; border: 1px solid #025628; border-radius: 8px; padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;"
+              onmouseover="this.style.background='#01401e'; this.style.transform='translateY(-1px)';"
+              onmouseout="this.style.background='#025628'; this.style.transform='none';">
+              <i class="fa-solid fa-plus" style="font-size: 11px;"></i>
+              <span>{{ !empty($course->syllabus_path) || !empty($course->syllabus_content) ? 'Update Syllabus' : 'Add Syllabus' }}</span>
+            </button>
+          </div>
+        </div>
+
+        {{-- Syllabus Content / File Card or Empty State --}}
+        @if (!empty($course->syllabus_path) || !empty($course->syllabus_content))
+          @php
+            $syllabusPath = $course->syllabus_path ?? null;
+            // Strip any numeric timestamp prefix (e.g., "1791204923_filename.pdf" -> "filename.pdf")
+            $cleanFileName = $syllabusPath
+                ? preg_replace('/^\d+_/', '', basename($syllabusPath))
+                : 'Course-Syllabus.pdf';
+            $syllabusUrl = $syllabusPath
+                ? asset('storage/' . $syllabusPath)
+                : null;
+          @endphp
+
+          <div
+            style="
+        background: #ffffff;
+        border: 1px solid #d1fae5;
+        border-radius: 14px;
+        padding: 18px 20px;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 18px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      ">
+            <div
+              style="display: flex; align-items: flex-start; gap: 15px; flex: 1; min-width: 0;">
+
+              {{-- Document Icon --}}
+              <div
+                style="
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            background: #ecfdf5;
+            border: 1px solid #bbf7d0;
+            color: #15803d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            flex-shrink: 0;
+          ">
+                <i class="fa-solid fa-file-pdf"></i>
+              </div>
+
+              {{-- Information --}}
+              <div style="flex: 1; min-width: 0;">
+                <div
+                  style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
+                  <span
+                    style="
+                font-size: 10px;
+                font-weight: 800;
+                letter-spacing: 0.04em;
+                color: #166534;
+                background: #dcfce7;
+                border: 1px solid #bbf7d0;
+                padding: 3px 8px;
+                border-radius: 5px;
+                text-transform: uppercase;
+              ">
+                    Official Document
+                  </span>
+                  <span
+                    style="font-size: 12px; color: #94a3b8; font-weight: 600;">
+                    Course Outline & Guidelines
+                  </span>
+                </div>
+
+                <div
+                  style="
+              font-weight: 750;
+              font-size: 15px;
+              color: #1e293b;
+              line-height: 1.4;
+              margin-bottom: 6px;
+              word-break: break-word;
+            ">
+                  {{ $course->syllabus_title ?? 'Course Syllabus & Training Roadmap' }}
+                </div>
+
+                @if (!empty($course->syllabus_content))
+                  <div
+                    style="
+                font-size: 12.5px;
+                color: #64748b;
+                line-height: 1.5;
+                margin-bottom: 12px;
+                max-width: 760px;
+                word-break: break-word;
+              ">
+                    {!! nl2br(e($course->syllabus_content)) !!}
+                  </div>
+                @endif
+
+                @if ($syllabusUrl)
+                  @php
+                    // Extract the extension (.pdf, .docx, etc.) from the stored file path
+                    $fileExt = pathinfo(
+                        $course->syllabus_path,
+                        PATHINFO_EXTENSION,
+                    );
+
+                    // Use syllabus_title if available, otherwise fallback to the file name
+                    $displayTitle = !empty($course->syllabus_title)
+                        ? (str_ends_with(
+                            strtolower($course->syllabus_title),
+                            '.' . strtolower($fileExt),
+                        )
+                            ? $course->syllabus_title
+                            : $course->syllabus_title .
+                                ($fileExt ? '.' . $fileExt : ''))
+                        : basename($course->syllabus_path);
+                  @endphp
+
+                  <div
+                    style="display: inline-flex; align-items: center; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 12px; gap: 10px; margin-top: 8px;">
+
+                    <i class="fa-solid fa-file-pdf"
+                      style="color: #dc2626; font-size: 13px;"></i>
+
+                    <span title="{{ $displayTitle }}"
+                      style="font-size: 12.5px; font-weight: 600; color: #1e293b; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                      {{ $displayTitle }}
+                    </span>
+
+                    <div
+                      style="display: flex; align-items: center; gap: 6px; border-left: 1px solid #e2e8f0; padding-left: 8px;">
+                      <a href="{{ $syllabusUrl }}" target="_blank"
+                        style="color: #025628; padding: 4px 6px; text-decoration: none; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+                        <i class="fa-regular fa-eye"></i> View
+                      </a>
+                      <a href="{{ $syllabusUrl }}"
+                        download="{{ $displayTitle }}"
+                        title="Download {{ $displayTitle }}"
+                        style="color: #64748b; padding: 4px 6px; text-decoration: none; font-size: 12px;">
+                        <i class="fa-solid fa-arrow-down"></i>
+                      </a>
+                    </div>
+
+                  </div>
+                @endif
+              </div>
+            </div>
+
+            {{-- Actions (Edit & Delete) --}}
+            <div
+              style="display: flex; align-items: center; gap: 5px; flex-shrink: 0;">
+
+              {{-- Edit Button --}}
+              <button type="button" onclick="openSyllabusModal()"
+                title="Edit syllabus"
+                style="background: transparent; border: none; color: #64748b; cursor: pointer; width: 34px; height: 34px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 13px; transition: all 0.15s;"
+                onmouseover="this.style.background='#ecfdf5'; this.style.color='#15803d';"
+                onmouseout="this.style.background='transparent'; this.style.color='#64748b';">
+                <i class="fa-regular fa-pen-to-square"></i>
+              </button>
+
+              {{-- Delete Button --}}
+              <button type="button" onclick="openDeleteSyllabusModal()"
+                title="Delete syllabus"
+                style="background: transparent; border: none; color: #94a3b8; cursor: pointer; width: 34px; height: 34px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 13px; transition: all 0.15s;"
+                onmouseover="this.style.background='#fff1f2'; this.style.color='#e11d48';"
+                onmouseout="this.style.background='transparent'; this.style.color='#94a3b8';">
+                <i class="fa-regular fa-trash-can"></i>
+              </button>
+
+            </div>
+          </div>
+        @else
+          {{-- Empty State --}}
+          <div
+            style="
+        background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+        border: 1px dashed #86efac;
+        border-radius: 14px;
+        padding: 42px 20px;
+        text-align: center;
+      ">
+            <div
+              style="
+          width: 52px;
+          height: 52px;
+          border-radius: 14px;
+          background: #dcfce7;
+          border: 1px solid #bbf7d0;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          color: #15803d;
+          margin-bottom: 12px;
+        ">
+              <i class="fa-solid fa-book-bookmark" style="font-size: 20px;"></i>
+            </div>
+
+            <h4
+              style="
+          margin: 0 0 5px 0;
+          font-size: 15px;
+          font-weight: 750;
+          color: #14532d;
+        ">
+              No Syllabus Added Yet
+            </h4>
+
+            <p
+              style="
+          margin: 0 auto 17px auto;
+          font-size: 12.5px;
+          color: #64748b;
+          max-width: 390px;
+          line-height: 1.5;
+        ">
+              Upload a syllabus file or provide course guidelines, objectives, and
+              evaluation grading criteria for your trainees.
+            </p>
+
+            <button type="button" onclick="openSyllabusModal()"
+              style="
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          background: #15803d;
+          color: #ffffff;
+          border: none;
+          border-radius: 8px;
+          padding: 9px 16px;
+          font-size: 12.5px;
+          font-weight: 700;
+          cursor: pointer;
+          box-shadow: 0 2px 5px rgba(21,128,61,0.18);
+          transition: all 0.15s;
+        "
+              onmouseover="this.style.background='#166534'; this.style.transform='translateY(-1px)';"
+              onmouseout="this.style.background='#15803d'; this.style.transform='translateY(0)';">
+              <i class="fa-solid fa-plus" style="font-size: 11px;"></i>
+              <span>Add Syllabus</span>
+            </button>
+          </div>
+        @endif
+
+      </div>
+
       {{-- SECTION 1: QUIZZES & ASSESSMENTS --}}
       <div
         style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
@@ -456,7 +732,7 @@
               style="margin: 0; font-size: 17px; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 8px;">
               <i class="fa-solid fa-list-check"
                 style="color: #025628; font-size: 16px;"></i>
-              Assessments
+              Quizzes & Assessments
             </h3>
           </div>
 
@@ -467,8 +743,7 @@
           <div style="display: flex; align-items: center; gap: 10px;">
             <span
               style="background: #f0fdf4; color: #025628; border: 1px solid #bbf7d0; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700;">
-              {{ count($quizzes) }}
-              {{ count($quizzes) === 1 ? 'Quiz' : 'Quizzes' }}
+
             </span>
 
             <button type="button" onclick="openAddQuizModal()"
@@ -550,31 +825,6 @@
                             margin-bottom: 5px;
                             flex-wrap: wrap;
                         ">
-
-                    <span
-                      style="
-                                font-size: 10px;
-                                font-weight: 800;
-                                letter-spacing: 0.04em;
-                                color: #166534;
-                                background: #dcfce7;
-                                border: 1px solid #bbf7d0;
-                                padding: 3px 8px;
-                                border-radius: 5px;
-                                text-transform: uppercase;
-                            ">
-                      Assessment
-                    </span>
-
-                    <span
-                      style="
-                                font-size: 12px;
-                                color: #94a3b8;
-                                font-weight: 600;
-                            ">
-                      Quiz {{ $qIndex + 1 }}
-                    </span>
-
                   </div>
 
                   {{-- Quiz Title --}}
@@ -1321,6 +1571,32 @@
           </div>
         </div>
 
+        {{-- QUIZ INSTRUCTIONS --}}
+        <div id="quizInstructionsBar"
+          style="padding:12px 24px 14px;background:#fcfdfd;
+      border-bottom:1px solid #dcfce7;">
+
+          <label for="quizInstructionsInput"
+            style="display:block;font-size:11px;font-weight:800;
+        color:#15803d;text-transform:uppercase;
+        letter-spacing:.04em;margin-bottom:6px;">
+            Instructions / Guidelines
+          </label>
+
+          <textarea id="quizInstructionsInput" name="instructions" rows="2"
+            placeholder="Add instructions for your trainees (e.g., Read each question carefully. Passing score is 75%)..."
+            style="display:block;width:100%;box-sizing:border-box;
+        border:1px solid #cbd5e1;border-radius:8px;
+        background:#fff;font-size:13.5px;font-family:inherit;
+        color:#334155;outline:none;padding:8px 12px;resize:vertical;line-height:1.5;"
+            onfocus="this.style.borderColor='#16a34a';this.style.boxShadow='0 0 0 2px rgba(22,163,74,0.15)';"
+            onblur="this.style.borderColor='#cbd5e1';this.style.boxShadow='none';"></textarea>
+
+          <div style="font-size:11px;color:#94a3b8;margin-top:4px;">
+            Optional notes, rules, or test guidance visible on the trainee's card.
+          </div>
+        </div>
+
         <form id="addQuizForm" onsubmit="submitTrainerQuiz(event)"
           style="margin:0;display:flex;flex-direction:column;min-height:0;flex:1;">
 
@@ -1725,6 +2001,252 @@
         </div>
       </div>
     </div>
+
+    {{-- ======================================================== --}}
+    {{-- ADD / EDIT SYLLABUS MODAL                                --}}
+    {{-- ======================================================== --}}
+    <div id="syllabusModal"
+      style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); z-index: 99999; backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 20px;">
+
+      <div
+        style="background: #ffffff; border-radius: 16px; width: 100%; max-width: 550px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); overflow: hidden; animation: modalPop 0.2s ease-out;">
+
+        {{-- Modal Header --}}
+        <div
+          style="padding: 18px 24px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between;">
+          <h3
+            style="margin: 0; font-size: 16px; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 8px;">
+            <span
+              style="width: 28px; height: 28px; border-radius: 6px; background: #f0fdf4; border: 1px solid #bbf7d0; display: inline-flex; align-items: center; justify-content: center; color: #025628; font-size: 13px;">
+              <i class="fa-solid fa-book-bookmark"></i>
+            </span>
+            <span>{{ !empty($course->syllabus_path) || !empty($course->syllabus_content) ? 'Update Course Syllabus' : 'Add Course Syllabus' }}</span>
+          </h3>
+          <button type="button" onclick="closeSyllabusModal()"
+            style="border: none; background: transparent; color: #94a3b8; font-size: 18px; cursor: pointer; border-radius: 6px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; transition: all 0.15s;"
+            onmouseover="this.style.background='#f1f5f9'; this.style.color='#0f172a';"
+            onmouseout="this.style.background='transparent'; this.style.color='#94a3b8';">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        {{-- Form --}}
+        <form
+          action="{{ route('trainer.course.syllabus.update', $course->id) }}"
+          method="POST" enctype="multipart/form-data">
+          @csrf
+
+          <div
+            style="padding: 22px 24px; display: flex; flex-direction: column; gap: 16px; max-height: 72vh; overflow-y: auto;">
+
+            {{-- Syllabus Title --}}
+            <div>
+              <label
+                style="display: block; font-size: 12.5px; font-weight: 700; color: #334155; margin-bottom: 6px;">
+                Syllabus Title <span style="color: #dc2626;">*</span>
+              </label>
+              <input type="text" name="syllabus_title" required
+                value="{{ old('syllabus_title', $course->syllabus_title ?? 'Course Syllabus & Training Roadmap') }}"
+                placeholder="e.g. Baking Course Syllabus & Guidelines"
+                style="width: 100%; box-sizing: border-box; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; color: #1e293b; outline: none; transition: border-color 0.2s;"
+                onfocus="this.style.borderColor='#025628';"
+                onblur="this.style.borderColor='#cbd5e1';">
+            </div>
+
+            {{-- Syllabus Content / Guidelines --}}
+            <div>
+              <label
+                style="display: block; font-size: 12.5px; font-weight: 700; color: #334155; margin-bottom: 6px;">
+                Course Guidelines / Grading Policy (Optional)
+              </label>
+              <textarea name="syllabus_content" rows="4"
+                placeholder="Write objectives, attendance policies, grading scale, or prerequisites..."
+                style="width: 100%; box-sizing: border-box; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; color: #1e293b; outline: none; font-family: inherit; resize: vertical; transition: border-color 0.2s;"
+                onfocus="this.style.borderColor='#025628';"
+                onblur="this.style.borderColor='#cbd5e1';">{{ old('syllabus_content', $course->syllabus_content) }}</textarea>
+            </div>
+
+            {{-- Syllabus File Upload --}}
+            <div>
+              <label
+                style="display: block; font-size: 12.5px; font-weight: 700; color: #334155; margin-bottom: 6px;">
+                Upload Document (.pdf, .docx, .doc)
+              </label>
+              <input type="file" name="syllabus_file"
+                accept=".pdf,.doc,.docx"
+                style="width: 100%; box-sizing: border-box; padding: 10px; border: 1px dashed #94a3b8; border-radius: 8px; font-size: 12.5px; background: #f8fafc; cursor: pointer;">
+
+              @if (!empty($course->syllabus_path))
+                <div
+                  style="margin-top: 6px; font-size: 11.5px; color: #64748b; display: flex; align-items: center; gap: 6px;">
+                  <i class="fa-solid fa-file-pdf" style="color: #dc2626;"></i>
+                  <span>Current file:
+                    <strong>{{ basename($course->syllabus_path) }}</strong></span>
+                </div>
+              @endif
+            </div>
+
+          </div>
+
+          {{-- Modal Footer --}}
+          <div
+            style="padding: 14px 24px; background: #f8fafc; border-top: 1px solid #f1f5f9; display: flex; justify-content: flex-end; gap: 10px;">
+            <button type="button" onclick="closeSyllabusModal()"
+              style="padding: 8px 16px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; border-radius: 7px; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all 0.15s;"
+              onmouseover="this.style.background='#f1f5f9';"
+              onmouseout="this.style.background='#ffffff';">
+              Cancel
+            </button>
+            <button type="submit"
+              style="padding: 8px 20px; border: 1px solid #025628; background: #025628; color: #ffffff; border-radius: 7px; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all 0.2s;"
+              onmouseover="this.style.background='#01401e';"
+              onmouseout="this.style.background='#025628';">
+              Save Syllabus
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+    <script>
+      function openSyllabusModal() {
+        const modal = document.getElementById('syllabusModal');
+        if (modal) {
+          modal.style.display = 'flex';
+          document.body.style.overflow = 'hidden'; // prevent background scrolling
+        }
+      }
+
+      function closeSyllabusModal() {
+        const modal = document.getElementById('syllabusModal');
+        if (modal) {
+          modal.style.display = 'none';
+          document.body.style.overflow = '';
+        }
+      }
+
+      // Close modal when clicking outside of the white card
+      window.addEventListener('click', function(e) {
+        const modal = document.getElementById('syllabusModal');
+        if (e.target === modal) {
+          closeSyllabusModal();
+        }
+      });
+
+      // Close on Escape key press
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          closeSyllabusModal();
+        }
+      });
+    </script>
+
+    {{-- ======================================================== --}}
+    {{-- DELETE SYLLABUS CONFIRMATION MODAL                       --}}
+    {{-- ======================================================== --}}
+    <div id="deleteSyllabusModal"
+      style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); z-index: 99999; backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 20px;">
+
+      <div
+        style="background: #ffffff; border-radius: 16px; width: 100%; max-width: 440px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); overflow: hidden; text-align: center; padding: 28px 24px;">
+
+        {{-- Trash Icon Badge --}}
+        <div
+          style="width: 54px; height: 54px; border-radius: 50%; background: #fee2e2; border: 1px solid #fecaca; display: inline-flex; align-items: center; justify-content: center; color: #dc2626; font-size: 22px; margin-bottom: 16px;">
+          <i class="fa-regular fa-trash-can"></i>
+        </div>
+
+        <h3
+          style="margin: 0 0 8px 0; font-size: 17px; font-weight: 750; color: #0f172a;">
+          Delete Course Syllabus?
+        </h3>
+
+        <p
+          style="margin: 0 0 24px 0; font-size: 13px; color: #64748b; line-height: 1.5;">
+          Are you sure you want to remove the syllabus details and any uploaded
+          documents? This action cannot be undone.
+        </p>
+
+        <form
+          action="{{ route('trainer.course.syllabus.delete', $course->id) }}"
+          method="POST">
+          @csrf
+          @method('DELETE')
+
+          <div style="display: flex; gap: 10px; justify-content: center;">
+            <button type="button" onclick="closeDeleteSyllabusModal()"
+              style="padding: 9px 18px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s;"
+              onmouseover="this.style.background='#f1f5f9';"
+              onmouseout="this.style.background='#ffffff';">
+              Cancel
+            </button>
+
+            <button type="submit"
+              style="padding: 9px 20px; border: none; background: #dc2626; color: #ffffff; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s; box-shadow: 0 2px 4px rgba(220, 38, 38, 0.25);"
+              onmouseover="this.style.background='#b91c1c';"
+              onmouseout="this.style.background='#dc2626';">
+              Yes, Delete
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+
+    {{-- ======================================================== --}}
+    {{-- MODAL SCRIPTS                                            --}}
+    {{-- ======================================================== --}}
+    <script>
+      function openSyllabusModal() {
+        const modal = document.getElementById('syllabusModal');
+        if (modal) {
+          modal.style.display = 'flex';
+          document.body.style.overflow = 'hidden';
+        }
+      }
+
+      function closeSyllabusModal() {
+        const modal = document.getElementById('syllabusModal');
+        if (modal) {
+          modal.style.display = 'none';
+          document.body.style.overflow = '';
+        }
+      }
+
+      function openDeleteSyllabusModal() {
+        const modal = document.getElementById('deleteSyllabusModal');
+        if (modal) {
+          modal.style.display = 'flex';
+          document.body.style.overflow = 'hidden';
+        }
+      }
+
+      function closeDeleteSyllabusModal() {
+        const modal = document.getElementById('deleteSyllabusModal');
+        if (modal) {
+          modal.style.display = 'none';
+          document.body.style.overflow = '';
+        }
+      }
+
+      // Close modal on click outside content
+      window.addEventListener('click', function(e) {
+        const syllabusModal = document.getElementById('syllabusModal');
+        const deleteModal = document.getElementById('deleteSyllabusModal');
+
+        if (e.target === syllabusModal) closeSyllabusModal();
+        if (e.target === deleteModal) closeDeleteSyllabusModal();
+      });
+
+      // Close modal on ESC key
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          closeSyllabusModal();
+          closeDeleteSyllabusModal();
+        }
+      });
+    </script>
 
     {{-- ADD MODULE MODAL --}}
     <div id="addModuleModal"
@@ -3160,15 +3682,15 @@
                 </select>
               </div>
               ${isChoice ? `
-                                                                                      <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;">
-                                                                                        ${q.options.map((opt,oi)=>`<div style="display:flex;align-items:center;gap:9px;">
+                                                                                                                    <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;">
+                                                                                                                      ${q.options.map((opt,oi)=>`<div style="display:flex;align-items:center;gap:9px;">
                     <span style="width:18px;height:18px;border:2px solid #cbd5e1;${q.type==='multiple_choice'?'border-radius:50%;':'border-radius:4px;'}box-sizing:border-box;flex:none;"></span>
                     <input value="${escapeHtml(opt)}" oninput="quizQuestions[${i}].options[${oi}]=this.value" aria-label="Question ${i+1} option ${oi+1}" style="flex:1;border:0;border-bottom:1px solid #e2e8f0;padding:5px 2px;font-size:13px;outline:none;">
                     <button type="button" onclick="removeQuizOption(${i},${oi})" style="border:0;background:none;color:#94a3b8;cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
                   </div>`).join('')}
-                                                                                        <button type="button" onclick="addQuizOption(${i})" style="display:inline-flex;align-items:center;gap:7px;align-self:flex-start;border:1px solid #86efac;background:#f0fdf4;color:#15803d;border-radius:7px;font-size:12.5px;font-weight:800;cursor:pointer;padding:7px 11px;margin-top:2px;"><i class="fa-solid fa-plus"></i> Add option</button>
-                                                                                      </div>` : `
-                                                                                      <div style="margin-top:12px;padding:11px 12px;border:1px dashed #cbd5e1;border-radius:7px;color:#94a3b8;font-size:12px;">${q.type==='paragraph'?'Long answer response area':'Short answer response'}</div>`}
+                                                                                                                      <button type="button" onclick="addQuizOption(${i})" style="display:inline-flex;align-items:center;gap:7px;align-self:flex-start;border:1px solid #86efac;background:#f0fdf4;color:#15803d;border-radius:7px;font-size:12.5px;font-weight:800;cursor:pointer;padding:7px 11px;margin-top:2px;"><i class="fa-solid fa-plus"></i> Add option</button>
+                                                                                                                    </div>` : `
+                                                                                                                    <div style="margin-top:12px;padding:11px 12px;border:1px dashed #cbd5e1;border-radius:7px;color:#94a3b8;font-size:12px;">${q.type==='paragraph'?'Long answer response area':'Short answer response'}</div>`}
             </div>
             <div style="border-top:1px solid #f1f5f9;padding:9px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
               <button type="button" onclick="toggleAnswerKey(${i})" style="display:inline-flex;align-items:center;gap:7px;border:0;background:${answerOpen?'#dcfce7':'transparent'};color:#15803d;border-radius:7px;padding:8px 10px;font-size:12.5px;font-weight:800;cursor:pointer;">
@@ -3191,9 +3713,9 @@
           <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:#166534;">Points <input type="number" min="0" step="1" value="${q.points}" onchange="quizQuestions[${i}].points=Math.max(0,Number(this.value)||0)" style="width:58px;border:0;border-bottom:2px solid #15803d;background:transparent;text-align:center;padding:3px;color:#166534;font-weight:800;outline:none;"></label>
         </div>
         ${isChoice ? q.options.map((opt,oi)=>`<label style="display:flex;align-items:center;gap:9px;padding:7px 4px;cursor:pointer;color:#334155;font-size:13px;">
-                                                                                <input type="${q.type==='multiple_choice'?'radio':'checkbox'}" name="answer-${i}" ${q.correctAnswers.includes(oi)?'checked':''} onchange="toggleCorrectAnswer(${i},${oi},this.checked)" style="accent-color:#16a34a;width:17px;height:17px;">
-                                                                                <span>${escapeHtml(opt || 'Option '+(oi+1))}</span>
-                                                                              </label>`).join('') : `<div style="padding:8px 4px;color:#64748b;font-size:12px;">This question type is manually graded.</div>`}
+                                                                                                              <input type="${q.type==='multiple_choice'?'radio':'checkbox'}" name="answer-${i}" ${q.correctAnswers.includes(oi)?'checked':''} onchange="toggleCorrectAnswer(${i},${oi},this.checked)" style="accent-color:#16a34a;width:17px;height:17px;">
+                                                                                                              <span>${escapeHtml(opt || 'Option '+(oi+1))}</span>
+                                                                                                            </label>`).join('') : `<div style="padding:8px 4px;color:#64748b;font-size:12px;">This question type is manually graded.</div>`}
         <div style="margin-top:9px;padding-top:11px;border-top:1px solid #bbf7d0;">
           <button type="button" onclick="toggleFeedback(${i})" style="border:0;background:none;color:#15803d;font-size:12.5px;font-weight:700;cursor:pointer;padding:0;"><i class="fa-regular fa-comment-dots"></i> ${q.feedback?'Edit answer feedback':'Add answer feedback'}</button>
           <div id="feedback-${i}" style="display:${q.feedback?'block':'none'};margin-top:8px;"><textarea oninput="quizQuestions[${i}].feedback=this.value" placeholder="Write feedback shown after answering..." style="width:100%;box-sizing:border-box;min-height:60px;border:1px solid #bbf7d0;border-radius:7px;padding:8px;font-size:12px;resize:vertical;outline:none;background:#fff;">${escapeHtml(q.feedback)}</textarea></div>

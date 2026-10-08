@@ -10,6 +10,7 @@ use App\Models\User_tbl;
 use App\Models\Module;
 use App\Models\TrainerAnnouncement;
 use App\Models\AnnouncementComment;
+use App\Models\Course_tbl as Course;
 
 class TrainerController extends Controller
 {
@@ -52,6 +53,48 @@ class TrainerController extends Controller
             'recentStudents'
         ));
     }
+
+    public function updateSyllabus(Request $request, $id)
+{
+    $course = \App\Models\Course_tbl::findOrFail($id);
+
+    $validated = $request->validate([
+        'syllabus_title'   => 'nullable|string|max:255',
+        'syllabus_content' => 'nullable|string',
+        'syllabus_file'    => 'nullable|file|mimes:pdf,docx,doc|max:10240',
+    ]);
+
+    $course->syllabus_title = $validated['syllabus_title'] ?? $course->syllabus_title;
+    $course->syllabus_content = $validated['syllabus_content'] ?? null;
+
+    if ($request->hasFile('syllabus_file')) {
+        if ($course->syllabus_path && Storage::disk('public')->exists($course->syllabus_path)) {
+            Storage::disk('public')->delete($course->syllabus_path);
+        }
+
+        $course->syllabus_path = $request->file('syllabus_file')->store("courses/{$course->id}/syllabus", 'public');
+    }
+
+    $course->save();
+
+    return back()->with('success', 'Syllabus updated successfully.');
+}
+
+public function deleteSyllabus($id)
+{
+    $course = \App\Models\Course_tbl::findOrFail($id);
+
+    if ($course->syllabus_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($course->syllabus_path)) {
+        \Illuminate\Support\Facades\Storage::disk('public')->delete($course->syllabus_path);
+    }
+
+    $course->syllabus_title = null;
+    $course->syllabus_content = null;
+    $course->syllabus_path = null;
+    $course->save();
+
+    return back()->with('success', 'Syllabus removed successfully.');
+}
 
     /**
      * My Courses list
@@ -429,4 +472,3 @@ class TrainerController extends Controller
         ]);
     }
 }
-

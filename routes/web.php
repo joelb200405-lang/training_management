@@ -208,3 +208,8 @@ Route::get("/trainer/quiz/{id}/edit", [UserController::class, "editQuiz"])
 Route::put("/trainer/quiz/{id}", [UserController::class, "updateQuiz"])
     ->name("trainer.quiz.update");
 
+  Route::post('/trainer/course/{id}/syllabus', [TrainerController::class, 'updateSyllabus'])
+    ->name('trainer.course.syllabus.update');
+
+    Route::delete('/trainer/course/{id}/syllabus', [App\Http\Controllers\TrainerController::class, 'deleteSyllabus'])
+    ->name('trainer.course.syllabus.delete');
