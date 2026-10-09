@@ -19,6 +19,7 @@ use App\Mail\ResetPasswordMail;
 use App\Models\Facility;
 use App\Models\LandingSection;
 use App\Models\CarouselSlide;
+use App\Models\HandsOnEvaluation;
 
 class UserController extends Controller
 {
@@ -172,6 +173,8 @@ class UserController extends Controller
                                         ->toArray();
 
                 $quizzes = \App\Models\Quiz::where('course_id', $enrollment->course_id)->get();
+
+                $postTest = $quizzes->firstWhere('quiz_type', 'post_test');
 
                 $quizResults = \App\Models\QuizResult::where('user_id', $userId)
                                 ->whereIn('quiz_id', $quizzes->pluck('id'))
@@ -389,9 +392,10 @@ public function admin1(Request $request)
     $certificates  = \App\Models\Certificate::with(['user', 'course'])->latest()->get();
 
     // ── 2. FETCH ENROLLED TRAINEES FOR THE ISSUE MODAL DROPDOWN ─────────────
-    $eligibleTrainees = \DB::table('enrollment_tbls')
+       $eligibleTrainees = \DB::table('enrollment_tbls')
         ->join('user_tbls', 'user_tbls.id', '=', 'enrollment_tbls.user_id')
         ->join('course_tbls', 'course_tbls.id', '=', 'enrollment_tbls.course_id')
+        ->where('enrollment_tbls.status', 'completed')
         ->select(
             'user_tbls.id',
             'user_tbls.firstname',
@@ -726,6 +730,7 @@ public function deleteFacility(Request $request)
     try {
         $request->validate([
             'course_code' => 'required|string',
+            'training_id' => 'required|string|max:100',
             'title'       => 'required|string',
             'duration'    => 'required|integer',
             'slots'       => 'required|integer',
@@ -734,6 +739,7 @@ public function deleteFacility(Request $request)
 
         Course_tbl::create([
             'course_code' => $request->course_code,
+            'training_id' => $request->training_id,
             'title'       => $request->title,
             'duration'    => $request->duration,
             'slots'       => $request->slots,
@@ -764,6 +770,7 @@ public function deleteFacility(Request $request)
 {
     $request->validate([
         'course_code' => 'required|string|max:50',
+        'training_id'  => 'required|string|max:100',
         'title'       => 'required|string|max:255',
         'duration'    => 'required|string',
         'slots'       => 'required|integer',
@@ -773,6 +780,7 @@ public function deleteFacility(Request $request)
     $course = Course_tbl::findOrFail($id);
     $course->update([
         'course_code' => $request->course_code,
+        'training_id' => $request->training_id,
         'title'       => $request->title,
         'duration'    => $request->duration,
         'slots'       => $request->slots,
@@ -1173,6 +1181,7 @@ public function ResetPassword(Request $request)
         );
     }
 
+
     // Check if the student is already enrolled in this course
     $existing = \App\Models\Enrollment_tbl::where('user_id', Auth::id())
         ->where('course_id', $id)
@@ -1215,6 +1224,24 @@ public function ResetPassword(Request $request)
             'You have successfully enrolled in ' . $course->title . '!'
         );
 }
+
+    public function studentAnnouncements()
+    {
+        $announcements = \App\Models\Announcement::where('is_active', 1)
+            ->where(function ($query) {
+                $query->whereNull('publish_at')
+                    ->orWhere('publish_at', '<=', now());
+            })
+            ->where(function ($query) {
+                $query->whereNull('expires_at')
+                    ->orWhere('expires_at', '>=', now());
+            })
+            ->whereIn('audience', ['general', 'student'])
+            ->latest()
+            ->get();
+
+        return view('student.announcements', compact('announcements'));
+    }
 
 //contact
 public function contact(){
@@ -1467,252 +1494,140 @@ public function dashboard()
     }
 }
     // ── QUIZZES ───────────────────────────────────────────────────────────────
-public function storeQuiz(Request $request)
-{
-    $request->validate([
-        'course_id' => 'required|exists:course_tbls,id',
-        'module_id' => 'nullable|exists:modules,id',
 
-        'title' => 'required|string|max:255',
-        'instructions' => 'nullable|string',
-
-        // Quiz settings
-        'passing_score' => 'required|integer|min:0|max:100',
-        'time_limit' => 'required|integer|min:0',
-
-        'questions' => 'required|array|min:1',
-
-        'questions.*.text' => 'required|string',
-        'questions.*.type' => 'required|string|in:multiple_choice,checkboxes,short_answer,paragraph',
-        'questions.*.options' => 'nullable|array',
-        'questions.*.correctAnswers' => 'nullable|array',
-        'questions.*.points' => 'nullable|integer|min:0',
-        'questions.*.feedback' => 'nullable|string',
-        'questions.*.required' => 'nullable|boolean',
-    ]);
-
-    DB::beginTransaction();
-
-    try {
-
-        // Create quiz
-        $quiz = \App\Models\Quiz::create([
-            'course_id' => $request->course_id,
-            'module_id' => $request->module_id,
-
-            'title' => $request->title,
-            'instructions' => $request->instructions,
-
-            // Dynamic quiz settings
-            'passing_score' => $request->passing_score,
-            'time_limit' => $request->time_limit,
+    public function storeQuiz(Request $request)
+    {
+        $request->validate([
+            'course_id'     => 'required|exists:course_tbls,id',
+            'module_id'     => 'nullable|exists:modules,id',
+            'title'         => 'required|string|max:255',
+            'passing_score' => 'required|integer|min:1|max:100',
+            'time_limit'    => 'required|integer|min:1',
         ]);
 
-        // Create questions
-        foreach ($request->questions as $index => $data) {
+        $quiz = \App\Models\Quiz::create($request->only(
+            'course_id', 'module_id', 'title', 'passing_score', 'time_limit'
+        ));
 
-            $options = $data['options'] ?? [];
-            $correctAnswers = $data['correctAnswers'] ?? [];
+        $quiz->load('module');
 
-            // Keep old A-D fields for compatibility
-            $choiceA = $options[0] ?? '';
-            $choiceB = $options[1] ?? '';
-            $choiceC = $options[2] ?? '';
-            $choiceD = $options[3] ?? '';
-
-            // Convert first correct answer index
-            // into old A/B/C/D format
-            $correctAnswer = 'a';
-
-            if (!empty($correctAnswers)) {
-
-                $firstCorrect = (int) $correctAnswers[0];
-
-                $correctAnswer = match ($firstCorrect) {
-                    0 => 'a',
-                    1 => 'b',
-                    2 => 'c',
-                    3 => 'd',
-                    default => 'a',
-                };
-            }
-
-            \App\Models\QuizQuestion::create([
-                'quiz_id' => $quiz->id,
-
-                // New fields
-                'question' => $data['text'],
-                'question_type' => $data['type'],
-                'options' => $options,
-                'correct_answers' => $correctAnswers,
-
-                'points' => $data['points'] ?? 1,
-                'feedback' => $data['feedback'] ?? null,
-                'required' => $data['required'] ?? false,
-
-                // Existing fields
-                'choice_a' => $choiceA,
-                'choice_b' => $choiceB,
-                'choice_c' => $choiceC,
-                'choice_d' => $choiceD,
-                'correct_answer' => $correctAnswer,
-
-                // Question order
-                'order' => $index,
-            ]);
-        }
-
-        DB::commit();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Quiz created successfully.',
-            'quiz' => $quiz->load('module', 'questions'),
-        ]);
-
-    } catch (\Exception $e) {
-
-        DB::rollBack();
-
-        return response()->json([
-            'success' => false,
-            'message' => $e->getMessage(),
-        ], 500);
+        return response()->json(['success' => true, 'quiz' => $quiz]);
     }
-}
+    
 
-
+    
 public function editQuiz($id)
 {
     $quiz = \App\Models\Quiz::with([
-        'module',
-        'questions'
+        'questions',
+        'module'
     ])->findOrFail($id);
 
     return response()->json([
         'success' => true,
-        'quiz' => $quiz,
+        'quiz' => $quiz
     ]);
 }
 
-
 public function updateQuiz(Request $request, $id)
 {
-    $request->validate([
-        'course_id' => 'required|exists:course_tbls,id',
-        'module_id' => 'nullable|exists:modules,id',
+    $quiz = Quiz::findOrFail($id);
 
+    $validated = $request->validate([
         'title' => 'required|string|max:255',
+        'course_id' => 'sometimes|required|exists:course_tbls,id',
+        'module_id' => 'nullable|exists:modules,id',
+        'passing_score' => 'required|integer|min:1|max:100',
+        'time_limit' => 'required|integer|min:1',
         'instructions' => 'nullable|string',
 
-        // Quiz settings
-        'passing_score' => 'required|integer|min:0|max:100',
-        'time_limit' => 'required|integer|min:0',
-
         'questions' => 'required|array|min:1',
-
         'questions.*.text' => 'required|string',
-        'questions.*.type' => 'required|string|in:multiple_choice,checkboxes,short_answer,paragraph',
+        'questions.*.type' => 'required|in:multiple_choice,checkboxes,short_answer,paragraph',
         'questions.*.options' => 'nullable|array',
+        'questions.*.options.*' => 'nullable|string',
         'questions.*.correctAnswers' => 'nullable|array',
+        'questions.*.correctAnswers.*' => 'nullable',
         'questions.*.points' => 'nullable|integer|min:0',
         'questions.*.feedback' => 'nullable|string',
         'questions.*.required' => 'nullable|boolean',
     ]);
 
-    DB::beginTransaction();
+    DB::transaction(function () use ($validated, $quiz) {
 
-    try {
+        $quiz->title = $validated['title'];
 
-        $quiz = \App\Models\Quiz::findOrFail($id);
-
-        // Update quiz information
-        $quiz->update([
-            'course_id' => $request->course_id,
-            'module_id' => $request->module_id,
-
-            'title' => $request->title,
-            'instructions' => $request->instructions,
-
-            // Dynamic quiz settings
-            'passing_score' => $request->passing_score,
-            'time_limit' => $request->time_limit,
-        ]);
-
-        // Remove old questions
-        $quiz->questions()->delete();
-
-        // Save updated questions
-        foreach ($request->questions as $index => $data) {
-
-            $options = $data['options'] ?? [];
-            $correctAnswers = $data['correctAnswers'] ?? [];
-
-            // Keep old fields for compatibility
-            $choiceA = $options[0] ?? '';
-            $choiceB = $options[1] ?? '';
-            $choiceC = $options[2] ?? '';
-            $choiceD = $options[3] ?? '';
-
-            $correctAnswer = 'a';
-
-            if (!empty($correctAnswers)) {
-
-                $firstCorrect = (int) $correctAnswers[0];
-
-                $correctAnswer = match ($firstCorrect) {
-                    0 => 'a',
-                    1 => 'b',
-                    2 => 'c',
-                    3 => 'd',
-                    default => 'a',
-                };
-            }
-
-            \App\Models\QuizQuestion::create([
-                'quiz_id' => $quiz->id,
-
-                'question' => $data['text'],
-                'question_type' => $data['type'],
-                'options' => $options,
-                'correct_answers' => $correctAnswers,
-
-                'points' => $data['points'] ?? 1,
-                'feedback' => $data['feedback'] ?? null,
-                'required' => $data['required'] ?? false,
-
-                // Existing fields
-                'choice_a' => $choiceA,
-                'choice_b' => $choiceB,
-                'choice_c' => $choiceC,
-                'choice_d' => $choiceD,
-                'correct_answer' => $correctAnswer,
-
-                'order' => $index,
-            ]);
+        if (array_key_exists('course_id', $validated)) {
+            $quiz->course_id = $validated['course_id'];
         }
 
-        DB::commit();
+        $quiz->module_id = $validated['module_id'] ?? null;
+        $quiz->passing_score = $validated['passing_score'];
+        $quiz->time_limit = $validated['time_limit'];
 
-        // Reload updated quiz
-        $quiz->load('module', 'questions');
+        if (\Illuminate\Support\Facades\Schema::hasColumn(
+            $quiz->getTable(),
+            'instructions'
+        )) {
+            $quiz->instructions = $validated['instructions'] ?? null;
+        }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Quiz updated successfully.',
-            'quiz' => $quiz,
-        ]);
+        $quiz->save();
 
-    } catch (\Exception $e) {
+        // Replace existing questions with the submitted questions.
+        $quiz->questions()->delete();
 
-        DB::rollBack();
+        foreach ($validated['questions'] as $index => $data) {
 
-        return response()->json([
-            'success' => false,
-            'message' => $e->getMessage(),
-        ], 500);
-    }
+            $options = array_values(array_filter(
+                array_map(
+                    fn ($value) => is_scalar($value) ? (string) $value : '',
+                    $data['options'] ?? []
+                ),
+                fn ($value) => $value !== ''
+            ));
+
+            // Normalize correct answers to strings.
+            $correctAnswers = array_values(array_filter(
+                array_map(
+                    fn ($value) => is_scalar($value) ? (string) $value : '',
+                    $data['correctAnswers'] ?? []
+                ),
+                fn ($value) => $value !== ''
+            ));
+
+            $question = new QuizQuestion();
+
+            $question->quiz_id = $quiz->id;
+            $question->question = $data['text'];
+            $question->question_type = $data['type'];
+            $question->options = $options;
+            $question->correct_answers = $correctAnswers;
+            $question->points = $data['points'] ?? 1;
+            $question->feedback = $data['feedback'] ?? null;
+            $question->required = $data['required'] ?? false;
+            $question->order = $index + 1;
+
+            // Preserve compatibility with existing multiple-choice fields.
+            $question->choice_a = $options[0] ?? null;
+            $question->choice_b = $options[1] ?? null;
+            $question->choice_c = $options[2] ?? null;
+            $question->choice_d = $options[3] ?? null;
+            $question->correct_answer = $correctAnswers[0] ?? null;
+
+            $question->save();
+        }
+    });
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Quiz updated successfully.',
+        'quiz' => $quiz->fresh(['questions', 'module']),
+    ]);
 }
+
+
+
 
     public function destroyQuiz($id)
     {
@@ -1849,11 +1764,41 @@ public function getQuizForStudent($quizId)
 
         $enrollment->progress = $progress;
 
-        // Kung 100% na, i-mark as completed
-        if ($progress >= 100) {
-            $enrollment->status = 'completed';
-            $enrollment->completed_at = now();
-        }
+
+// Check if all modules are completed
+$moduleIds = \App\Models\Module::where('course_id', $quiz->course_id)
+    ->active()
+    ->pluck('id');
+
+$completedModules = \App\Models\ModuleCompletion::where('user_id', $userId)
+    ->whereIn('module_id', $moduleIds)
+    ->count();
+
+$allModulesCompleted = $moduleIds->count() > 0
+    && $completedModules >= $moduleIds->count();
+
+// Check if Post-Test is passed
+$postTest = \App\Models\Quiz::where('course_id', $quiz->course_id)
+    ->where('quiz_type', 'post_test')
+    ->first();
+
+$postTestPassed = $postTest
+    && \App\Models\QuizResult::where('user_id', $userId)
+        ->where('quiz_id', $postTest->id)
+        ->where('status', 'passed')
+        ->exists();
+
+// Check if Hands-On Test is passed
+$handsOnPassed = \App\Models\HandsOnEvaluation::where('user_id', $userId)
+    ->where('course_id', $quiz->course_id)
+    ->where('result', 'passed')
+    ->exists();
+
+// Final completion requirement
+if ($allModulesCompleted && $postTestPassed && $handsOnPassed) {
+    $enrollment->status = 'completed';
+    $enrollment->completed_at = now();
+}
 
         $enrollment->save();
     }
@@ -1869,11 +1814,6 @@ public function getQuizForStudent($quizId)
     ]);
     }
 
-
-// Ilagay sa UserController.php (o TrainerController.php)
-// Huwag kalimutang i-import ang models sa itaas ng file:
-// use App\Models\Course_tbl;
-// use App\Models\User_tbl;
 
 public function trainerStudents()
 {
@@ -1907,7 +1847,15 @@ public function trainerStudents()
         ->orderBy('enrollment_tbls.enrolled_at', 'desc')
         ->get();
 
-    return view('trainer.students', compact('course', 'students'));
+    $handsOnEvaluations = HandsOnEvaluation::where('course_id', $course->id)
+    ->get()
+    ->keyBy('user_id');
+
+    return view('trainer.students', compact(
+    'course',
+    'students',
+    'handsOnEvaluations'
+    ));
     }
 
     public function attendance()
@@ -1952,6 +1900,84 @@ public function trainerStudents()
         'inSessionToday' => $inSessionToday,
     ]);
 }
+
+public function storeHandsOnEvaluation(Request $request)
+{
+    $trainer = Auth::user();
+
+    $course = Course_tbl::where('trainer_id', $trainer->id)->firstOrFail();
+
+    $request->validate([
+        'user_id' => 'required|exists:user_tbls,id',
+        'result'  => 'required|in:passed,failed',
+        'remarks' => 'nullable|string',
+    ]);
+
+    $studentEnrolled = \App\Models\Enrollment_tbl::where('user_id', $request->user_id)
+    ->where('course_id', $course->id)
+    ->exists();
+
+    if (!$studentEnrolled) {
+        return back()->with('error', 'This student is not enrolled in your course.');
+    }
+
+HandsOnEvaluation::updateOrCreate(
+    [
+        'user_id'   => $request->user_id,
+        'course_id' => $course->id,
+    ],
+    [
+        'trainer_id'   => $trainer->id,
+        'result'       => $request->result,
+        'evaluated_at' => now(),
+        'remarks'      => $request->remarks,
+    ]
+);
+
+// Check if the student can now complete the course
+if ($request->result === 'passed') {
+
+    $enrollment = \App\Models\Enrollment_tbl::where('user_id', $request->user_id)
+        ->where('course_id', $course->id)
+        ->first();
+
+    if ($enrollment) {
+
+        // Check all active modules
+        $moduleIds = \App\Models\Module::where('course_id', $course->id)
+            ->active()
+            ->pluck('id');
+
+        $completedModules = \App\Models\ModuleCompletion::where('user_id', $request->user_id)
+            ->whereIn('module_id', $moduleIds)
+            ->count();
+
+        $allModulesCompleted = $moduleIds->count() > 0
+            && $completedModules >= $moduleIds->count();
+
+        // Check Post-Test
+        $postTest = \App\Models\Quiz::where('course_id', $course->id)
+            ->where('quiz_type', 'post_test')
+            ->first();
+
+        $postTestPassed = $postTest
+            && \App\Models\QuizResult::where('user_id', $request->user_id)
+                ->where('quiz_id', $postTest->id)
+                ->where('status', 'passed')
+                ->exists();
+
+        // Final completion check
+        if ($allModulesCompleted && $postTestPassed) {
+            $enrollment->status = 'completed';
+            $enrollment->completed_at = now();
+            $enrollment->progress = 100;
+            $enrollment->save();
+        }
+    }
+}
+
+return back()->with('success', 'Hands-On evaluation saved successfully.');
+}   
 
 public function storeAttendance(Request $request)
 {
@@ -2326,15 +2352,28 @@ private function validateAnnouncement(Request $request): array
 
             $quizzes = \App\Models\Quiz::where('course_id', $enrollment->course_id)->get();
 
+            $postTest = $quizzes->firstWhere('quiz_type', 'post_test');
+
             $quizResults = \App\Models\QuizResult::where('user_id', $userId)
-                            ->whereIn('quiz_id', $quizzes->pluck('id'))
-                            ->get();
+                ->whereIn('quiz_id', $quizzes->pluck('id'))
+                ->get();
+
+            $handsOnEvaluation = \App\Models\HandsOnEvaluation::where('user_id', $userId)
+            ->where('course_id', $enrollment->course_id)
+            ->first();
+
+            $certificate = \App\Models\Certificate::where('user_id', $userId)
+            ->where('course_id', $enrollment->course_id)
+            ->first();
+
             } else {
                 $modules             = collect();
                 $unitNumbers         = collect();
                 $completedModuleIds  = [];
                 $quizzes             = collect();
                 $quizResults         = collect();
+                $handsOnEvaluation   = null;
+                $certificate         = null;
             }
     
         return view('student.modules', compact(
@@ -2344,9 +2383,13 @@ private function validateAnnouncement(Request $request): array
             'unitNumbers',
             'completedModuleIds',
             'quizzes',
-            'quizResults'
+            'quizResults',
+            'postTest',
+            'handsOnEvaluation',
+            'certificate'
         ));
     }
+    
     public function updateCourseDescription(Request $request, $id)
     {
         $request->validate([
@@ -2369,20 +2412,36 @@ private function validateAnnouncement(Request $request): array
     }
 
         public function trainerCoursePreview($id)
-    {
-        $trainer = Auth::user();
+{
+    $trainer = Auth::user();
 
-        $course = Course_tbl::where('id', $id)
-                    ->where('trainer_id', $trainer->id)
-                    ->firstOrFail();
+    // Get the course owned by the logged-in trainer
+    $course = Course_tbl::where('id', $id)
+        ->where('trainer_id', $trainer->id)
+        ->firstOrFail();
 
-        $modules = \App\Models\Module::where('course_id', $course->id)
-                        ->active()
-                        ->ordered()
-                        ->get();
+    // Get the course modules
+    $modules = \App\Models\Module::where('course_id', $course->id)
+        ->active()
+        ->ordered()
+        ->get();
 
-        return view('trainer.course_preview', compact('course', 'modules'));
-    }
+    // Get all onsite activities created for this course
+    $onsiteActivities = \App\Models\OnsiteActivity::where(
+        'course_id',
+        $course->id
+    )
+        ->orderByDesc('activity_date')
+        ->orderByDesc('id')
+        ->get();
+
+    // Pass all required data to the Blade view
+    return view('trainer.course_preview', compact(
+        'course',
+        'modules',
+        'onsiteActivities'
+    ));
+}
 
     public function updateCourseObjectives(Request $request, $id)
     {
@@ -2405,20 +2464,99 @@ private function validateAnnouncement(Request $request): array
         ]);
     }
 
-    public function markModuleDone(Request $request, $id)
-    {
-        $userId = Auth::id();
+public function markModuleDone(Request $request, $id)
+{
+    $userId = Auth::id();
 
-        \App\Models\ModuleCompletion::firstOrCreate([
-            'user_id'   => $userId,
-            'module_id' => $id,
-        ]);
+    \App\Models\ModuleCompletion::firstOrCreate([
+        'user_id'   => $userId,
+        'module_id' => $id,
+    ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Module marked as done!'
-        ]);
+    // Get the module's course
+    $module = \App\Models\Module::findOrFail($id);
+
+    $courseId = $module->course_id;
+
+    // Get the student's enrollment
+    $enrollment = \App\Models\Enrollment_tbl::where('user_id', $userId)
+        ->where('course_id', $courseId)
+        ->first();
+
+    if ($enrollment) {
+
+        // Check all active modules
+        $moduleIds = \App\Models\Module::where('course_id', $courseId)
+            ->active()
+            ->pluck('id');
+
+        $completedModules = \App\Models\ModuleCompletion::where('user_id', $userId)
+            ->whereIn('module_id', $moduleIds)
+            ->count();
+
+        $allModulesCompleted = $moduleIds->count() > 0
+            && $completedModules >= $moduleIds->count();
+
+        // Check Post-Test
+        $postTest = \App\Models\Quiz::where('course_id', $courseId)
+            ->where('quiz_type', 'post_test')
+            ->first();
+
+        $postTestPassed = $postTest
+            && \App\Models\QuizResult::where('user_id', $userId)
+                ->where('quiz_id', $postTest->id)
+                ->where('status', 'passed')
+                ->exists();
+
+        // Check Hands-On
+        $handsOnPassed = \App\Models\HandsOnEvaluation::where('user_id', $userId)
+            ->where('course_id', $courseId)
+            ->where('result', 'passed')
+            ->exists();
+
+        // Final completion requirement
+        if ($allModulesCompleted && $postTestPassed && $handsOnPassed) {
+            $enrollment->status = 'completed';
+            $enrollment->completed_at = now();
+            $enrollment->progress = 100;
+            $enrollment->save();
+        }
     }
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Module marked as done!'
+    ]);
+}
+
+public function markAnnouncementRead($id)
+{
+    $announcement = \App\Models\Announcement::findOrFail($id);
+    $user = \Auth::user();
+
+    // Admin/Super Admin can read all announcements.
+    // Keep the same audience rules used by the notification dropdowns.
+    $canRead = match ($user->role) {
+        'admin', 'super_admin' => true,
+        'trainer' => in_array($announcement->audience, ['general', 'trainer'], true),
+        'student' => in_array($announcement->audience, ['general', 'student'], true),
+        default => false,
+    };
+
+    if (!$canRead) {
+        abort(403);
+    }
+
+    \DB::table('announcement_reads')->insertOrIgnore([
+        'announcement_id' => $announcement->id,
+        'user_id' => $user->id,
+        'read_at' => now(),
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    return response()->json(['success' => true]);
+}
 
     
     

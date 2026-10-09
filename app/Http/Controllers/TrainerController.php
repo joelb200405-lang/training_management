@@ -11,6 +11,7 @@ use App\Models\Module;
 use App\Models\TrainerAnnouncement;
 use App\Models\AnnouncementComment;
 use App\Models\Course_tbl as Course;
+use App\Models\OnsiteActivity; // <-- Replace with your actual model name
 
 class TrainerController extends Controller
 {
@@ -113,22 +114,27 @@ public function deleteSyllabus($id)
      * Course Preview / Detail
      */
     public function courseShow($id)
-    {
-        $trainer = Auth::user();
-        $course  = Course_tbl::where('trainer_id', $trainer->id)
-            ->with([
-                'students',
-                // Order by unit first, then lesson order within that unit
-                'modules' => fn($q) => $q->orderBy('unit_number', 'asc')->orderBy('order', 'asc'),
-                'trainerAnnouncements.trainer',
-                'trainerAnnouncements.comments.user', // Eager-load comments and authors
-            ])
-            ->findOrFail($id);
+{
+    $trainer = Auth::user();
+    $course  = Course_tbl::where('trainer_id', $trainer->id)
+        ->with([
+            'students',
+            'modules' => fn($q) => $q->orderBy('unit_number', 'asc')->orderBy('order', 'asc'),
+            'trainerAnnouncements.trainer',
+            'trainerAnnouncements.comments.user',
+        ])
+        ->findOrFail($id);
 
-        $modules = $course->modules ?? collect();
+    $modules = $course->modules ?? collect();
 
-        return view('trainer.course-preview', compact('course', 'modules'));
-    }
+    // Fetch the onsite activities for this course
+    $onsiteActivities = OnsiteActivity::where('course_id', $course->id)
+        ->orderBy('activity_date', 'desc')
+        ->get();
+
+    // Pass 'onsiteActivities' to the view
+    return view('trainer.course-preview', compact('course', 'modules', 'onsiteActivities'));
+}
 
     /**
      * Store Curriculum Module (Trainer Action)
@@ -461,14 +467,28 @@ public function deleteSyllabus($id)
     /**
      * Assessments
      */
-    public function assessment()
+    public function assessment(Request $request)
     {
         $trainer = Auth::user();
         $courses = Course_tbl::where('trainer_id', $trainer->id)->get();
 
+        // 1. Fetch activities for all courses taught by this trainer
+        // (or filter by selected course if you have a dropdown)
+        $selectedCourseId = $request->get('course_id');
+
+        $onsiteActivities = OnsiteActivity::whereIn('course_id', $courses->pluck('id'))
+            ->when($selectedCourseId, function ($query, $selectedCourseId) {
+                return $query->where('course_id', $selectedCourseId);
+            })
+            ->orderBy('activity_date', 'desc')
+            ->get();
+
+        // 2. Pass 'onsiteActivities' to the view
         return view('trainer.assessment', [
-            'courses'     => $courses,
-            'assessments' => collect(),
+            'courses'          => $courses,
+            'selectedCourseId' => $selectedCourseId,
+            'assessments'      => collect(),
+            'onsiteActivities' => $onsiteActivities, // <-- This was missing
         ]);
     }
 }

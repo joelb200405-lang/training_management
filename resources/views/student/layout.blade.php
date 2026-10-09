@@ -1,29 +1,42 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
+
   <meta charset="UTF-8">
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <meta name="csrf-token" content="{{ csrf_token() }}">
+
   <title>@yield('title', 'Dasmariñas Training')</title>
 
   <link rel="stylesheet" href="{{ asset('stylesheet/homepage.css') }}">
+
   <link rel="stylesheet" href="{{ asset('stylesheet/layout.css') }}">
+
   <link rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
     integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
+
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
   <link
     href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Montserrat:wght@400;600;700;800;900&family=Poppins:wght@600;700;800&display=swap"
     rel="stylesheet">
+
   <link
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
     rel="stylesheet"
     integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
     crossorigin="anonymous">
+
   <!-- Tab Icon -->
+
   <link rel="icon" type="image/png"
     href="{{ asset('images/logo_ledipo.png') }}">
 
@@ -31,9 +44,9 @@
 
   <style>
     /* =========================================================
-           LOGGED-IN PROFILE AVATAR / DROPDOWN
-           Matches the student homepage profile-circle design
-           ========================================================= */
+      LOGGED-IN PROFILE AVATAR / DROPDOWN
+      Matches the student homepage profile-circle design
+      ========================================================= */
     .landing-profile {
       position: relative;
       display: flex;
@@ -166,7 +179,7 @@
       padding: 8px 15px;
     }
 
-    /* ── SIDEBAR INDEX STYLES ──────────────────────────── */
+    /* ── SIDEBAR INDEX STYLES ────────────────────────────────────── */
     .sidebar-index-title {
       font-size: 10px;
       font-weight: 700;
@@ -215,7 +228,74 @@
       color: #025628;
     }
 
-    /* ── PRE-TEST & POST-TEST MODAL STYLES ──────────────────── */
+    .index-item {
+      border-radius: 8px;
+      transition: background .18s ease;
+    }
+
+    .index-item:hover,
+    .index-item.active {
+      background: #eaf5ee;
+    }
+
+    .index-item>span {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .index-item>span .fa {
+      width: 15px;
+      text-align: center;
+    }
+
+    .index-chevron {
+      font-size: 10px;
+      transition: transform .18s ease;
+    }
+
+    .index-item[aria-expanded="true"] .index-chevron {
+      transform: rotate(180deg);
+    }
+
+    .index-sub-menu {
+      padding: 5px 0 8px 16px;
+    }
+
+    .index-sub-link {
+      display: flex;
+      align-items: flex-start;
+      gap: 7px;
+      padding: 7px 9px;
+      margin: 1px 6px 1px 0;
+      border-radius: 7px;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
+    .index-sub-link .fa {
+      flex: 0 0 13px;
+      margin-top: 2px;
+      font-size: 11px;
+    }
+
+    .index-sub-link:hover,
+    .index-sub-link.active {
+      background: #eaf5ee;
+      color: #025628;
+    }
+
+    .index-quiz-link {
+      font-size: 10px;
+      padding-left: 16px;
+    }
+
+    .index-empty {
+      cursor: default;
+      font-style: italic;
+    }
+
+    /* ── MODAL STYLES ────────────────────────────────────── */
     .pretest-modal-overlay {
       display: none;
       position: fixed;
@@ -365,7 +445,6 @@
       color: #ffffff;
     }
 
-    /* ── A4 LANDSCAPE CERTIFICATE MODAL ─────────────────── */
     .a4-cert-modal-wrapper {
       display: none;
       position: fixed;
@@ -664,6 +743,7 @@
       }
     }
   </style>
+
 </head>
 
 <body>
@@ -671,89 +751,143 @@
   <nav class="topbar">
 
     <div class="topbar-left">
+
       <button class="hamburger" id="hamburger" aria-label="Toggle sidebar">
+
         <span></span>
+
         <span></span>
+
         <span></span>
+
       </button>
 
       <a href="{{ route('homepage') }}" class="topbar-brand">
+
         <img src="{{ asset('images/logo.png') }}" alt="logo"
           class="topbar-logo">
+
         <span>LEDIPO</span>
+
       </a>
+
     </div>
 
     <div class="topbar-right">
+
       {{-- Updated Profile Trigger & Container --}}
+
       <div class="landing-profile">
+
         <button class="landing-avatar-btn" id="avatarBtn"
           aria-label="Open profile menu">
+
           {{ strtoupper(substr(Auth::user()->firstname ?? 'M', 0, 1)) }}{{ strtoupper(substr(Auth::user()->lastname ?? 'B', 0, 1)) }}
+
         </button>
 
         <div class="landing-profile-dropdown" id="dropdown">
+
           <div class="landing-dropdown-header">
+
             <div class="landing-dd-avatar">
+
               {{ strtoupper(substr(Auth::user()->firstname ?? 'M', 0, 1)) }}{{ strtoupper(substr(Auth::user()->lastname ?? 'B', 0, 1)) }}
+
             </div>
+
             <div class="landing-user-info">
+
               <div class="landing-dh-name">
+
                 {{ Auth::user()->firstname ?? 'Student' }}
+
                 {{ Auth::user()->lastname ?? '' }}</div>
+
               <div class="landing-dh-role">
-                {{ ucfirst(Auth::user()->role ?? 'Student') }}</div>
+
+                {{ ucfirst(Auth::user()->role ?? 'Student') }}
+
+              </div>
+
             </div>
+
           </div>
 
           <div class="dd-items">
 
             <a href="{{ Route::has('student.profile') ? route('student.profile') : '#' }}"
               class="dd-item">
+
               <i class="fa fa-user dd-icon"></i>
+
               Profile
+
             </a>
 
             <a href="{{ Route::has('homepage') ? route('homepage') : url('/homepage') }}"
               class="dd-item">
+
               <i class="fa fa-gauge-high dd-icon"></i>
+
               Dashboard
+
             </a>
 
             <a href="{{ url('/') }}" class="dd-item">
+
               <i class="fa fa-house dd-icon"></i>
+
               Home
+
             </a>
 
             <div class="dd-divider"></div>
 
             <a href="#" class="dd-item dd-logout"
               onclick="event.preventDefault(); openLogoutModal();">
+
               <i class="fa fa-right-from-bracket dd-icon"></i>
+
               Log out
+
             </a>
+
           </div>
 
           <form id="logout-form"
             action="{{ Route::has('Logout') ? route('Logout') : '#' }}"
             method="POST" style="display:none;">
+
             @csrf
+
           </form>
+
         </div>
+
       </div>
+
     </div>
+
   </nav>
 
   <div id="logoutModal" class="modal" style="display:none;">
+
     <div class="modal-content">
+
       <p>Are you sure you want to log out?</p>
 
       <div class="modal-actions-centered">
+
         <button onclick="confirmLogout()" class="btn-modal-yes">Yes</button>
+
         <button onclick="closeLogoutModal()"
           class="btn-modal-no">Cancel</button>
+
       </div>
+
     </div>
+
   </div>
 
   <div class="app-body">
@@ -761,264 +895,514 @@
     <div class="sidebar-overlay" id="overlay"></div>
 
     {{-- ── SIDEBAR ────────────────────────────────────────── --}}
+
     <aside class="sidebar" id="sidebar">
+
       <div class="sidebar-section-label">MENU</div>
 
       <a href="{{ Route::has('homepage') ? route('homepage') : '/student/dashboard' }}"
         class="nav-item {{ request()->routeIs('homepage') ? 'active' : '' }}">
+
         <span>Dashboard</span>
+
       </a>
 
       <a href="{{ Route::has('student.modules') ? route('student.modules') : '/student/modules' }}"
         class="nav-item {{ request()->routeIs('student.modules*') ? 'active' : '' }}">
+
         <span>My Courses</span>
+
       </a>
 
-      {{-- ── INDEX DROPDOWN MENU ── --}}
-      @if (isset($unitNumbers) && $unitNumbers->isNotEmpty())
+      {{-- ── COURSE INDEX / MODULE SIDEBAR ── --}}
+
+      @php
+
+        $sidebarModules = isset($modules) ? $modules : collect();
+
+        $sidebarUnitNumbers =
+            isset($unitNumbers) && $unitNumbers->isNotEmpty()
+                ? $unitNumbers
+                : $sidebarModules
+
+                    ->pluck('unit_number')
+
+                    ->filter(fn($number) => $number !== null)
+
+                    ->unique()
+
+                    ->sort()
+
+                    ->values();
+
+      @endphp
+
+      @if ($sidebarUnitNumbers->isNotEmpty())
+
         <div id="sidebarIndexMenu">
-          <div class="sidebar-index-title">INDEX</div>
 
-          {{-- Introduction --}}
-          <div class="index-item"
-            onclick="toggleSubMenu('introSub'); if(typeof showIntroScreen === 'function') showIntroScreen();">
-            <span>Introduction</span>
-            <i class="fa fa-chevron-down" style="font-size:10px;"></i>
+          <div class="sidebar-index-title">COURSE CONTENT</div>
+
+          <div class="index-item" role="button" tabindex="0"
+            onclick="toggleSubMenu('introSub'); showIntroScreen();">
+
+            <span><i class="fa fa-book-open"></i> Introduction</span>
+
+            <i class="fa fa-chevron-down index-chevron"></i>
+
           </div>
+
           <div class="index-sub-menu show" id="introSub">
-            <span
-              onclick="if(typeof showIntroScreen === 'function') showIntroScreen()"
-              class="index-sub-link active">• Welcome & Course Overview</span>
+
+            <a href="#courseOverview" class="index-sub-link"
+              onclick="showIntroScreen();">• Welcome &amp; Course
+
+              Overview</a>
+
           </div>
 
-          {{-- Real Units --}}
-          @foreach ($unitNumbers as $unitNum)
-            <div class="index-item"
-              onclick="toggleSubMenu('unit{{ $unitNum }}Sub'); if(typeof showUnitScreen === 'function') showUnitScreen({{ $unitNum }});">
-              <span>Unit {{ $unitNum }}</span>
-              <i class="fa fa-chevron-down" style="font-size:10px;"></i>
+          @foreach ($sidebarUnitNumbers as $unitNum)
+            <div class="index-item" role="button" tabindex="0"
+              onclick="toggleSubMenu('unit{{ $unitNum }}Sub'); showUnitScreen({{ $unitNum }});">
+
+              <span><i class="fa fa-layer-group"></i> Unit
+
+                {{ $unitNum }}</span>
+
+              <i class="fa fa-chevron-down index-chevron"></i>
+
             </div>
+
             <div class="index-sub-menu" id="unit{{ $unitNum }}Sub">
+
+              @foreach ($sidebarModules->where('unit_number', $unitNum) as $sidebarModule)
+                <a href="#module-item-{{ $sidebarModule->id }}"
+                  class="index-sub-link"
+                  onclick="openSidebarModule(event, {{ $sidebarModule->id }}, {{ $unitNum }});">
+
+                  <i
+                    class="fa fa-file-lines"></i><span>{{ $sidebarModule->title }}</span>
+
+                </a>
+
+                @if (isset($quizzes))
+                  @foreach ($quizzes->where('module_id', $sidebarModule->id) as $sidebarQuiz)
+                    <a href="#quiz-item-{{ $sidebarQuiz->id }}"
+                      class="index-sub-link index-quiz-link"
+                      onclick="openSidebarQuiz(event, {{ $sidebarQuiz->id }}, @js($sidebarQuiz->title), {{ $unitNum }});">
+
+                      <i
+                        class="fa fa-circle-question"></i><span>{{ $sidebarQuiz->title }}</span>
+
+                    </a>
+                  @endforeach
+                @endif
+              @endforeach
+
+              @if ($sidebarModules->where('unit_number', $unitNum)->isEmpty())
+                <span class="index-sub-link index-empty">No modules added
+
+                  yet</span>
+              @endif
+
             </div>
           @endforeach
 
-          {{-- Completion --}}
-          <div class="index-item"
-            onclick="toggleSubMenu('completionSub'); if(typeof showCompletionScreen === 'function') showCompletionScreen();">
-            <span>Completion</span>
-            <i class="fa fa-chevron-down" style="font-size:10px;"></i>
+          <div class="index-item" role="button" tabindex="0"
+            onclick="toggleSubMenu('completionSub'); showAllCourseContent();">
+
+            <span><i class="fa fa-graduation-cap"></i> Completion</span>
+
+            <i class="fa fa-chevron-down index-chevron"></i>
+
           </div>
-          <div class="index-sub-menu" id="completionSub"></div>
+
+          <div class="index-sub-menu" id="completionSub">
+
+            <a href="#courseOverview" class="index-sub-link"
+              onclick="showIntroScreen();">• Course progress</a>
+
+          </div>
+
         </div>
+
       @endif
 
       <a href="{{ Route::has('student.announcements') ? route('student.announcements') : '/student/announcements' }}"
         class="nav-item {{ request()->routeIs('student.announcements') ? 'active' : '' }}">
+
         <span>Announcement</span>
+
       </a>
+
     </aside>
 
     <main class="main-content">
+
       @yield('content')
+
     </main>
 
   </div>
 
   {{-- ── PRE-TEST MODAL POPUP ───────────────────────────────── --}}
+
   <div id="pretestSidebarModal" class="pretest-modal-overlay">
+
     <div class="pretest-modal-card">
+
       <div class="pretest-modal-header">
+
         <button onclick="closePretestSidebarModal()"
           class="pretest-modal-close">✕</button>
+
         <h3>Baseline Pre-test</h3>
+
         <p>Course Assessment</p>
+
       </div>
 
       <div class="pretest-modal-body">
+
         <div class="pretest-grid-info">
+
           <div class="pretest-info-box">
+
             <div class="val">20</div>
+
             <div class="lbl">Questions</div>
+
           </div>
+
           <div class="pretest-info-box">
+
             <div class="val">1 Attempt</div>
+
             <div class="lbl">Limit Allowed</div>
+
           </div>
+
           <div class="pretest-info-box">
+
             <div class="val">30 Mins</div>
+
             <div class="lbl">Time Duration</div>
+
           </div>
+
           <div class="pretest-info-box">
+
             <div class="val">70%</div>
+
             <div class="lbl">Passing Grade</div>
+
           </div>
+
         </div>
 
         <div class="pretest-rules-list">
+
           <strong>Instructions:</strong>
+
           <ul>
-            <li>Ensure a stable internet connection before starting.</li>
-            <li>You only have <strong>1 attempt</strong> to take this test.</li>
+
+            <li>Ensure a stable internet connection before starting.
+
+            </li>
+
+            <li>You only have <strong>1 attempt</strong> to take
+
+              this test.</li>
+
             <li>Once started, the timer cannot be paused.</li>
+
           </ul>
+
         </div>
 
         <button onclick="triggerStartPretest()" class="btn-start-pretest">
+
           Start Pre-test
+
         </button>
+
       </div>
+
     </div>
+
   </div>
 
   {{-- ── POST-TEST MODAL POPUP ─────────────────────────────── --}}
+
   <div id="posttestSidebarModal" class="pretest-modal-overlay">
+
     <div class="pretest-modal-card">
+
       <div class="pretest-modal-header">
+
         <button onclick="closePosttestSidebarModal()"
           class="pretest-modal-close">✕</button>
+
         <h3>Final Post-Test</h3>
+
         <p>Official Written Evaluation</p>
+
       </div>
 
       <div class="pretest-modal-body">
+
         <div class="pretest-grid-info">
+
           <div class="pretest-info-box">
+
             <div class="val">80</div>
+
             <div class="lbl">Questions</div>
+
           </div>
+
           <div class="pretest-info-box">
+
             <div class="val">1 Attempt</div>
+
             <div class="lbl">Limit Allowed</div>
+
           </div>
+
           <div class="pretest-info-box">
+
             <div class="val">60 Mins</div>
+
             <div class="lbl">Time Duration</div>
+
           </div>
+
           <div class="pretest-info-box">
+
             <div class="val">80%</div>
+
             <div class="lbl">Passing Grade</div>
+
           </div>
+
         </div>
 
         <div class="pretest-rules-list">
+
           <strong>Instructions:</strong>
+
           <ul>
-            <li>This is the final written evaluation containing <strong>80
-                questions</strong>.</li>
-            <li>You need a score of <strong>80% or higher</strong> to pass.</li>
-            <li>Ensure you complete all items before submitting.</li>
+
+            <li>This is the final written evaluation containing
+
+              <strong>80
+
+                questions</strong>.
+
+            </li>
+
+            <li>You need a score of <strong>80% or higher</strong>
+
+              to pass.</li>
+
+            <li>Ensure you complete all items before submitting.
+
+            </li>
+
           </ul>
+
         </div>
 
         <button onclick="triggerStartPosttest()" class="btn-start-pretest">
+
           Start Post-Test
+
         </button>
+
       </div>
+
     </div>
+
   </div>
 
-  {{-- ── A4 LANDSCAPE CERTIFICATE MODAL ─────────────────────── --}}
   <div id="certificateModal" class="a4-cert-modal-wrapper">
+
     <div class="a4-cert-container">
 
       <div class="a4-cert-sheet">
+
         <div class="cert-corner-top-left-accent"></div>
+
         <div class="cert-corner-top-left"></div>
 
         <div class="cert-corner-bottom-right-accent"></div>
+
         <div class="cert-corner-bottom-right"></div>
 
         <div class="cert-inner-content">
+
           <div>
+
             <div class="cert-header-logos">
+
               <img src="{{ asset('images/logo.png') }}" alt="Dasma Logo"
                 class="cert-logo-img"
                 onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/4/41/Seal_of_Dasmari%C3%B1as.png'">
+
               <img
                 src="https://upload.wikimedia.org/wikipedia/commons/b/b2/TESDA_logo.svg"
                 alt="TESDA Logo" class="cert-logo-img" style="height:36px;">
+
               <img src="{{ asset('images/logo.png') }}" alt="LEDIPO Logo"
                 class="cert-logo-img">
+
             </div>
 
             <div class="cert-agency-title">
-              TECHNICAL EDUCATION AND SKILLS DEVELOPMENT AUTHORITY<br>
+
+              TECHNICAL EDUCATION AND SKILLS DEVELOPMENT
+
+              AUTHORITY<br>
+
               CITY GOVERNMENT OF DASMARIÑAS - LEDIPO
+
             </div>
 
-            <div class="cert-main-heading">CERTIFICATE OF COMPLETION</div>
-            <div class="cert-certify-text">THIS COMS CERTIFIY THAT</div>
+            <div class="cert-main-heading">CERTIFICATE OF
+
+              COMPLETION</div>
+
+            <div class="cert-certify-text">THIS COMS CERTIFIY THAT
+
+            </div>
+
           </div>
 
           <div>
+
             <div class="cert-student-name">
+
               {{ Auth::user()->firstname ?? 'Samira' }}
+
               {{ Auth::user()->lastname ?? 'Hadid' }}
+
             </div>
-            <div class="cert-completion-desc">HAS SUCCESSFULLY COMPLETED THE
+
+            <div class="cert-completion-desc">HAS SUCCESSFULLY
+
+              COMPLETED THE
+
               TRAINING IN</div>
 
             <div class="cert-course-title" id="certDynamicCourseTitle">
+
               DRESSMAKING
+
             </div>
 
             <div class="cert-conducted-by">Conducted by</div>
+
             <div class="cert-office-name">
-              DASMARIÑAS LOCAL ECONOMIC DEVELOPMENT AND INVESTMENT PROMOTION
+
+              DASMARIÑAS LOCAL ECONOMIC DEVELOPMENT AND INVESTMENT
+
+              PROMOTION
+
               OFFICE (LEDIPO)
+
             </div>
 
             <div class="cert-date-range">
+
               from April 15, 2026 to May 11, 2026
+
             </div>
 
             <div class="cert-given-text">
-              Given this 18th day of April 2026 at Dasmariñas City, Cavite,
+
+              Given this 18th day of April 2026 at Dasmariñas
+
+              City, Cavite,
+
               Philippines.
+
             </div>
+
           </div>
 
           <div>
+
             <div class="cert-meta-ids-row">
+
               <span>CERT. NO.: D-LED-TES-2026-081</span>
+
               <span>TRAINING ID: NCIIDRM-26-032</span>
+
             </div>
 
             <div class="cert-signatures-row">
+
               <div class="cert-sig-block">
+
                 <div class="cert-sig-line"></div>
-                <div class="cert-sig-name">HON. JENNIFER A. BARZAGA</div>
+
+                <div class="cert-sig-name">HON. JENNIFER A.
+
+                  BARZAGA</div>
+
                 <div class="cert-sig-title">City Mayor</div>
+
               </div>
 
               <div class="cert-sig-block">
+
                 <div class="cert-sig-line"></div>
-                <div class="cert-sig-name">MR. CARLOS H. LEGASPI</div>
+
+                <div class="cert-sig-name">MR. CARLOS H.
+
+                  LEGASPI</div>
+
                 <div class="cert-sig-title">LEDIPO Head</div>
+
               </div>
+
             </div>
+
           </div>
 
         </div>
+
       </div>
 
       <div class="cert-modal-actions">
+
         <span
           style="color:#ffffff; font-size:11.5px; font-weight:600;">Official
+
           LEDIPO E-Certificate Preview</span>
+
         <div>
+
           <button onclick="closeCertificateModal()"
             style="background:#4A5568; color:#fff; border:none; padding:6px 16px; border-radius:6px; font-size:11px; font-weight:700; cursor:pointer; margin-right:8px;">
+
             Close
+
           </button>
-          <button onclick="window.print()"
+
+          <button onclick="window\.print()"
             style="background:#D4D120; color:#1A1A1A; border:none; padding:6px 18px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">
+
             <i class="fa fa-print"></i> Print / Download PDF
+
           </button>
+
         </div>
+
       </div>
 
     </div>
+
   </div>
 
   <script
@@ -1027,108 +1411,1008 @@
 
   <script>
     const hamburger = document.getElementById('hamburger');
+
+
+
+
+
+
+
     const sidebar = document.getElementById('sidebar');
+
+
+
+
+
+
+
     const overlay = document.getElementById('overlay');
+
+
+
+
+
+
+
     const avatarBtn = document.getElementById('avatarBtn');
+
+
+
+
+
+
+
     const dropdown = document.getElementById('dropdown');
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     if (hamburger) {
+
+
+
+
+
+
+
       hamburger.addEventListener('click', function() {
+
+
+
+
+
+
+
         sidebar.classList.toggle('sidebar-open');
+
+
+
+
+
+
+
         overlay.classList.toggle('show');
+
+
+
+
+
+
+
       });
+
+
+
+
+
+
+
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     if (overlay) {
+
+
+
+
+
+
+
       overlay.addEventListener('click', function() {
+
+
+
+
+
+
+
         sidebar.classList.remove('sidebar-open');
+
+
+
+
+
+
+
         overlay.classList.remove('show');
+
+
+
+
+
+
+
       });
+
+
+
+
+
+
+
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     if (avatarBtn) {
+
+
+
+
+
+
+
       avatarBtn.addEventListener('click', function(e) {
+
+
+
+
+
+
+
         e.stopPropagation();
+
+
+
+
+
+
+
         dropdown.classList.toggle('open');
+
+
+
+
+
+
+
+      });
+
+
+
+
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    document.addEventListener('click', function(e) {
+
+
+
+
+
+
+
+      if (dropdown && !e.target.closest('.landing-profile')) {
+
+
+
+
+
+
+
+        dropdown.classList.remove('open');
+
+
+
+
+
+
+
+      }
+
+
+
+
+
+
+
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    function toggleSubMenu(id) {
+
+
+
+      const el = document.getElementById(id);
+
+
+
+      if (!el) return;
+
+
+
+      el.classList.toggle('show');
+
+
+
+      const heading = el.previousElementSibling;
+
+
+
+      if (heading && heading.classList.contains('index-item')) {
+
+
+
+        heading.setAttribute('aria-expanded', el.classList.contains('show') ?
+
+
+
+          'true' : 'false');
+
+
+
+      }
+
+
+
+    }
+
+
+
+
+
+
+
+    function hideAllModuleContent() {
+      document.querySelectorAll(
+        '.sidebar-unit-heading, .module-action-row, .module-quizzes-wrap, .module-pdf-preview, .course-level-quizzes-wrap'
+      ).forEach((element) => {
+        element.style.display = 'none';
       });
     }
 
-    document.addEventListener('click', function(e) {
-      if (dropdown && !e.target.closest('.landing-profile')) {
-        dropdown.classList.remove('open');
+    function setIntroContentVisibility(show) {
+      const selectors = [
+        '#courseOverview',
+        '#courseSyllabus',
+        '.course-syllabus',
+        '.syllabus-section',
+        '[data-content-screen="introduction"]'
+      ];
+
+      selectors.forEach((selector) => {
+        document.querySelectorAll(selector).forEach((element) => {
+          element.style.display = show ? '' : 'none';
+        });
+      });
+
+      // Introduction and module content are separate screens.
+      document.querySelectorAll('#modulesSection').forEach((element) => {
+        element.style.display = show ? 'none' : '';
+      });
+    }
+
+    function clearCourseIndexActiveState() {
+      document.querySelectorAll(
+        '#sidebarIndexMenu .index-item, #sidebarIndexMenu .index-sub-link'
+      ).forEach((element) => element.classList.remove('active'));
+    }
+
+    function showIntroScreen() {
+      // Remember the current screen in the URL
+      saveLmsPosition('screen', 'intro');
+      saveLmsPosition('unit', null);
+      saveLmsPosition('module', null);
+      saveLmsPosition('quiz', null);
+
+      hideAllModuleContent();
+      setIntroContentVisibility(true);
+
+      document.querySelectorAll('.course-level-quizzes-wrap').forEach(
+        (element) => {
+          element.style.display = '';
+        }
+      );
+
+      clearCourseIndexActiveState();
+
+      const introMenu = document.getElementById('introSub');
+      if (introMenu) introMenu.classList.add('show');
+
+      const introHeading = introMenu ?
+        introMenu.previousElementSibling :
+        null;
+
+      if (introHeading) introHeading.classList.add('active');
+
+      const introLink = document.querySelector('#introSub .index-sub-link');
+      if (introLink) introLink.classList.add('active');
+    }
+
+    function showUnitScreen(unitNumber) {
+      const selectedUnit = String(unitNumber);
+      hideAllModuleContent();
+      setIntroContentVisibility(false);
+      clearCourseIndexActiveState();
+
+      document.querySelectorAll('.sidebar-unit-heading').forEach((heading) => {
+        if (String(heading.dataset.unitNumber) === selectedUnit) {
+          heading.style.display = '';
+        }
+      });
+
+      document.querySelectorAll('.module-action-row').forEach((module) => {
+        if (String(module.dataset.unitNumber) === selectedUnit) {
+          module.style.display = '';
+        }
+      });
+
+      // Show only previews/quizzes that belong to the selected unit. If a child
+      // element has no unit number, resolve its unit from its linked module.
+      document.querySelectorAll('.module-quizzes-wrap, .module-pdf-preview')
+        .forEach((element) => {
+          let elementUnit = element.dataset.unitNumber;
+          if (!elementUnit && element.dataset.moduleId) {
+            const linkedModule = document.getElementById('module-item-' +
+              element.dataset.moduleId);
+            elementUnit = linkedModule ? linkedModule.dataset.unitNumber : '';
+          }
+          if (String(elementUnit) === selectedUnit) element.style.display = '';
+        });
+
+      const unitMenu = document.getElementById('unit' + selectedUnit + 'Sub');
+      if (unitMenu) {
+        unitMenu.classList.add('show');
+        if (unitMenu.previousElementSibling) {
+          unitMenu.previousElementSibling.classList.add('active');
+        }
+      }
+    }
+
+    function showAllCourseContent() {
+      showIntroScreen();
+    }
+
+    function showOnlySelectedModule(moduleId, unitNumber) {
+      const selectedId = String(moduleId);
+      const selectedUnit = String(unitNumber);
+      hideAllModuleContent();
+      setIntroContentVisibility(false);
+      clearCourseIndexActiveState();
+
+      document.querySelectorAll('.sidebar-unit-heading').forEach((heading) => {
+        if (String(heading.dataset.unitNumber) === selectedUnit) {
+          heading.style.display = '';
+        }
+      });
+
+      const moduleElement = document.getElementById('module-item-' + selectedId);
+      if (moduleElement) moduleElement.style.display = '';
+
+      document.querySelectorAll('.module-pdf-preview, .module-quizzes-wrap')
+        .forEach((element) => {
+          if (String(element.dataset.moduleId) === selectedId) {
+            element.style.display = '';
+          }
+        });
+
+      const unitMenu = document.getElementById('unit' + selectedUnit + 'Sub');
+      if (unitMenu) unitMenu.classList.add('show');
+
+      const selectedLink = document.querySelector(
+        '#unit' + selectedUnit + 'Sub a[href="#module-item-' + selectedId + '"]'
+      );
+      if (selectedLink) selectedLink.classList.add('active');
+    }
+
+    function openSidebarModule(event, moduleId, unitNumber) {
+      if (event) event.preventDefault();
+      showOnlySelectedModule(moduleId, unitNumber);
+
+      const target = document.getElementById('module-item-' + moduleId);
+      if (target) target.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+
+    function openSidebarQuiz(event, quizId, quizTitle, unitNumber) {
+      if (event) event.preventDefault();
+
+      const quizElement = document.getElementById('quiz-item-' + quizId);
+      const moduleId = quizElement ? quizElement.dataset.moduleId : null;
+
+      if (moduleId) {
+        showOnlySelectedModule(moduleId, unitNumber);
+      } else {
+        hideAllModuleContent();
+        setIntroContentVisibility(false);
+        clearCourseIndexActiveState();
+      }
+
+      if (event && event.currentTarget) event.currentTarget.classList.add(
+        'active');
+
+      if (typeof openQuiz === 'function') {
+        openQuiz(quizId, quizTitle);
+      } else if (quizElement) {
+        quizElement.style.display = '';
+        quizElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      }
+    }
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const params = new URLSearchParams(window.location.search);
+
+      const screen = params.get('screen') || 'intro';
+      const unit = params.get('unit');
+      const moduleId = params.get('module');
+
+      if (screen === 'module' && moduleId && unit) {
+        showOnlySelectedModule(moduleId, unit);
+      } else if (screen === 'unit' && unit) {
+        showUnitScreen(unit);
+      } else {
+        showIntroScreen();
       }
     });
 
-    function toggleSubMenu(id) {
-      const el = document.getElementById(id);
-      if (el) {
-        el.classList.toggle('show');
-      }
+
+    function openPretestSidebarModal() {
+
+
+
+
+
+
+
+      document.getElementById('pretestSidebarModal').style.display = 'flex';
+
+
+
+
+
+
+
     }
 
-    /* ── Pre-test Modal Handlers ────────────────────────── */
-    function openPretestSidebarModal() {
-      document.getElementById('pretestSidebarModal').style.display = 'flex';
-    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     function closePretestSidebarModal() {
+
+
+
+
+
+
+
       document.getElementById('pretestSidebarModal').style.display = 'none';
+
+
+
+
+
+
+
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     function triggerStartPretest() {
+
+
+
+
+
+
+
       closePretestSidebarModal();
+
+
+
+
+
+
+
       if (typeof openQuizModal === 'function') {
+
+
+
+
+
+
+
         openQuizModal(1, 'Baseline Pre-test');
+
+
+
+
+
+
+
       } else {
+
+
+
+
+
+
+
         alert('Starting Pre-test...');
+
+
+
+
+
+
+
       }
+
+
+
+
+
+
+
     }
 
-    /* ── Post-test Modal Handlers ────────────────────────── */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // ── Post-test Modal Handlers ──────────────────────────
+
+
+
+
+
+
+
     function openPosttestSidebarModal() {
+
+
+
+
+
+
+
       document.getElementById('posttestSidebarModal').style.display = 'flex';
+
+
+
+
+
+
+
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     function closePosttestSidebarModal() {
+
+
+
+
+
+
+
       document.getElementById('posttestSidebarModal').style.display = 'none';
+
+
+
+
+
+
+
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     function triggerStartPosttest() {
+
+
+
+
+
+
+
       closePosttestSidebarModal();
+
+
+
+
+
+
+
       if (typeof openQuizModal === 'function') {
+
+
+
+
+
+
+
         openQuizModal(2, 'Final Post-Test (80 Items)');
+
+
+
+
+
+
+
       } else {
+
+
+
+
+
+
+
         alert('Starting 80-Item Post-Test...');
+
+
+
+
+
+
+
       }
+
+
+
+
+
+
+
     }
 
-    /* ── Certificate Modal Handlers ──────────────────────── */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // ── Certificate Modal Handlers ────────────────────────
+
+
+
+
+
+
+
     function openCertificateModal() {
+
+
+
+
+
+
+
       const activeTitleEl = document.getElementById('activeCourseTitle') ||
+
+
+
+
+
+
+
         document.getElementById('certProgramName');
+
+
+
+
+
+
+
       const certCourseEl = document.getElementById('certDynamicCourseTitle');
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       if (activeTitleEl && certCourseEl) {
+
+
+
+
+
+
+
         certCourseEl.textContent = activeTitleEl.textContent.trim();
+
+
+
+
+
+
+
       }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       document.getElementById('certificateModal').style.display = 'flex';
+
+
+
+
+
+
+
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     function closeCertificateModal() {
+
+
+
+
+
+
+
       document.getElementById('certificateModal').style.display = 'none';
+
+
+
+
+
+
+
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     function openLogoutModal() {
+
+
+
+
+
+
+
       document.getElementById('logoutModal').style.display = 'block';
+
+
+
+
+
+
+
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     function closeLogoutModal() {
+
+
+
+
+
+
+
       document.getElementById('logoutModal').style.display = 'none';
+
+
+
+
+
+
+
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     function confirmLogout() {
+
+
+
+
+
+
+
       document.getElementById('logout-form').submit();
+
+
+
+
+
+
+
     }
   </script>
 

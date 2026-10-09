@@ -722,6 +722,145 @@
 
       </div>
 
+      {{-- SECTION: ONSITE GRADES --}}
+      <div
+        style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); margin-top: 24px;">
+
+        {{-- Section Header --}}
+        <div
+          style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 14px;">
+          <div>
+            <h3
+              style="margin: 0; font-size: 17px; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-clipboard-check"
+                style="color: #025628; font-size: 16px;"></i>
+              Onsite Activity Grades
+            </h3>
+            <p style="margin: 4px 0 0 24px; font-size: 12.5px; color: #64748b;">
+              Record and evaluate practical exams, hands-on tasks, and
+              face-to-face workshop scores.
+            </p>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span
+              style="background: #f0fdf4; color: #025628; border: 1px solid #bbf7d0; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700;">
+              {{ isset($onsiteActivities) && $onsiteActivities->count() > 0 ? $onsiteActivities->count() . ' Activities' : '0 Activities' }}
+            </span>
+
+            <button type="button" onclick="openCreateActivityModal()"
+              style="display: inline-flex; align-items: center; gap: 8px; background: #025628; color: #ffffff; border: 1px solid #025628; border-radius: 8px; padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;"
+              onmouseover="this.style.background='#01401e'; this.style.transform='translateY(-1px)';"
+              onmouseout="this.style.background='#025628'; this.style.transform='none';">
+              <i class="fa-solid fa-plus" style="font-size: 11px;"></i>
+              <span>Add Activity</span>
+            </button>
+          </div>
+        </div>
+
+        @if (isset($onsiteActivities) && $onsiteActivities->count() > 0)
+          {{-- Activities List --}}
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            @foreach ($onsiteActivities as $activity)
+              <div
+                style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; gap: 18px; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
+
+                {{-- Activity Details --}}
+                <div
+                  style="display: flex; align-items: flex-start; gap: 14px; flex: 1; min-width: 0;">
+                  <div
+                    style="width: 42px; height: 42px; border-radius: 10px; background: #ecfdf5; border: 1px solid #bbf7d0; color: #15803d; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0;">
+                    <i class="fa-solid fa-award"></i>
+                  </div>
+
+                  <div style="flex: 1; min-width: 0;">
+                    <div
+                      style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                      <span
+                        style="font-size: 10px; font-weight: 800; letter-spacing: 0.04em; color: #166534; background: #dcfce7; border: 1px solid #bbf7d0; padding: 2px 7px; border-radius: 4px; text-transform: uppercase;">
+                        Max: {{ $activity->max_score ?? 100 }} pts
+                      </span>
+                      <span
+                        style="font-size: 12px; color: #94a3b8; font-weight: 600;">
+                        Date:
+                        {{ \Carbon\Carbon::parse($activity->activity_date)->format('M d, Y') }}
+                      </span>
+                    </div>
+
+                    <div
+                      style="font-weight: 700; font-size: 15px; color: #1e293b; line-height: 1.4; word-break: break-word;">
+                      {{ $activity->title }}
+                    </div>
+
+                    @if (!empty($activity->description))
+                      <div
+                        style="font-size: 12.5px; color: #64748b; line-height: 1.4; margin-top: 4px;">
+                        {{ $activity->description }}
+                      </div>
+                    @endif
+                  </div>
+                </div>
+
+                {{-- Action Buttons --}}
+                <div
+                  style="display: flex; align-items: center; gap: 10px; flex-shrink: 0;">
+                  {{-- Input/View Grades Button --}}
+                  <button type="button"
+                    onclick="openGradeEntryModal({{ $activity->id }})"
+                    style="display: inline-flex; align-items: center; gap: 6px; background: #f8fafc; color: #025628; border: 1px solid #bbf7d0; border-radius: 7px; padding: 7px 14px; font-size: 12.5px; font-weight: 700; cursor: pointer; transition: all 0.15s;"
+                    onmouseover="this.style.background='#ecfdf5';"
+                    onmouseout="this.style.background='#f8fafc';">
+                    <i class="fa-solid fa-pen-nib" style="font-size: 12px;"></i>
+                    <span>Encode Grades</span>
+                  </button>
+
+                  {{-- Delete Activity --}}
+                  <button type="button"
+                    onclick="openDeleteActivityModal({{ $activity->id }})"
+                    title="Delete activity"
+                    style="background: transparent; border: none; color: #94a3b8; cursor: pointer; width: 34px; height: 34px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 13px; transition: all 0.15s;"
+                    onmouseover="this.style.background='#fff1f2'; this.style.color='#e11d48';"
+                    onmouseout="this.style.background='transparent'; this.style.color='#94a3b8';">
+                    <i class="fa-regular fa-trash-can"></i>
+                  </button>
+                </div>
+
+              </div>
+            @endforeach
+          </div>
+        @else
+          {{-- Empty State --}}
+          <div
+            style="background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%); border: 1px dashed #86efac; border-radius: 14px; padding: 42px 20px; text-align: center;">
+            <div
+              style="width: 52px; height: 52px; border-radius: 14px; background: #dcfce7; border: 1px solid #bbf7d0; display: inline-flex; align-items: center; justify-content: center; color: #15803d; margin-bottom: 12px;">
+              <i class="fa-solid fa-clipboard-list"
+                style="font-size: 20px;"></i>
+            </div>
+
+            <h4
+              style="margin: 0 0 5px 0; font-size: 15px; font-weight: 750; color: #14532d;">
+              No Onsite Activities Created Yet
+            </h4>
+
+            <p
+              style="margin: 0 auto 17px auto; font-size: 12.5px; color: #64748b; max-width: 400px; line-height: 1.5;">
+              Create practical exams, workshop assessments, or return
+              demonstration rubrics to enter onsite grades for enrolled trainees.
+            </p>
+
+            <button type="button" onclick="openCreateActivityModal()"
+              style="display: inline-flex; align-items: center; gap: 8px; background: #15803d; color: #ffffff; border: none; border-radius: 8px; padding: 9px 16px; font-size: 12.5px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 5px rgba(21,128,61,0.18); transition: all 0.15s;"
+              onmouseover="this.style.background='#166534'; this.style.transform='translateY(-1px)';"
+              onmouseout="this.style.background='#15803d'; this.style.transform='translateY(0)';">
+              <i class="fa-solid fa-plus" style="font-size: 11px;"></i>
+              <span>Create First Activity</span>
+            </button>
+          </div>
+        @endif
+
+      </div>
+
       {{-- SECTION 1: QUIZZES & ASSESSMENTS --}}
       <div
         style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
@@ -741,10 +880,6 @@
           @endphp
 
           <div style="display: flex; align-items: center; gap: 10px;">
-            <span
-              style="background: #f0fdf4; color: #025628; border: 1px solid #bbf7d0; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700;">
-
-            </span>
 
             <button type="button" onclick="openAddQuizModal()"
               style="display: inline-flex; align-items: center; gap: 8px; background: #025628; color: #ffffff; border: 1px solid #025628; border-radius: 8px; padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;"
@@ -2577,6 +2712,178 @@
     </div>
 
   </div>
+
+  {{-- MODAL: CREATE ONSITE ACTIVITY --}}
+  <div id="createActivityModal"
+    style="display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(15, 23, 42, 0.55); backdrop-filter: blur(2px); align-items: center; justify-content: center; padding: 20px;">
+    <div
+      style="background: #ffffff; border-radius: 14px; width: 100%; max-width: 520px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); overflow: hidden;">
+      <div
+        style="padding: 18px 22px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div
+            style="width: 34px; height: 34px; border-radius: 8px; background: #ecfdf5; border: 1px solid #bbf7d0; color: #15803d; display: flex; align-items: center; justify-content: center; font-size: 14px;">
+            <i class="fa-solid fa-plus"></i>
+          </div>
+          <h3
+            style="margin: 0; font-size: 16px; font-weight: 700; color: #1e293b;">
+            Create Onsite Activity</h3>
+        </div>
+        <button type="button" onclick="closeCreateActivityModal()"
+          style="background: none; border: none; font-size: 18px; color: #94a3b8; cursor: pointer; padding: 4px;">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form method="POST"
+        action="{{ route('trainer.onsite-activities.store') }}"
+        style="padding: 22px; margin: 0;">
+        @csrf
+        <input type="hidden" name="course_id" value="{{ $course->id }}">
+
+        <div style="margin-bottom: 14px;">
+          <label
+            style="display: block; font-size: 12.5px; font-weight: 700; color: #334155; margin-bottom: 6px;">
+            Activity Title <span style="color: #dc2626;">*</span>
+          </label>
+          <input type="text" name="title" required
+            placeholder="e.g., Bread Formulation Demonstration #1"
+            style="width: 100%; box-sizing: border-box; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; color: #1e293b; outline: none;">
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-bottom: 14px;">
+          <div style="flex: 1;">
+            <label
+              style="display: block; font-size: 12.5px; font-weight: 700; color: #334155; margin-bottom: 6px;">
+              Max Score <span style="color: #dc2626;">*</span>
+            </label>
+            <input type="number" name="max_score" value="100"
+              min="1" step="0.01" required
+              style="width: 100%; box-sizing: border-box; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; color: #1e293b; outline: none;">
+          </div>
+          <div style="flex: 1;">
+            <label
+              style="display: block; font-size: 12.5px; font-weight: 700; color: #334155; margin-bottom: 6px;">
+              Activity Date <span style="color: #dc2626;">*</span>
+            </label>
+            <input type="date" name="activity_date"
+              value="{{ date('Y-m-d') }}" required
+              style="width: 100%; box-sizing: border-box; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; color: #1e293b; outline: none;">
+          </div>
+        </div>
+
+        <div style="margin-bottom: 22px;">
+          <label
+            style="display: block; font-size: 12.5px; font-weight: 700; color: #334155; margin-bottom: 6px;">
+            Description / Instructions <span
+              style="font-size: 11px; color: #94a3b8; font-weight: 500;">(Optional)</span>
+          </label>
+          <textarea name="description" rows="3"
+            placeholder="Enter evaluation points, hygiene rubrics, or notes..."
+            style="width: 100%; box-sizing: border-box; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; color: #1e293b; outline: none; resize: vertical; font-family: inherit;"></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+          <button type="button" onclick="closeCreateActivityModal()"
+            style="padding: 9px 16px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #475569; font-weight: 600; font-size: 13px; cursor: pointer;">
+            Cancel
+          </button>
+          <button type="submit"
+            style="padding: 9px 18px; border: none; border-radius: 8px; background: #025628; color: #ffffff; font-weight: 600; font-size: 13px; cursor: pointer;">
+            Create Activity
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  {{-- MODAL: ENCODE ONSITE GRADES --}}
+  <div id="gradeEntryModal"
+    style="display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(15, 23, 42, 0.55); backdrop-filter: blur(2px); align-items: center; justify-content: center; padding: 20px;">
+    <div
+      style="background: #ffffff; border-radius: 16px; width: 100%; max-width: 860px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); overflow: hidden;">
+      <div
+        style="padding: 18px 24px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div
+            style="width: 40px; height: 40px; border-radius: 10px; background: #ecfdf5; border: 1px solid #bbf7d0; color: #15803d; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;">
+            <i class="fa-solid fa-pen-nib"></i>
+          </div>
+          <div>
+            <h3 id="modalActivityTitle"
+              style="margin: 0; font-size: 16px; font-weight: 700; color: #1e293b;">
+              Encode Activity Grades
+            </h3>
+            <div
+              style="display: flex; align-items: center; gap: 8px; margin-top: 2px;">
+              <span id="modalActivityMax"
+                style="font-size: 12px; font-weight: 700; color: #166534; background: #dcfce7; padding: 2px 7px; border-radius: 4px;">
+                Max Score: 100 pts
+              </span>
+              <span id="modalTraineeCount"
+                style="font-size: 12px; color: #64748b;">
+                Loading students...
+              </span>
+            </div>
+          </div>
+        </div>
+        <button type="button" onclick="closeGradeEntryModal()"
+          style="background: none; border: none; font-size: 18px; color: #94a3b8; cursor: pointer; padding: 4px;">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="onsiteGradesForm" method="POST"
+        action="{{ route('trainer.onsite-grades.store') }}"
+        style="display: flex; flex-direction: column; overflow: hidden; margin: 0; flex: 1;">
+        @csrf
+        <input type="hidden" name="activity_id" id="modalActivityId"
+          value="">
+
+        <div
+          style="padding: 18px 24px; overflow-y: auto; max-height: calc(90vh - 150px); flex: 1;">
+          <table
+            style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+              <tr
+                style="border-bottom: 2px solid #f1f5f9; font-size: 11.5px; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em;">
+                <th style="padding-bottom: 12px; font-weight: 700;">Trainee</th>
+                <th
+                  style="padding-bottom: 12px; font-weight: 700; width: 140px;">
+                  Score</th>
+                <th
+                  style="padding-bottom: 12px; font-weight: 700; width: 80px; text-align: center;">
+                  Status</th>
+                <th
+                  style="padding-bottom: 12px; font-weight: 700; width: 220px;">
+                  Remarks</th>
+              </tr>
+            </thead>
+            <tbody id="traineeGradesTableBody"></tbody>
+          </table>
+
+          <div id="gradesLoadingIndicator"
+            style="text-align: center; padding: 40px 20px; color: #64748b; font-size: 13px;">
+            <i class="fa-solid fa-spinner fa-spin"
+              style="font-size: 22px; color: #025628; margin-bottom: 10px; display: block;"></i>
+            Fetching student roster and saved scores...
+          </div>
+        </div>
+
+        <div
+          style="padding: 14px 24px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 10px; background: #f8fafc;">
+          <button type="button" onclick="closeGradeEntryModal()"
+            style="padding: 9px 16px; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; color: #475569; font-weight: 600; font-size: 13px; cursor: pointer;">
+            Cancel
+          </button>
+          <button type="submit"
+            style="padding: 9px 20px; border: none; border-radius: 8px; background: #025628; color: #ffffff; font-weight: 600; font-size: 13px; cursor: pointer;">
+            Save All Grades
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 @endsection
 
 @section('scripts')
@@ -3682,15 +3989,15 @@
                 </select>
               </div>
               ${isChoice ? `
-                                                                                                                    <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;">
-                                                                                                                      ${q.options.map((opt,oi)=>`<div style="display:flex;align-items:center;gap:9px;">
+                                                                                                                                            <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;">
+                                                                                                                                              ${q.options.map((opt,oi)=>`<div style="display:flex;align-items:center;gap:9px;">
                     <span style="width:18px;height:18px;border:2px solid #cbd5e1;${q.type==='multiple_choice'?'border-radius:50%;':'border-radius:4px;'}box-sizing:border-box;flex:none;"></span>
                     <input value="${escapeHtml(opt)}" oninput="quizQuestions[${i}].options[${oi}]=this.value" aria-label="Question ${i+1} option ${oi+1}" style="flex:1;border:0;border-bottom:1px solid #e2e8f0;padding:5px 2px;font-size:13px;outline:none;">
                     <button type="button" onclick="removeQuizOption(${i},${oi})" style="border:0;background:none;color:#94a3b8;cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
                   </div>`).join('')}
-                                                                                                                      <button type="button" onclick="addQuizOption(${i})" style="display:inline-flex;align-items:center;gap:7px;align-self:flex-start;border:1px solid #86efac;background:#f0fdf4;color:#15803d;border-radius:7px;font-size:12.5px;font-weight:800;cursor:pointer;padding:7px 11px;margin-top:2px;"><i class="fa-solid fa-plus"></i> Add option</button>
-                                                                                                                    </div>` : `
-                                                                                                                    <div style="margin-top:12px;padding:11px 12px;border:1px dashed #cbd5e1;border-radius:7px;color:#94a3b8;font-size:12px;">${q.type==='paragraph'?'Long answer response area':'Short answer response'}</div>`}
+                                                                                                                                              <button type="button" onclick="addQuizOption(${i})" style="display:inline-flex;align-items:center;gap:7px;align-self:flex-start;border:1px solid #86efac;background:#f0fdf4;color:#15803d;border-radius:7px;font-size:12.5px;font-weight:800;cursor:pointer;padding:7px 11px;margin-top:2px;"><i class="fa-solid fa-plus"></i> Add option</button>
+                                                                                                                                            </div>` : `
+                                                                                                                                            <div style="margin-top:12px;padding:11px 12px;border:1px dashed #cbd5e1;border-radius:7px;color:#94a3b8;font-size:12px;">${q.type==='paragraph'?'Long answer response area':'Short answer response'}</div>`}
             </div>
             <div style="border-top:1px solid #f1f5f9;padding:9px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
               <button type="button" onclick="toggleAnswerKey(${i})" style="display:inline-flex;align-items:center;gap:7px;border:0;background:${answerOpen?'#dcfce7':'transparent'};color:#15803d;border-radius:7px;padding:8px 10px;font-size:12.5px;font-weight:800;cursor:pointer;">
@@ -3713,9 +4020,9 @@
           <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:#166534;">Points <input type="number" min="0" step="1" value="${q.points}" onchange="quizQuestions[${i}].points=Math.max(0,Number(this.value)||0)" style="width:58px;border:0;border-bottom:2px solid #15803d;background:transparent;text-align:center;padding:3px;color:#166534;font-weight:800;outline:none;"></label>
         </div>
         ${isChoice ? q.options.map((opt,oi)=>`<label style="display:flex;align-items:center;gap:9px;padding:7px 4px;cursor:pointer;color:#334155;font-size:13px;">
-                                                                                                              <input type="${q.type==='multiple_choice'?'radio':'checkbox'}" name="answer-${i}" ${q.correctAnswers.includes(oi)?'checked':''} onchange="toggleCorrectAnswer(${i},${oi},this.checked)" style="accent-color:#16a34a;width:17px;height:17px;">
-                                                                                                              <span>${escapeHtml(opt || 'Option '+(oi+1))}</span>
-                                                                                                            </label>`).join('') : `<div style="padding:8px 4px;color:#64748b;font-size:12px;">This question type is manually graded.</div>`}
+                                                                                                                                      <input type="${q.type==='multiple_choice'?'radio':'checkbox'}" name="answer-${i}" ${q.correctAnswers.includes(oi)?'checked':''} onchange="toggleCorrectAnswer(${i},${oi},this.checked)" style="accent-color:#16a34a;width:17px;height:17px;">
+                                                                                                                                      <span>${escapeHtml(opt || 'Option '+(oi+1))}</span>
+                                                                                                                                    </label>`).join('') : `<div style="padding:8px 4px;color:#64748b;font-size:12px;">This question type is manually graded.</div>`}
         <div style="margin-top:9px;padding-top:11px;border-top:1px solid #bbf7d0;">
           <button type="button" onclick="toggleFeedback(${i})" style="border:0;background:none;color:#15803d;font-size:12.5px;font-weight:700;cursor:pointer;padding:0;"><i class="fa-regular fa-comment-dots"></i> ${q.feedback?'Edit answer feedback':'Add answer feedback'}</button>
           <div id="feedback-${i}" style="display:${q.feedback?'block':'none'};margin-top:8px;"><textarea oninput="quizQuestions[${i}].feedback=this.value" placeholder="Write feedback shown after answering..." style="width:100%;box-sizing:border-box;min-height:60px;border:1px solid #bbf7d0;border-radius:7px;padding:8px;font-size:12px;resize:vertical;outline:none;background:#fff;">${escapeHtml(q.feedback)}</textarea></div>
@@ -4565,6 +4872,179 @@
           }, 100);
         }
       }
+    });
+
+    let currentActivityMaxScore = 100;
+
+    // Create Modal Actions
+    function openCreateActivityModal() {
+      const modal = document.getElementById('createActivityModal');
+      if (modal) modal.style.display = 'flex';
+    }
+
+    function closeCreateActivityModal() {
+      const modal = document.getElementById('createActivityModal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    // Delete Action
+    function openDeleteActivityModal(activityId) {
+      if (confirm(
+          'Are you sure you want to delete this activity and all its recorded grades?'
+        )) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/trainer/onsite-activities/${activityId}`;
+        form.innerHTML = `
+        @csrf
+        @method('DELETE')
+      `;
+        document.body.appendChild(form);
+        form.submit();
+      }
+    }
+
+    // Grade Entry Modal Actions
+    function openGradeEntryModal(activityId) {
+      const modal = document.getElementById('gradeEntryModal');
+      const tbody = document.getElementById('traineeGradesTableBody');
+      const loader = document.getElementById('gradesLoadingIndicator');
+      const titleEl = document.getElementById('modalActivityTitle');
+      const maxEl = document.getElementById('modalActivityMax');
+      const countEl = document.getElementById('modalTraineeCount');
+      const activityInput = document.getElementById('modalActivityId');
+
+      activityInput.value = activityId;
+      tbody.innerHTML = '';
+      loader.style.display = 'block';
+      countEl.innerText = 'Loading students...';
+      modal.style.display = 'flex';
+
+      fetch(`/trainer/onsite-activities/${activityId}/grades`)
+        .then(response => {
+          if (!response.ok) throw new Error('Network error');
+          return response.json();
+        })
+        .then(data => {
+          loader.style.display = 'none';
+          currentActivityMaxScore = parseFloat(data.activity.max_score) || 100;
+
+          titleEl.innerText = data.activity.title;
+          maxEl.innerText = `Max Score: ${currentActivityMaxScore} pts`;
+          countEl.innerText =
+            `${data.trainees.length} Enrolled Trainee${data.trainees.length === 1 ? '' : 's'}`;
+
+          if (!data.trainees || data.trainees.length === 0) {
+            tbody.innerHTML = `
+            <tr>
+              <td colspan="4" style="text-align: center; padding: 30px; color: #94a3b8; font-size: 13px;">
+                No active enrolled students found in this course.
+              </td>
+            </tr>
+          `;
+            return;
+          }
+
+          data.trainees.forEach(t => {
+            const row = document.createElement('tr');
+            row.style.borderBottom = '1px solid #f1f5f9';
+
+            const scoreVal = (t.score !== null && t.score !== undefined) ? t
+              .score : '';
+            const remarksVal = t.remarks ? t.remarks : '';
+            const hasScore = scoreVal !== '';
+            const percentage = hasScore ? Math.round((parseFloat(scoreVal) /
+              currentActivityMaxScore) * 100) : null;
+            const statusBadge = hasScore ?
+              (percentage >= 75 ?
+                '<span style="background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 4px;">Passed</span>' :
+                '<span style="background: #fff1f2; color: #9f1239; border: 1px solid #fecdd3; font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 4px;">Failed</span>'
+              ) :
+              '<span style="background: #f8fafc; color: #94a3b8; border: 1px solid #e2e8f0; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 4px;">Pending</span>';
+
+            row.innerHTML = `
+            <td style="padding: 12px 0;">
+              <div style="font-weight: 700; color: #1e293b; font-size: 13.5px;">
+                ${t.lastname}, ${t.firstname}
+              </div>
+              <div style="font-size: 12px; color: #64748b;">
+                ${t.id_number ? `ID: ${t.id_number} &bull; ` : ''}${t.email}
+              </div>
+              <input type="hidden" name="grades[${t.enrollment_id}][enrollment_id]" value="${t.enrollment_id}">
+              <input type="hidden" name="grades[${t.enrollment_id}][user_id]" value="${t.user_id}">
+            </td>
+            <td style="padding: 12px 10px 12px 0;">
+              <div style="display: flex; align-items: center; gap: 4px;">
+                <input type="number" 
+                       name="grades[${t.enrollment_id}][score]" 
+                       value="${scoreVal}" 
+                       max="${currentActivityMaxScore}" 
+                       min="0" 
+                       step="0.01" 
+                       placeholder="0.00" 
+                       oninput="handleScoreInput(this, ${currentActivityMaxScore})"
+                       style="width: 90px; box-sizing: border-box; padding: 7px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; font-weight: 700; color: #1e293b; outline: none;">
+                <span style="font-size: 12px; color: #94a3b8;">/ ${currentActivityMaxScore}</span>
+              </div>
+            </td>
+            <td style="padding: 12px 0; text-align: center;">
+              <div class="status-cell">${statusBadge}</div>
+            </td>
+            <td style="padding: 12px 0;">
+              <input type="text" 
+                     name="grades[${t.enrollment_id}][remarks]" 
+                     value="${remarksVal}" 
+                     placeholder="Notes / feedback..."
+                     style="width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12.5px; color: #334155; outline: none;">
+            </td>
+          `;
+            tbody.appendChild(row);
+          });
+        })
+        .catch(err => {
+          loader.innerHTML = `
+          <span style="color: #e11d48; font-weight: 600;">
+            <i class="fa-solid fa-triangle-exclamation"></i> Error fetching trainee grades. Please refresh and try again.
+          </span>
+        `;
+        });
+    }
+
+    function closeGradeEntryModal() {
+      const modal = document.getElementById('gradeEntryModal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    // Live validator for score caps and real-time pass/fail indicator update
+    function handleScoreInput(input, maxScore) {
+      let val = parseFloat(input.value);
+      if (val > maxScore) {
+        input.value = maxScore;
+        val = maxScore;
+      } else if (val < 0) {
+        input.value = 0;
+        val = 0;
+      }
+
+      const row = input.closest('tr');
+      const badgeContainer = row.querySelector('.status-cell');
+      if (isNaN(val) || input.value === '') {
+        badgeContainer.innerHTML =
+          '<span style="background: #f8fafc; color: #94a3b8; border: 1px solid #e2e8f0; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 4px;">Pending</span>';
+      } else {
+        const pct = (val / maxScore) * 100;
+        badgeContainer.innerHTML = pct >= 75 ?
+          '<span style="background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 4px;">Passed</span>' :
+          '<span style="background: #fff1f2; color: #9f1239; border: 1px solid #fecdd3; font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 4px;">Failed</span>';
+      }
+    }
+
+    // Close modals on clicking outer backdrop
+    window.addEventListener('click', function(e) {
+      const modal1 = document.getElementById('createActivityModal');
+      const modal2 = document.getElementById('gradeEntryModal');
+      if (e.target === modal1) closeCreateActivityModal();
+      if (e.target === modal2) closeGradeEntryModal();
     });
   </script>
 @endsection
