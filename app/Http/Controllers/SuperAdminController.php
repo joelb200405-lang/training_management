@@ -9,6 +9,7 @@ use Illuminate\Validation\Rule;
 class SuperAdminController extends Controller
 {
 
+
 public function adminAccounts()
 {
     $admins = User_tbl::where('role', 'admin')
@@ -19,9 +20,27 @@ public function adminAccounts()
         ->orderBy('lastname')
         ->get();
 
-    return view('superadmin.dashboard', compact('admins', 'trainers'));
+    $students = User_tbl::where('role', 'student')
+        ->orderBy('lastname')
+        ->get();
+
+    return view('superadmin.dashboard', compact(
+        'admins',
+        'trainers',
+        'students'
+    ));
 }
 
+
+
+public function studentAccounts()
+{
+    $students = User_tbl::where('role', 'student')
+        ->orderBy('lastname')
+        ->get();
+
+    return view('superadmin.dashboard', compact('students'));
+}
 
     
 public function trainerAccounts()

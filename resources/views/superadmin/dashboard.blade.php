@@ -1100,6 +1100,551 @@
             }
 
         }
+
+
+/* ROLES & PERMISSIONS */
+
+.roles-overview {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 24px;
+}
+
+.role-overview-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 22px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    transition: box-shadow 0.2s ease;
+}
+
+.role-overview-card:hover {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
+}
+
+.role-overview-icon {
+    flex-shrink: 0;
+    width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e8f4ec;
+    color: #025628;
+    border-radius: 10px;
+    font-size: 20px;
+}
+
+.role-overview-card h4 {
+    margin: 2px 0 8px;
+    color: #025628;
+    font-size: 17px;
+}
+
+.role-overview-card p {
+    margin: 0 0 12px;
+    color: #6b7280;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.role-label {
+    display: inline-block;
+    padding: 5px 9px;
+    background: #f0f5f1;
+    color: #025628;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .roles-overview {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+.permissions-matrix-section {
+    margin-top: 30px;
+}
+
+.permissions-matrix-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.permissions-matrix-header h3 {
+    margin: 0 0 6px;
+}
+
+.permissions-matrix-header p {
+    margin: 0;
+    color: #777;
+    font-size: 14px;
+}
+
+.view-only-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 12px;
+    border-radius: 20px;
+    background: #f1f3f5;
+    color: #495057;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+
+.permissions-table-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+}
+
+.permissions-table {
+    width: 100%;
+    min-width: 1000px;
+    border-collapse: collapse;
+    table-layout: auto;
+    font-size: 13px;
+}
+
+
+.permissions-table th,
+.permissions-table td {
+    padding: 14px 16px;
+    text-align: left;
+    vertical-align: middle;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.permissions-table thead th {
+    background: #f8fafc;
+    color: #374151;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.permissions-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.permissions-table tbody tr:hover {
+    background: #fafafa;
+}
+
+.permission-yes {
+    color: #18794e;
+    font-weight: 600;
+}
+
+.permission-no {
+    color: #9ca3af;
+    text-align: center !important;
+}
+
+.permission-review {
+    color: #946200;
+    font-weight: 500;
+}
+
+.permissions-matrix-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 14px 0 0;
+    color: #6b7280;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.permissions-matrix-note i {
+    margin-top: 3px;
+}
+
+@media (max-width: 768px) {
+    .permissions-matrix-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+.permissions-table td {
+    max-width: 220px;
+    white-space: normal;
+    line-height: 1.5;
+}
+
+.permissions-table th:first-child,
+.permissions-table td:first-child {
+    width: 250px;
+}
+
+
+/* SYSTEM SETTINGS */
+
+.system-settings-overview {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 24px;
+}
+
+.system-setting-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 22px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    transition: box-shadow 0.2s ease;
+}
+
+.system-setting-card:hover {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
+}
+
+.system-setting-icon {
+    flex-shrink: 0;
+    width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e8f4ec;
+    color: #025628;
+    border-radius: 10px;
+    font-size: 20px;
+}
+
+.system-setting-content {
+    min-width: 0;
+}
+
+.system-setting-content h4 {
+    margin: 2px 0 8px;
+    color: #025628;
+    font-size: 16px;
+}
+
+.system-setting-content p {
+    margin: 0 0 12px;
+    color: #6b7280;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.system-setting-status {
+    display: inline-block;
+    padding: 5px 9px;
+    background: #f0f5f1;
+    color: #025628;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.system-settings-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    margin-top: 20px;
+    padding: 14px 16px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    color: #6b7280;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.system-settings-note i {
+    margin-top: 3px;
+}
+
+@media (max-width: 768px) {
+    .system-settings-overview {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* SYSTEM CONFIGURATION */
+
+.system-configuration-overview {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 24px;
+}
+
+.system-configuration-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 22px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    transition: box-shadow 0.2s ease;
+}
+
+.system-configuration-card:hover {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
+}
+
+.system-configuration-icon {
+    flex-shrink: 0;
+    width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e8f4ec;
+    color: #025628;
+    border-radius: 10px;
+    font-size: 20px;
+}
+
+.system-configuration-content {
+    min-width: 0;
+}
+
+.system-configuration-content h4 {
+    margin: 2px 0 8px;
+    color: #025628;
+    font-size: 16px;
+}
+
+.system-configuration-content p {
+    margin: 0 0 12px;
+    color: #6b7280;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.system-configuration-status {
+    display: inline-block;
+    padding: 5px 9px;
+    background: #f0f5f1;
+    color: #025628;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.system-configuration-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    margin-top: 20px;
+    padding: 14px 16px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    color: #6b7280;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.system-configuration-note i {
+    margin-top: 3px;
+}
+
+@media (max-width: 768px) {
+    .system-configuration-overview {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* USER ACTIVITY LOGS */
+
+.activity-logs-overview {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 24px;
+}
+
+.activity-summary-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 22px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    transition: box-shadow 0.2s ease;
+}
+
+.activity-summary-card:hover {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
+}
+
+.activity-summary-icon {
+    flex-shrink: 0;
+    width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e8f4ec;
+    color: #025628;
+    border-radius: 10px;
+    font-size: 20px;
+}
+
+.activity-summary-card h4 {
+    margin: 2px 0 8px;
+    color: #025628;
+    font-size: 16px;
+}
+
+.activity-summary-card p {
+    margin: 0 0 12px;
+    color: #6b7280;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.activity-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    background: #f0f5f1;
+    color: #025628;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.activity-log-table-section {
+    margin-top: 30px;
+}
+
+.activity-log-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.activity-log-header h3 {
+    margin: 0 0 6px;
+}
+
+.activity-log-header p {
+    margin: 0;
+    color: #777;
+    font-size: 14px;
+}
+
+.activity-log-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+}
+
+.activity-log-table {
+    width: 100%;
+    min-width: 750px;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.activity-log-table th,
+.activity-log-table td {
+    padding: 14px 16px;
+    text-align: left;
+    vertical-align: middle;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.activity-log-table thead th {
+    background: #f8fafc;
+    color: #374151;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.activity-log-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.activity-empty-state {
+    height: 150px;
+    text-align: center !important;
+    color: #6b7280;
+}
+
+.activity-empty-state i,
+.activity-empty-state strong,
+.activity-empty-state span {
+    display: block;
+}
+
+.activity-empty-state i {
+    margin-bottom: 10px;
+    font-size: 24px;
+    color: #025628;
+}
+
+.activity-empty-state strong {
+    margin-bottom: 6px;
+    color: #374151;
+}
+
+.activity-empty-state span {
+    font-size: 12px;
+}
+
+.activity-logs-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    margin-top: 20px;
+    padding: 14px 16px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    color: #6b7280;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.activity-logs-note i {
+    margin-top: 3px;
+}
+
+@media (max-width: 768px) {
+    .activity-logs-overview {
+        grid-template-columns: 1fr;
+    }
+
+    .activity-log-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+
     </style>
 
 </head>
@@ -1649,36 +2194,6 @@
                 <i class="fa fa-file-lines nav-icon"></i>
 
                 <span>System Logs</span>
-
-            </a>
-
-
-
-            <div class="sidebar-section-label">
-                Account
-            </div>
-
-
-            <a href="#profile" class="nav-item" data-view="profile" onclick="
-                showView('profile');
-                return false;
-            ">
-
-                <i class="fa fa-user nav-icon"></i>
-
-                <span>My Profile</span>
-
-            </a>
-
-
-            <a href="#logout" class="nav-item" onclick="
-                openLogoutModal();
-                return false;
-            ">
-
-                <i class="fa fa-right-from-bracket nav-icon"></i>
-
-                <span>Logout</span>
 
             </a>
 
@@ -2556,6 +3071,7 @@
                         <th>Username</th>
                         <th>Status</th>
                         <th>Date Created</th>
+                        <th>ACTIONS</th>
                     </tr>
                 </thead>
 
@@ -2619,7 +3135,7 @@
                     @empty
 
                         <tr>
-                            <td colspan="5" class="empty-admins">
+                            <td colspan="6" class="empty-admins">
 
                                 <i class="fa-solid fa-chalkboard-user"></i>
 
@@ -2773,19 +3289,155 @@
                         View and manage registered trainees and student accounts.
                     </p>
 
-                    <div class="superadmin-placeholder">
 
+<!-- STUDENT SEARCH AND FILTER -->
+<div class="student-filter-bar" style="
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+    align-items: center;
+">
+    <div style="
+        position: relative;
+        flex: 1;
+        min-width: 220px;
+    ">
+        <i class="fa-solid fa-magnifying-glass" style="
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+        "></i>
+
+        <input
+            type="text"
+            id="studentSearchInput"
+            placeholder="Search by name, email, or username..."
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 11px 12px 11px 36px;
+                border: 1px solid #dcdcdc;
+                border-radius: 7px;
+                font-size: 12px;
+                outline: none;
+            "
+        >
+    </div>
+
+    <select
+        id="studentStatusFilter"
+        style="
+            min-width: 160px;
+            padding: 11px 12px;
+            border: 1px solid #dcdcdc;
+            border-radius: 7px;
+            background: #fff;
+            color: #444;
+            font-size: 12px;
+        "
+    >
+        <option value="">All Statuses</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+    </select>
+</div>
+
+
+
+<div class="superadmin-table-wrapper">
+
+    <table class="superadmin-table">
+        <thead>
+            <tr>
+                <th>STUDENT NAME</th>
+                <th>EMAIL</th>
+                <th>USERNAME</th>
+                <th>STATUS</th>
+                <th>DATE CREATED</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @forelse ($students as $student)
+                <tr>
+                    <td>
+                        {{ $student->firstname }}
+                        {{ $student->lastname }}
+                    </td>
+
+                    <td>{{ $student->email }}</td>
+
+                    <td>{{ $student->username }}</td>
+
+                    <td>
+                        @php
+                            $status = strtolower(
+                                $student->status ?? 'inactive'
+                            );
+                        @endphp
+
+                        <span class="status-badge {{ $status }}">
+                            {{ ucfirst($status) }}
+                        </span>
+                    </td>
+
+                    <td>
+                        {{ $student->created_at?->format('M d, Y') ?? 'N/A' }}
+                    </td>
+
+
+<td>
+    <button
+        type="button"
+        class="student-view-btn"
+        onclick="viewStudentDetails(
+            {{ $student->id }},
+            @js($student->firstname),
+            @js($student->lastname),
+            @js($student->email),
+            @js($student->username),
+            @js($student->status ?? 'Inactive'),
+            @js($student->created_at?->format('M d, Y') ?? 'N/A'),
+            @js($student->contact ?? 'Not provided'),
+            @js($student->role)
+        )"
+        style="
+            padding: 7px 12px;
+            background: #025628;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        "
+    >
+        <i class="fa-solid fa-eye"></i> View
+    </button>
+</td>
+
+
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="5" class="empty-admins">
                         <i class="fa-solid fa-users"></i>
 
-                        <strong>
-                            Student Accounts
-                        </strong>
+                        <strong>No student accounts found.</strong>
 
                         <span>
-                            Student account management will be added here.
+                            No accounts with the student role were found.
                         </span>
+                    </td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
 
-                    </div>
+</div>
+
 
                 </div>
 
@@ -2814,23 +3466,181 @@
                         each role can access.
                     </p>
 
-                    <div class="superadmin-placeholder">
 
-                        <i class="fa-solid fa-key"></i>
+<div class="roles-overview">
 
-                        <strong>
-                            Role &amp; Permission Management
-                        </strong>
+    <div class="role-overview-card">
+        <div class="role-overview-icon">
+            <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div>
+            <h4>Super Admin</h4>
+            <p>System administration and overall access management.</p>
+            <span class="role-label">Highest Access</span>
+        </div>
+    </div>
 
-                        <span>
-                            Permission controls will be added here.
-                        </span>
+    <div class="role-overview-card">
+        <div class="role-overview-icon">
+            <i class="fa-solid fa-user-gear"></i>
+        </div>
+        <div>
+            <h4>Admin</h4>
+            <p>Administrative functions and management of assigned system records.</p>
+            <span class="role-label">Administrative Access</span>
+        </div>
+    </div>
 
-                    </div>
+    <div class="role-overview-card">
+        <div class="role-overview-icon">
+            <i class="fa-solid fa-chalkboard-user"></i>
+        </div>
+        <div>
+            <h4>Trainer</h4>
+            <p>Training-related functions and management of assigned trainees.</p>
+            <span class="role-label">Training Access</span>
+        </div>
+    </div>
 
-                </div>
+    <div class="role-overview-card">
+        <div class="role-overview-icon">
+            <i class="fa-solid fa-user-graduate"></i>
+        </div>
+        <div>
+            <h4>Student</h4>
+            <p>Learning materials, course activities, and student learning features.</p>
+            <span class="role-label">Learning Access</span>
+        </div>
+    </div>
+</div> <!-- End of roles-overview -->
 
-            </div>
+<div class="permissions-matrix-section">
+    <div class="permissions-matrix-header">
+        <div>
+            <h3>Permission Matrix</h3>
+            <p>View the system functions available to each role.</p>
+        </div>
+        <span class="view-only-badge">
+            <i class="fa-solid fa-eye"></i>
+            View Only
+        </span>
+    </div>
+
+    <div class="permissions-table-wrapper">
+        <table class="permissions-table">
+            <thead>
+                <tr>
+                    <th>System Function</th>
+                    <th>Super Admin</th>
+                    <th>Admin</th>
+                    <th>Trainer</th>
+                    <th>Student</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td>Account Management</td>
+                    <td>Admin, Trainer, Student accounts</td>
+                    <td>Users and Trainers</td>
+                    <td class="permission-no">—</td>
+                    <td class="permission-no">—</td>
+                </tr>
+
+                <tr>
+                    <td>Registration Management</td>
+                    <td class="permission-review">Review Required</td>
+                    <td class="permission-yes">Allowed</td>
+                    <td class="permission-no">—</td>
+                    <td class="permission-no">—</td>
+                </tr>
+
+                <tr>
+                    <td>Course Management</td>
+                    <td class="permission-review">Review Required</td>
+                    <td class="permission-yes">Allowed</td>
+                    <td>Assigned course content</td>
+                    <td>Browse and Enroll</td>
+                </tr>
+
+                <tr>
+                    <td>Modules and Learning Materials</td>
+                    <td class="permission-review">Review Required</td>
+                    <td class="permission-yes">Allowed</td>
+                    <td class="permission-yes">Allowed</td>
+                    <td>View and Complete</td>
+                </tr>
+
+                <tr>
+                    <td>Quiz Management and Assessment</td>
+                    <td class="permission-review">Review Required</td>
+                    <td>Manage Quizzes</td>
+                    <td>Manage Quizzes</td>
+                    <td>Take and Submit Quizzes</td>
+                </tr>
+
+                <tr>
+                    <td>Attendance and Hands-on Evaluation</td>
+                    <td class="permission-review">Review Required</td>
+                    <td class="permission-review">Review Required</td>
+                    <td class="permission-yes">Allowed</td>
+                    <td class="permission-review">Review Required</td>
+                </tr>
+
+                <tr>
+                    <td>Onsite Activities and Grades</td>
+                    <td class="permission-review">Review Required</td>
+                    <td class="permission-review">Review Required</td>
+                    <td class="permission-yes">Allowed</td>
+                    <td class="permission-review">Review Required</td>
+                </tr>
+
+                <tr>
+                    <td>Announcements</td>
+                    <td class="permission-review">Review Required</td>
+                    <td class="permission-yes">Allowed</td>
+                    <td class="permission-review">Review Required</td>
+                    <td>View Announcements</td>
+                </tr>
+
+                <tr>
+                    <td>Certificates</td>
+                    <td class="permission-review">Review Required</td>
+                    <td class="permission-yes">Allowed</td>
+                    <td class="permission-yes">Allowed</td>
+                    <td class="permission-review">Review Required</td>
+                </tr>
+
+                <tr>
+                    <td>Landing Page Management</td>
+                    <td class="permission-review">Review Required</td>
+                    <td class="permission-yes">Allowed</td>
+                    <td class="permission-no">—</td>
+                    <td class="permission-no">—</td>
+                </tr>
+
+                <tr>
+                    <td>Profile and Password Settings</td>
+                    <td class="permission-review">Review Required</td>
+                    <td class="permission-review">Review Required</td>
+                    <td class="permission-yes">Allowed</td>
+                    <td class="permission-yes">Allowed</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <p class="permissions-matrix-note">
+        <i class="fa-solid fa-circle-info"></i>
+        This matrix is informational only. It does not change system access.
+        Review Required means the current route definitions do not establish
+        that role's access to the function.
+    </p>
+</div> <!-- End of permissions-matrix-section -->
+
+</div> <!-- End of superadmin-page-card -->
+
+</div> <!-- End of view-roles-permissions -->
 
 
 
@@ -2854,19 +3664,97 @@
                         Manage system-wide settings and administrative preferences.
                     </p>
 
-                    <div class="superadmin-placeholder">
 
-                        <i class="fa-solid fa-gear"></i>
+<div class="system-settings-overview">
 
-                        <strong>
-                            System Settings
-                        </strong>
+    <!-- Application Information -->
+    <div class="system-setting-card">
+        <div class="system-setting-icon">
+            <i class="fa-solid fa-window-maximize"></i>
+        </div>
 
-                        <span>
-                            System settings will be added here.
-                        </span>
+        <div class="system-setting-content">
+            <h4>Application Information</h4>
+            <p>View the basic information about the LEDIPO system.</p>
+            <span class="system-setting-status">Information Only</span>
+        </div>
+    </div>
 
-                    </div>
+    <!-- Account Security -->
+    <div class="system-setting-card">
+        <div class="system-setting-icon">
+            <i class="fa-solid fa-shield-halved"></i>
+        </div>
+
+        <div class="system-setting-content">
+            <h4>Account Security</h4>
+            <p>Review authentication, role-based access, and account security settings.</p>
+            <span class="system-setting-status">Review Only</span>
+        </div>
+    </div>
+
+    <!-- Email and Notifications -->
+    <div class="system-setting-card">
+        <div class="system-setting-icon">
+            <i class="fa-solid fa-envelope"></i>
+        </div>
+
+        <div class="system-setting-content">
+            <h4>Email &amp; Notifications</h4>
+            <p>Review email verification and notification-related configuration.</p>
+            <span class="system-setting-status">Review Only</span>
+        </div>
+    </div>
+
+    <!-- Database -->
+    <div class="system-setting-card">
+        <div class="system-setting-icon">
+            <i class="fa-solid fa-database"></i>
+        </div>
+
+        <div class="system-setting-content">
+            <h4>Database Information</h4>
+            <p>Identify database configuration and maintenance considerations.</p>
+            <span class="system-setting-status">Information Only</span>
+        </div>
+    </div>
+
+    <!-- System Maintenance -->
+    <div class="system-setting-card">
+        <div class="system-setting-icon">
+            <i class="fa-solid fa-screwdriver-wrench"></i>
+        </div>
+
+        <div class="system-setting-content">
+            <h4>System Maintenance</h4>
+            <p>Reserve this section for future maintenance and backup management features.</p>
+            <span class="system-setting-status">Coming Later</span>
+        </div>
+    </div>
+
+    <!-- Configuration Management -->
+    <div class="system-setting-card">
+        <div class="system-setting-icon">
+            <i class="fa-solid fa-sliders"></i>
+        </div>
+
+        <div class="system-setting-content">
+            <h4>Configuration Management</h4>
+            <p>Review system-wide configuration options before enabling changes.</p>
+            <span class="system-setting-status">Coming Later</span>
+        </div>
+    </div>
+
+</div>
+
+<div class="system-settings-note">
+    <i class="fa-solid fa-circle-info"></i>
+    <span>
+        This page is currently view-only. These cards are informational
+        placeholders and do not read or modify actual system configuration.
+    </span>
+</div>
+
 
                 </div>
 
@@ -2894,63 +3782,222 @@
                         Configure system-level options and application behavior.
                     </p>
 
-                    <div class="superadmin-placeholder">
 
-                        <i class="fa-solid fa-sliders"></i>
+<div class="system-configuration-overview">
 
-                        <strong>
-                            System Configuration
-                        </strong>
+    <!-- Application Environment -->
+    <div class="system-configuration-card">
+        <div class="system-configuration-icon">
+            <i class="fa-solid fa-server"></i>
+        </div>
 
-                        <span>
-                            Configuration controls will be added here.
-                        </span>
+        <div class="system-configuration-content">
+            <h4>Application Environment</h4>
+            <p>Review the application's environment and runtime configuration.</p>
+            <span class="system-configuration-status">Review Only</span>
+        </div>
+    </div>
+
+    <!-- Database Connection -->
+    <div class="system-configuration-card">
+        <div class="system-configuration-icon">
+            <i class="fa-solid fa-database"></i>
+        </div>
+
+        <div class="system-configuration-content">
+            <h4>Database Connection</h4>
+            <p>Review database connection settings and database driver information.</p>
+            <span class="system-configuration-status">Review Only</span>
+        </div>
+    </div>
+
+    <!-- Email Configuration -->
+    <div class="system-configuration-card">
+        <div class="system-configuration-icon">
+            <i class="fa-solid fa-envelope"></i>
+        </div>
+
+        <div class="system-configuration-content">
+            <h4>Email Configuration</h4>
+            <p>Review mail delivery settings used for verification and system emails.</p>
+            <span class="system-configuration-status">Review Only</span>
+        </div>
+    </div>
+
+    <!-- Session and Authentication -->
+    <div class="system-configuration-card">
+        <div class="system-configuration-icon">
+            <i class="fa-solid fa-user-shield"></i>
+        </div>
+
+        <div class="system-configuration-content">
+            <h4>Session &amp; Authentication</h4>
+            <p>Review session handling and authentication-related configuration.</p>
+            <span class="system-configuration-status">Review Only</span>
+        </div>
+    </div>
+
+    <!-- File Storage -->
+    <div class="system-configuration-card">
+        <div class="system-configuration-icon">
+            <i class="fa-solid fa-folder-open"></i>
+        </div>
+
+        <div class="system-configuration-content">
+            <h4>File Storage</h4>
+            <p>Review storage configuration for uploaded learning materials and documents.</p>
+            <span class="system-configuration-status">Review Only</span>
+        </div>
+    </div>
+
+    <!-- Future Configuration -->
+    <div class="system-configuration-card">
+        <div class="system-configuration-icon">
+            <i class="fa-solid fa-sliders"></i>
+        </div>
+
+        <div class="system-configuration-content">
+            <h4>Advanced Configuration</h4>
+            <p>Reserve this section for future configurable system options.</p>
+            <span class="system-configuration-status">Coming Later</span>
+        </div>
+    </div>
+
+</div>
+
+<div class="system-configuration-note">
+    <i class="fa-solid fa-circle-info"></i>
+    <span>
+        This page is currently view-only. These cards are informational
+        placeholders and do not read or modify actual application configuration.
+    </span>
+</div>
 
                     </div>
 
                 </div>
 
-            </div>
 
 
 
-            <!-- ==================================================
-             USER ACTIVITY LOGS
-        =================================================== -->
+<!-- ==================================================
+     USER ACTIVITY LOGS
+=================================================== -->
 
-            <div id="view-user-activity" class="superadmin-view" style="display:none;">
+<div id="view-user-activity" class="superadmin-view" style="display:none;">
 
-                <h1 class="page-title">
-                    User Activity Logs
-                </h1>
+    <h1 class="page-title">
+        User Activity Logs
+    </h1>
 
-                <div class="superadmin-page-card">
+    <div class="superadmin-page-card">
 
-                    <h3>
-                        User Activity
-                    </h3>
+        <h3>User Activity</h3>
 
+        <p>
+            Review important user actions and account activity.
+        </p>
+
+        <!-- Activity Overview -->
+        <div class="activity-logs-overview">
+
+            <!-- Account Activity -->
+            <div class="activity-summary-card">
+                <div class="activity-summary-icon">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+
+                <div>
+                    <h4>Account Activity</h4>
                     <p>
-                        Review important user actions and account activity.
+                        Review account-related actions and user activity records.
                     </p>
+                    <span class="activity-status">View Only</span>
+                </div>
+            </div>
 
-                    <div class="superadmin-placeholder">
-
-                        <i class="fa-solid fa-user-clock"></i>
-
-                        <strong>
-                            User Activity Logs
-                        </strong>
-
-                        <span>
-                            Activity logging will be added here.
-                        </span>
-
-                    </div>
-
+            <!-- Authentication Activity -->
+            <div class="activity-summary-card">
+                <div class="activity-summary-icon">
+                    <i class="fa-solid fa-right-to-bracket"></i>
                 </div>
 
+                <div>
+                    <h4>Authentication Activity</h4>
+                    <p>
+                        Reserve this section for login and logout activity records.
+                    </p>
+                    <span class="activity-status">Future Integration</span>
+                </div>
             </div>
+
+        </div>
+
+        <!-- Recent Activity Table -->
+        <div class="activity-log-table-section">
+
+            <div class="activity-log-header">
+                <div>
+                    <h3>Recent Activity</h3>
+                    <p>
+                        Activity records will appear here when logging is implemented.
+                    </p>
+                </div>
+
+                <span class="activity-status">
+                    <i class="fa-solid fa-eye"></i>
+                    View Only
+                </span>
+            </div>
+
+            <div class="activity-log-table-wrapper">
+
+                <table class="activity-log-table">
+
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Activity</th>
+                            <th>Details</th>
+                            <th>Date &amp; Time</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr>
+                            <td colspan="5" class="activity-empty-state">
+                                <i class="fa-solid fa-clipboard-list"></i>
+
+                                <strong>No activity records available</strong>
+
+                                <span>
+                                    Actual user activity has not been connected yet.
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+        <!-- Information Note -->
+        <div class="activity-logs-note">
+            <i class="fa-solid fa-circle-info"></i>
+
+            <span>
+                This page currently displays a sample layout only.
+                It does not retrieve or record actual user activity.
+                Activity tracking must be implemented separately.
+            </span>
+        </div>
+
+    </div>
+
+</div>
 
 
 
@@ -3115,6 +4162,103 @@
             </div>
 
 
+<!-- STUDENT DETAILS MODAL -->
+<div id="studentDetailsModal"
+     class="superadmin-modal"
+     style="display:none;">
+
+    <div class="superadmin-modal-content"
+         style="max-width:600px; width:90%;">
+
+        <div class="superadmin-modal-header">
+            <h3>
+                <i class="fa-solid fa-user-graduate"></i>
+                Student Details
+            </h3>
+
+            <button type="button"
+                    onclick="closeStudentDetails()"
+                    aria-label="Close">
+                &times;
+            </button>
+        </div>
+
+        <div style="padding:24px;">
+
+            <div style="
+                display:grid;
+                grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+                gap:16px;
+            ">
+
+                <div>
+                    <small style="color:#777;">Student ID</small>
+                    <p id="detailStudentId">—</p>
+                </div>
+
+                <div>
+                    <small style="color:#777;">Full Name</small>
+                    <p id="detailStudentName">—</p>
+                </div>
+
+                <div>
+                    <small style="color:#777;">Email Address</small>
+                    <p id="detailStudentEmail">—</p>
+                </div>
+
+                <div>
+                    <small style="color:#777;">Username</small>
+                    <p id="detailStudentUsername">—</p>
+                </div>
+
+                <div>
+                    <small style="color:#777;">Contact Number</small>
+                    <p id="detailStudentContact">—</p>
+                </div>
+
+                <div>
+                    <small style="color:#777;">Account Status</small>
+                    <p id="detailStudentStatus">—</p>
+                </div>
+
+                <div>
+                    <small style="color:#777;">Role</small>
+                    <p id="detailStudentRole">—</p>
+                </div>
+
+                <div>
+                    <small style="color:#777;">Date Created</small>
+                    <p id="detailStudentCreated">—</p>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div style="
+            display:flex;
+            justify-content:flex-end;
+            padding:16px 24px;
+            border-top:1px solid #eee;
+        ">
+            <button type="button"
+                    onclick="closeStudentDetails()"
+                    style="
+                        padding:10px 18px;
+                        background:#025628;
+                        color:white;
+                        border:none;
+                        border-radius:6px;
+                        cursor:pointer;
+                    ">
+                Close
+            </button>
+        </div>
+
+    </div>
+</div>
+
+
         </main>
 
     </div>
@@ -3160,6 +4304,23 @@ function openAddTrainerModal() {
 function closeAddTrainerModal() {
     document.getElementById('addTrainerModal').classList.remove('open');
 }
+
+function openAddAdminModal() {
+    const modal = document.getElementById('addAdminModal');
+
+    if (modal) {
+        modal.classList.add('open');
+    }
+}
+
+function closeAddAdminModal() {
+    const modal = document.getElementById('addAdminModal');
+
+    if (modal) {
+        modal.classList.remove('open');
+    }
+}
+
 
 
 
@@ -3631,6 +4792,160 @@ function closeAddTrainerModal() {
             }
         );
 
+
+        /* ==========================================================
+           STUDENT ACCOUNTS: SEARCH AND FILTER
+        ========================================================== */
+
+        const studentSearchInput =
+            document.getElementById('studentSearchInput');
+
+        const studentStatusFilter =
+            document.getElementById('studentStatusFilter');
+
+        const studentTableBody =
+            document.querySelector('#view-student-accounts tbody');
+
+        if (
+            studentSearchInput &&
+            studentStatusFilter &&
+            studentTableBody
+        ) {
+            const studentRows = Array.from(
+                studentTableBody.querySelectorAll('tr')
+            ).filter(function (row) {
+                return !row.querySelector('.empty-admins');
+            });
+
+            const noResultsRow = document.createElement('tr');
+
+            noResultsRow.innerHTML = `
+                <td colspan="5" class="empty-admins">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <strong>No matching students found.</strong>
+                    <span>Try another search term or status.</span>
+                </td>
+            `;
+
+            noResultsRow.style.display = 'none';
+            studentTableBody.appendChild(noResultsRow);
+
+            function filterStudentAccounts() {
+                const searchTerm =
+                    studentSearchInput.value.trim().toLowerCase();
+
+                const selectedStatus =
+                    studentStatusFilter.value.toLowerCase();
+
+                let visibleCount = 0;
+
+                studentRows.forEach(function (row) {
+                    const studentName =
+                        row.cells[0]?.textContent.toLowerCase() || '';
+
+                    const studentEmail =
+                        row.cells[1]?.textContent.toLowerCase() || '';
+
+                    const studentUsername =
+                        row.cells[2]?.textContent.toLowerCase() || '';
+
+                    const studentStatus =
+                        row.cells[3]
+                            ?.querySelector('.status-badge')
+                            ?.textContent.trim().toLowerCase() || '';
+
+                    const matchesSearch =
+                        studentName.includes(searchTerm) ||
+                        studentEmail.includes(searchTerm) ||
+                        studentUsername.includes(searchTerm);
+
+                    const matchesStatus =
+                        selectedStatus === '' ||
+                        studentStatus === selectedStatus;
+
+                    const shouldShow =
+                        matchesSearch && matchesStatus;
+
+                    row.style.display = shouldShow ? '' : 'none';
+
+                    if (shouldShow) {
+                        visibleCount++;
+                    }
+                });
+
+                noResultsRow.style.display =
+                    studentRows.length > 0 && visibleCount === 0
+                        ? ''
+                        : 'none';
+            }
+
+            studentSearchInput.addEventListener(
+                'input',
+                filterStudentAccounts
+            );
+
+            studentStatusFilter.addEventListener(
+                'change',
+                filterStudentAccounts
+            );
+        }
+
+
+/* ==========================================================
+   STUDENT ACCOUNTS: VIEW STUDENT DETAILS
+========================================================== */
+
+function viewStudentDetails(
+    id,
+    firstname,
+    lastname,
+    email,
+    username,
+    status,
+    createdAt,
+    contact,
+    role
+) {
+    document.getElementById('detailStudentId').textContent = id;
+    document.getElementById('detailStudentName').textContent =
+        `${firstname} ${lastname}`;
+
+    document.getElementById('detailStudentEmail').textContent = email;
+    document.getElementById('detailStudentUsername').textContent = username;
+    document.getElementById('detailStudentContact').textContent = contact;
+    document.getElementById('detailStudentStatus').textContent = status;
+    document.getElementById('detailStudentRole').textContent = role;
+    document.getElementById('detailStudentCreated').textContent = createdAt;
+
+    const modal = document.getElementById('studentDetailsModal');
+
+    modal.style.display = 'flex';
+}
+
+function closeStudentDetails() {
+    const modal = document.getElementById('studentDetailsModal');
+
+    modal.style.display = 'none';
+}
+
+/* Close the modal when clicking outside its content */
+document.addEventListener('click', function (event) {
+    const modal = document.getElementById('studentDetailsModal');
+
+    if (modal && event.target === modal) {
+        closeStudentDetails();
+    }
+});
+
+/* Close the modal using the Escape key */
+document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape') {
+        closeStudentDetails();
+    }
+});
+
+
+    
     </script>
 
 

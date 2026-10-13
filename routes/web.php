@@ -128,6 +128,7 @@ Route::middleware("super_admin")->group(function () {
     Route::put('/superadmin/admin-accounts/{id}', [SuperAdminController::class, 'updateAdmin'])->name('superadmin.admin.update'); 
     Route::get('/superadmin/trainer-accounts', [SuperAdminController::class, 'trainerAccounts'])->name('superadmin.trainers');
     Route::post('/superadmin/trainer-accounts', [SuperAdminController::class, 'storeTrainer'])->name('superadmin.trainers.store');
+    Route::get('/superadmin/student-accounts', [SuperAdminController::class, 'studentAccounts'])->name('superadmin.students');
 
 });
 
